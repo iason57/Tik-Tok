@@ -107,6 +107,7 @@ public class Broker extends Thread implements Broker_interface,Node{
         new Client(100, 5).start();
         */
         
+        
         Broker t2 = new Broker();
         
         t2.start();
