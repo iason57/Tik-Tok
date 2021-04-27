@@ -7,7 +7,25 @@ public class Consumer extends Thread implements Consumer_interface,Node {
     public Socket clientSocket;
     public PrintWriter out;
     public BufferedReader in;
-    public String message = "Hello"; 
+    public String message = "Hello";
+    public Broker broker;
+
+    public Consumer(Socket clientSocket) {
+        this.clientSocket = clientSocket;
+    }
+
+    public Consumer(Socket clientSocket, Broker br) {
+        this.clientSocket = clientSocket;
+        this.broker = br;
+    }
+
+    public Consumer(){
+
+    }
+
+    public void setBroker(Broker br){
+        this.broker = br;
+    }
 
     //--------------------------------------------------------------
 
@@ -94,9 +112,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
         Consumer t1 = new Consumer();
         
         t1.start();
-        
-        
-        
+
         Consumer t2 = new Consumer();
         
         t2.start();

@@ -4,13 +4,27 @@ import java.io.*;
 
 public class Broker extends Thread implements Broker_interface,Node{
 
-    public List<Consumer> registeredUsers = new ArrayList<Consumer>();
+    public List<Consumer> registeredUsers;
     public List<Publisher> registeredPublishers;
     public ServerSocket serverSocket;
     public Socket clientSocket; // mallon oxi
     public PrintWriter out;
     public BufferedReader in;
-    private int number_of_thread =1;
+    private int number_of_thread = 1;
+
+    public Broker(Broker br){
+        this.registeredUsers = br.registeredUsers;
+        this.registeredPublishers = br.registeredPublishers;
+        this.serverSocket = br.serverSocket;
+        this.clientSocket = br.clientSocket;
+        this.out = br.out;
+        this.in = br.in;
+        this.number_of_thread = br.number_of_thread;
+    }
+
+    public Broker(){
+
+    }
 
     //--------------------------------------------------------------------
 
@@ -23,7 +37,10 @@ public class Broker extends Thread implements Broker_interface,Node{
     public void acceptConnection(){ //parametros : Consumer c - type : Consumer
         while (true){
             try{
-                new Consumer_handlers(serverSocket.accept(),number_of_thread++).start();
+                Socket clSocket = serverSocket.accept();
+                registeredUsers.add(new Consumer(clSocket, this));
+                new Consumer_handlers(clSocket,number_of_thread++).start();
+                number_of_clients.set(0, number_of_clients.get(0)+1);
             }
             catch(Exception e){
             }
@@ -51,11 +68,9 @@ public class Broker extends Thread implements Broker_interface,Node{
         catch(Exception e){
 
         }
-        /*
-        for (int j = 0; j < 10; j++) {
-            brokers.add(new Broker());
-        }
-        */
+
+        registeredUsers = new ArrayList<Consumer>();
+        registeredPublishers = new ArrayList<Publisher>();
     }
     public void connect(){
 
@@ -67,15 +82,19 @@ public class Broker extends Thread implements Broker_interface,Node{
 
     }
     public List<Broker> getBrokers(){
-        return null;
+        return brokers;
     }
 
     public void run(){
         try{
-            Broker server = new Broker();
-            server.init(6666);
+            for (int j = 0; j < 3; j++) {
+                Broker server = new Broker();
+                server.init(6666+j); //ports: 6666, 6667, 6668.
+                brokers.add(new Broker(server));
+                brokers.get(j).acceptConnection();
+            }
             System.out.println("run thread Broker");
-            server.acceptConnection();
+            
         }
         catch(Exception e)
         {
@@ -102,9 +121,11 @@ public class Broker extends Thread implements Broker_interface,Node{
                 new InputStreamReader(System.in));
 
             try{
+
                 out = new PrintWriter(clientSocket.getOutputStream(), true);
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 System.out.println("Starting to talk with consumer : "+id);
+                //registeredUsers.add(id);
                 String greeting = in.readLine();
                 while (!greeting.equals(".")) {
                     System.out.println("Client "+id+" said : "+greeting);
@@ -124,22 +145,11 @@ public class Broker extends Thread implements Broker_interface,Node{
 
 
     public static void main(String args[]) {
-        /*
-        new Client(10, 5).start();
-        new Client(20, 5).start();
-        new Client(30, 5).start();
-        new Client(40, 5).start();
-        new Client(50, 5).start();
-        new Client(60, 5).start();
-        new Client(70, 5).start();
-        new Client(80, 5).start();
-        new Client(90, 5).start();
-        new Client(100, 5).start();
-        */
-        
         Broker t2 = new Broker();
-        
+        brokers.add(t2);
+        for (int u=0; u<brokers.size(); u++){
+            System.out.println(brokers.get(u));
+        }
         t2.start();
-        
     }
 }
