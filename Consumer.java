@@ -34,9 +34,22 @@ public class Consumer extends Thread implements Consumer_interface,Node {
     }
 
     public void connect(){
+        String str;
+        BufferedReader reader = new BufferedReader(
+            new InputStreamReader(System.in));
+        String message_from_server;
         try{
             out = new PrintWriter(clientSocket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            while(true){
+                str =  reader.readLine();
+                out.println(str);
+                if(str.equals(".")){
+                    System.exit(0);
+                }
+                message_from_server = in.readLine();
+                System.out.println("Server said : "+message_from_server);
+            }
             
         }
         catch (Exception e){
@@ -69,7 +82,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
             Consumer client = new Consumer();
             client.init(6666);
             client.connect();
-            System.out.println("run thread 1");
+            System.out.println("run thread Consumer");
             
         }
         catch(Exception e){

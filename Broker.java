@@ -20,15 +20,20 @@ public class Broker extends Thread implements Broker_interface,Node{
         return null;
     }
     public void acceptConnection(){ //parametros : Consumer c - type : Consumer
+        String str;
+        BufferedReader reader = new BufferedReader(
+            new InputStreamReader(System.in));
         try{
-            System.out.println("here3!");
             clientSocket = serverSocket.accept();
-            System.out.println("here2!");
+            out = new PrintWriter(clientSocket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            out = new PrintWriter(clientSocket.getOutputStream(), true);       
-            System.out.println("here!");
             String greeting = in.readLine();
-            
+            while (!greeting.equals(".")) {
+                System.out.println("Client said : "+greeting);
+                str =  reader.readLine();
+                out.println(str);
+                greeting = in.readLine();
+            }
         }
         catch(Exception e){
 
@@ -78,12 +83,9 @@ public class Broker extends Thread implements Broker_interface,Node{
 
     public void run(){
         try{
-            
-            
-            System.out.println("run thread 1");
             Broker server = new Broker();
             server.init(6666);
-            System.out.println("run thread 2");
+            System.out.println("run thread Broker");
             server.acceptConnection();
         }
         catch(Exception e)
