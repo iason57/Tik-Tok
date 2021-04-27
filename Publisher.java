@@ -5,7 +5,7 @@ public class Publisher implements Publisher_interface,Node{
     private ChannelName channelName;
 
     //--------------------------------------------------------------
-    
+
     public void addHashTag(String str){
 
     }
@@ -16,7 +16,7 @@ public class Publisher implements Publisher_interface,Node{
 
     }
     public Broker HashTopic(String str){
-        
+        return null;
     }
     public void push(String str,Value v){
         
@@ -46,6 +46,6 @@ public class Publisher implements Publisher_interface,Node{
 
     }
     public List<Broker> getBrokers(){
-
+        return null;
     }
 }
