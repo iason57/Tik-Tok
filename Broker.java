@@ -10,6 +10,7 @@ public class Broker extends Thread implements Broker_interface,Node{
     public Socket clientSocket; // mallon oxi
     public PrintWriter out;
     public BufferedReader in;
+    private int number_of_thread =1;
 
     //--------------------------------------------------------------------
 
@@ -20,25 +21,13 @@ public class Broker extends Thread implements Broker_interface,Node{
         return null;
     }
     public void acceptConnection(){ //parametros : Consumer c - type : Consumer
-        String str;
-        BufferedReader reader = new BufferedReader(
-            new InputStreamReader(System.in));
-        try{
-            clientSocket = serverSocket.accept();
-            out = new PrintWriter(clientSocket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            String greeting = in.readLine();
-            while (!greeting.equals(".")) {
-                System.out.println("Client said : "+greeting);
-                str =  reader.readLine();
-                out.println(str);
-                greeting = in.readLine();
+        while (true){
+            try{
+                new Consumer_handlers(serverSocket.accept(),number_of_thread++).start();
+            }
+            catch(Exception e){
             }
         }
-        catch(Exception e){
-
-        }
-        // return c;
     }
     public void notifyPublisher(String str){
 
@@ -93,6 +82,47 @@ public class Broker extends Thread implements Broker_interface,Node{
 
         }
     }
+
+    //handler
+
+    private static class Consumer_handlers extends Thread {
+        private Socket clientSocket;
+        private PrintWriter out;
+        private BufferedReader in;
+        private int id;
+
+        public Consumer_handlers(Socket socket,int num) {
+            this.clientSocket = socket;
+            id = num;
+        }
+
+        public void run() {            
+            String str;
+            BufferedReader reader = new BufferedReader(
+                new InputStreamReader(System.in));
+
+            try{
+                out = new PrintWriter(clientSocket.getOutputStream(), true);
+                in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                System.out.println("Starting to talk with consumer : "+id);
+                String greeting = in.readLine();
+                while (!greeting.equals(".")) {
+                    System.out.println("Client "+id+" said : "+greeting);
+                    str =  reader.readLine();
+                    out.println(str + " message to "+id);
+                    greeting = in.readLine();
+                }
+                in.close();
+                out.close();
+                clientSocket.close();
+            }
+            catch(Exception e){
+    
+            }            
+        }
+    }
+
+
     public static void main(String args[]) {
         /*
         new Client(10, 5).start();
