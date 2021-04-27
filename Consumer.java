@@ -9,6 +9,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
     public BufferedReader in;
     public String message = "Hello";
     public Broker broker;
+    public int port;
 
     public Consumer(Socket clientSocket) {
         this.clientSocket = clientSocket;
@@ -19,8 +20,12 @@ public class Consumer extends Thread implements Consumer_interface,Node {
         this.broker = br;
     }
 
-    public Consumer(){
+    public Consumer(int p){
+        port = p;
+    }
 
+    public Consumer(){
+        
     }
 
     public void setBroker(Broker br){
@@ -66,7 +71,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
                     System.exit(0);
                 }
                 message_from_server = in.readLine();
-                System.out.println("Server said : "+message_from_server);
+                System.out.println("Broker "+port+" said : "+message_from_server);
             }
             
         }
@@ -97,8 +102,8 @@ public class Consumer extends Thread implements Consumer_interface,Node {
     public void run(){
         try{
             
-            Consumer client = new Consumer();
-            client.init(6666);
+            Consumer client = new Consumer(port);
+            client.init(port);
             client.connect();
             System.out.println("run thread Consumer");
             
@@ -109,15 +114,15 @@ public class Consumer extends Thread implements Consumer_interface,Node {
     }
     public static void main(String args[]) {
         
-        Consumer t1 = new Consumer();
+        Consumer t1 = new Consumer(6666);
         
         t1.start();
 
-        Consumer t2 = new Consumer();
+        Consumer t2 = new Consumer(6667);
         
         t2.start();
 
-        Consumer t3 = new Consumer();
+        Consumer t3 = new Consumer(6668);
         
         t3.start();
         

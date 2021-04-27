@@ -11,6 +11,7 @@ public class Broker extends Thread implements Broker_interface,Node{
     public PrintWriter out;
     public BufferedReader in;
     private int number_of_thread = 1;
+    public int port;
 
     public Broker(Broker br){
         this.registeredUsers = br.registeredUsers;
@@ -20,10 +21,15 @@ public class Broker extends Thread implements Broker_interface,Node{
         this.out = br.out;
         this.in = br.in;
         this.number_of_thread = br.number_of_thread;
+        this.port = port;
     }
 
     public Broker(){
 
+    }
+
+    public Broker(int p){
+        port = p;
     }
 
     //--------------------------------------------------------------------
@@ -38,9 +44,14 @@ public class Broker extends Thread implements Broker_interface,Node{
         while (true){
             try{
                 Socket clSocket = serverSocket.accept();
-                registeredUsers.add(new Consumer(clSocket, this));
-                new Consumer_handlers(clSocket,number_of_thread++).start();
+                //int thesi = number_of_clients.get(0) % brokers.size();
+                //System.out.println("Server that accepted the connection : "+thesi);
+                //brokers.get(thesi).registeredUsers.add(new Consumer(clSocket, this)); // kai alles metavlites
+                //brokers.get(thesi).clientSocket = clSocket;
+                
+                System.out.println(port);
                 number_of_clients.set(0, number_of_clients.get(0)+1);
+                new Consumer_handlers(clSocket,number_of_thread++,port).start();
             }
             catch(Exception e){
             }
@@ -87,13 +98,13 @@ public class Broker extends Thread implements Broker_interface,Node{
 
     public void run(){
         try{
-            for (int j = 0; j < 3; j++) {
-                Broker server = new Broker();
-                server.init(6666+j); //ports: 6666, 6667, 6668.
-                brokers.add(new Broker(server));
-                brokers.get(j).acceptConnection();
-            }
-            System.out.println("run thread Broker");
+            //for (int j = 0; j < 3; j++) {
+                Broker server = new Broker(port);
+                server.init(port);
+                server.acceptConnection();
+            //}
+
+            //System.out.println(brokers);
             
         }
         catch(Exception e)
@@ -109,10 +120,12 @@ public class Broker extends Thread implements Broker_interface,Node{
         private PrintWriter out;
         private BufferedReader in;
         private int id;
+        private int pport;
 
-        public Consumer_handlers(Socket socket,int num) {
+        public Consumer_handlers(Socket socket,int num,int p) {
             this.clientSocket = socket;
             id = num;
+            pport = p;
         }
 
         public void run() {            
@@ -124,13 +137,13 @@ public class Broker extends Thread implements Broker_interface,Node{
 
                 out = new PrintWriter(clientSocket.getOutputStream(), true);
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                System.out.println("Starting to talk with consumer : "+id);
+                System.out.println("Starting to talk with consumer : "+id+" and broker : "+ pport);
                 //registeredUsers.add(id);
                 String greeting = in.readLine();
                 while (!greeting.equals(".")) {
-                    System.out.println("Client "+id+" said : "+greeting);
+                    System.out.println("Client "+id+" said to broker "+ pport +" : "+greeting);
                     str =  reader.readLine();
-                    out.println(str + " message to "+id);
+                    out.println("Response to "+greeting+", "+str + " message to "+id);
                     greeting = in.readLine();
                 }
                 in.close();
@@ -145,11 +158,20 @@ public class Broker extends Thread implements Broker_interface,Node{
 
 
     public static void main(String args[]) {
-        Broker t2 = new Broker();
-        brokers.add(t2);
-        for (int u=0; u<brokers.size(); u++){
-            System.out.println(brokers.get(u));
-        }
-        t2.start();
+        
+        number_of_clients.add(0);
+
+        Broker b1 = new Broker(6666);
+        b1.start();
+
+        Broker b2 = new Broker(6667);
+        b2.start();
+
+        Broker b3 = new Broker(6668);
+        b3.start();
+
+
+
+
     }
 }
