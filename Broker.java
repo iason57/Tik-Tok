@@ -20,4 +20,22 @@ public class Broker implements Broker_interface,Node{
     public void filterConsumers(String str){
 
     }
+    
+    //Node methods
+    
+    public void init(int i){
+
+    }
+    public void connect(){
+
+    }
+    public void disconnect(){
+
+    }
+    public void updateNodes(){
+
+    }
+    public List<Broker> getBrokers(){
+
+    }
 }
