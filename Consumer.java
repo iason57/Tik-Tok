@@ -35,6 +35,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
 
     public void connect(){
         String str;
+        int count = 0;
         BufferedReader reader = new BufferedReader(
             new InputStreamReader(System.in));
         String message_from_server;
@@ -43,8 +44,8 @@ public class Consumer extends Thread implements Consumer_interface,Node {
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             while(true){
                 str =  reader.readLine();
-                out.println(str);
-                if(str.equals(".")){
+                out.println(str+", message-count :"+count++);
+                if(str.equals("..")){
                     System.exit(0);
                 }
                 message_from_server = in.readLine();
@@ -94,6 +95,17 @@ public class Consumer extends Thread implements Consumer_interface,Node {
         Consumer t1 = new Consumer();
         
         t1.start();
+        try{
+            Thread.sleep(10000);
+        }
+        catch(Exception e){
+            
+        }
+        
+
+        Consumer t2 = new Consumer();
+        
+        t2.start();
         
     }
 }
