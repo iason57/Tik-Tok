@@ -1,4 +1,11 @@
+import java.util.*;
+
 public class Broker implements Broker_interface,Node{
+    private List<Consumer> registeredUsers = new ArrayList<Consumer>();
+    private List<Publisher> registeredPublishers;
+
+    //--------------------------------------------------------------------
+
     public void calculateKeys(){
 
     }

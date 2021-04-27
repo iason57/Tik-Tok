@@ -1,4 +1,11 @@
+import java.util.*;
+
 public class Publisher implements Publisher_interface,Node{
+
+    private ChannelName channelName;
+
+    //--------------------------------------------------------------
+    
     public void addHashTag(String str){
 
     }
@@ -25,7 +32,7 @@ public class Publisher implements Publisher_interface,Node{
     }
 
     //Node methods
-    
+
     public void init(int i){
 
     }
