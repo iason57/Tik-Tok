@@ -149,7 +149,7 @@ public class Broker extends Thread implements Broker_interface,Node{
             
             try{
                
-                String video_file_to_send = "C://Users//iason//Desktop//Ergasia-TikTok//Tik-Tok//source5.mp4";
+                String video_file_to_send = "C://Users//iason//Desktop//Ergasia-TikTok//Tik-Tok//source2.mp4";
                 // send file
                 File myFile = new File (video_file_to_send);
                 byte [] allfile  = new byte [(int)myFile.length()];
@@ -198,6 +198,8 @@ public class Broker extends Thread implements Broker_interface,Node{
                 bis.close();
                 fis.close();
                 os.close();
+
+                System.out.println("File size is : "+(int)myFile.length());
 
                 System.exit(0);
                 /*

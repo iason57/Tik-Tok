@@ -92,7 +92,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
             
             try{
                 //new ----------------------------------------------------------------------------
-                int file_size = 100030;
+                int file_size = 100003;
                 int bytesRead;
                 int current = 0;
                 InputStream is = clientSocket.getInputStream();
@@ -116,7 +116,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
                         //fos = new FileOutputStream(video_file);
                         //bos = new BufferedOutputStream(fos);
                         
-                        System.out.println("read");
+                        System.out.println(mybytearray.length);
                         bytesRead = is.read(mybytearray,0,mybytearray.length);
                         
                         //current = bytesRead;
@@ -173,7 +173,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
     
                     
     
-                    if (current < 100000) {
+                    if (current < 100000 ) {
                         System.out.println("Breaking");
                         break;
                     }
