@@ -99,9 +99,11 @@ public class Broker extends Thread implements Broker_interface,Node{
     public void run(){
         try{
             //for (int j = 0; j < 3; j++) {
-                Broker server = new Broker(port);
-                server.init(port);
-                server.acceptConnection();
+                //Broker server = new Broker(port);
+                //server.init(port);
+                //server.acceptConnection();
+                this.init(port);
+                this.acceptConnection();
             //}
 
             //System.out.println(brokers);
@@ -133,8 +135,43 @@ public class Broker extends Thread implements Broker_interface,Node{
             BufferedReader reader = new BufferedReader(
                 new InputStreamReader(System.in));
 
+            //new ---------------------------------------------------------------------------
+            FileInputStream fis = null;
+            BufferedInputStream bis = null;
+            OutputStream os = null;
             try{
+               
+                String video_file_to_send = "C://Users//iason//Desktop//Ergasia-TikTok//Tik-Tok//s.mp4";
+                // send file
+                File myFile = new File (video_file_to_send);
+                byte [] mybytearray  = new byte [(int)myFile.length()+3];
 
+                System.out.println("ok1.");
+                String k = "end";
+                byte[] b = k.getBytes();
+                //System.out.println(b.length);
+                mybytearray[mybytearray.length - 3] = b[0];
+                mybytearray[mybytearray.length - 2] = b[1];
+                mybytearray[mybytearray.length - 1] = b[2];
+
+
+                System.out.println(mybytearray[mybytearray.length - 3]);
+                System.out.println(mybytearray[mybytearray.length - 2]);
+                System.out.println(mybytearray[mybytearray.length - 1]);
+
+                fis = new FileInputStream(myFile);
+                bis = new BufferedInputStream(fis);
+                bis.read(mybytearray,0,mybytearray.length);
+                os = clientSocket.getOutputStream();
+                System.out.println("Sending " + video_file_to_send + "(" + (mybytearray.length -3) + "bytes)");    
+                os.write(mybytearray,0,mybytearray.length);
+                os.flush();
+                System.out.println("Done.");
+                System.exit(0);
+                
+                //end new -----------------------------------------------------------------------
+
+                /*
                 out = new PrintWriter(clientSocket.getOutputStream(), true);
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 System.out.println("Starting to talk with consumer : "+id+" and broker : "+ pport);
@@ -146,6 +183,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                     out.println("Response to "+greeting+", "+str + " message to "+id);
                     greeting = in.readLine();
                 }
+                */
                 in.close();
                 out.close();
                 clientSocket.close();
@@ -163,15 +201,12 @@ public class Broker extends Thread implements Broker_interface,Node{
 
         Broker b1 = new Broker(6666);
         b1.start();
-
+        /*
         Broker b2 = new Broker(6667);
         b2.start();
 
         Broker b3 = new Broker(6668);
         b3.start();
-
-
-
-
+        */
     }
 }
