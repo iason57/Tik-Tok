@@ -143,49 +143,61 @@ public class Broker extends Thread implements Broker_interface,Node{
             String str;
             BufferedReader reader = new BufferedReader(
                 new InputStreamReader(System.in));
+            
 
             //new ---------------------------------------------------------------------------
             
             try{
                
-                String video_file_to_send = "C://Users//Admin//Desktop//Tik-Tok//source.mp4";
+                String video_file_to_send = "C://Users//iason//Desktop//Ergasia-TikTok//Tik-Tok//source5.mp4";
                 // send file
                 File myFile = new File (video_file_to_send);
+                byte [] allfile  = new byte [(int)myFile.length()];
                 int pointer_in_file=0;
                 int chunk = 100000;
+                FileInputStream fis = null;
+                BufferedInputStream bis = null;
+                OutputStream os = null;
+                fis = new FileInputStream(myFile);
+                bis = new BufferedInputStream(fis);
+                bis.read(allfile,0,(int)myFile.length());
+                os = clientSocket.getOutputStream();
                 while((int)myFile.length() > pointer_in_file){
                     if( (pointer_in_file + 100000) > (int)myFile.length() ){
                         chunk = (int)myFile.length()%100000;
-                        System.out.println(chunk);
+                        System.out.println("The chunk is : "+chunk);
                     }
                     byte [] mybytearray  = new byte [chunk+3];
-                    System.out.println("ok1.");
+                    System.out.println("Length : "+mybytearray.length);
                     String k = "end";
                     byte[] b = k.getBytes();
                     //System.out.println(b.length);
-                    mybytearray[mybytearray.length - 3] = b[0]; //???????
-                    mybytearray[mybytearray.length  - 2] = b[1];  //???????
+                    mybytearray[mybytearray.length - 3] = b[0];
+                    mybytearray[mybytearray.length  - 2] = b[1];
                     mybytearray[mybytearray.length  - 1] = b[2];
                     
 
                     System.out.println("here"); 
-                    FileInputStream fis = null;
-                    BufferedInputStream bis = null;
-                    OutputStream os = null;
-                    fis = new FileInputStream(myFile);
-                    bis = new BufferedInputStream(fis);
-                    bis.read(mybytearray,pointer_in_file,pointer_in_file+chunk); //chunk + 3?? thelo to pointer in file?
-
-                    os = clientSocket.getOutputStream();
+                    
+                    
+                    //bis.read(mybytearray,pointer_in_file,pointer_in_file+chunk); //chunk + 3?? thelo to pointer in file?
+                    System.out.println("here1"); 
+                    for(int i=pointer_in_file;i < (pointer_in_file+chunk);i++){
+                        mybytearray[i-pointer_in_file] = allfile[i];
+                    }
+                    System.out.println("here2"); 
+                    
                     System.out.println("Sending " + video_file_to_send + "(" + (mybytearray.length -3) + "bytes) part :"+(pointer_in_file/100000 +1 ) );    
-                    os.write(mybytearray,0,chunk+3);
+                    os.write(mybytearray,0,mybytearray.length);
                     os.flush();
                     System.out.println("Done.");
                     pointer_in_file += 100000;
-                    bis.close();
-                    fis.close();
-                    os.close();
+                    System.out.println(pointer_in_file);
+                    
                 }
+                bis.close();
+                fis.close();
+                os.close();
                 /*
                 byte [] mybytearray  = new byte [(int)myFile.length()+3];
 
@@ -232,6 +244,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                 in.close();
                 out.close();
                 clientSocket.close();
+                
             }
             catch(Exception e){
     

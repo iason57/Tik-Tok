@@ -86,64 +86,57 @@ public class Consumer extends Thread implements Consumer_interface,Node {
         Byte w2 = new Byte(b[1]);
         Byte w3 = new Byte(b[2]);
         int part = 0;
-        while (true){
-            part++;
+        FileOutputStream fos = null;
+        BufferedOutputStream bos = null;
+        
+            
             try{
                 //new ----------------------------------------------------------------------------
                 int file_size = 100030;
                 int bytesRead;
                 int current = 0;
-                FileOutputStream fos = null;
-                BufferedOutputStream bos = null;
-                String video_file  = "C://Users//Admin//Desktop//Tik-Tok//source-downloaded-"+port+"-"+id+"-part-"+part+".mp4";
-    
-                // receive file
-    
-                byte [] mybytearray  = new byte [file_size];
-                
                 InputStream is = clientSocket.getInputStream();
-                
-                System.out.println("Step1");
-                try{
-                    fos = new FileOutputStream(video_file);
-                    bos = new BufferedOutputStream(fos);
-                    bytesRead = is.read(mybytearray,0,mybytearray.length);
+                byte [] mybytearray  = new byte [file_size];
+                //mpakale test
+                byte [] to_mp4_full  = new byte [10000000];
+                int pointer = 0;
+                String video_file  = "C://Users//iason//Desktop//Ergasia-TikTok//Tik-Tok//source-downloaded-"+port+"-"+id+".mp4";
+                fos = new FileOutputStream(video_file);
+                bos = new BufferedOutputStream(fos);
+                while (true){
+                    part++;
+                    if(part == 10) System.exit(0); //<----- na bgei melodika
+                    //String video_file  = "C://Users//iason//Desktop//Ergasia-TikTok//Tik-Tok//source-downloaded-"+port+"-"+id+"-part-"+part+".txt";
+        
+                    // receive file
+
+                    mybytearray  = new byte [file_size];
                     
-                    //current = bytesRead;
-                    current = 0;
-                    System.out.println("Step2");
-                    
-                    
-    
-                    /*
-                     String l = "asdfasdfendasdf";
-                    byte[] h = l.getBytes();
-    
-                    do {
-                        if(w1.equals(new Byte(h[current]))){
-                            if(w2.equals(new Byte(h[current+1]))){
-                                if(w3.equals(new Byte(h[current+2]))){
-                                    break;
-                                }
-                            }
-                        }
-                        else{
-                            current++;
-                        }
-                    } while(true);
-    
-                    System.out.println("ok, done test kai current : "+current);
-    
-                    */
-                    System.out.println("Step3");
-                    do {
-                        if(w1.equals(new Byte(mybytearray[current]))){
-                            //System.out.println("mpika"+ current);
-                            if(w2.equals(new Byte(mybytearray[current+1]))){
-                                //System.out.println("mpika2"+ current);
-                                if(w3.equals(new Byte(mybytearray[current+2]))){
-                                    //System.out.println("mpika3"+ current);
-                                    break;
+                    System.out.println("Step1");
+                    try{
+                        System.out.println("new");
+                        //fos = new FileOutputStream(video_file);
+                        //bos = new BufferedOutputStream(fos);
+                        
+                        System.out.println("read");
+                        bytesRead = is.read(mybytearray,0,mybytearray.length);
+                        
+                        //current = bytesRead;
+                        current = 0;
+                        System.out.println("Step2");
+                        
+                        do {
+                            if(w1.equals(new Byte(mybytearray[current]))){
+                                //System.out.println("mpika"+ current);
+                                if(w2.equals(new Byte(mybytearray[current+1]))){
+                                    //System.out.println("mpika2"+ current);
+                                    if(w3.equals(new Byte(mybytearray[current+2]))){
+                                        //System.out.println("mpika3"+ current);
+                                        break;
+                                    }
+                                    else{
+                                        current++;
+                                    }
                                 }
                                 else{
                                     current++;
@@ -152,62 +145,71 @@ public class Consumer extends Thread implements Consumer_interface,Node {
                             else{
                                 current++;
                             }
+                        } while(true);
+
+                        System.out.println("vgika");
+                        System.out.println(mybytearray[current ]);
+                        System.out.println(mybytearray[current +1]);
+                        System.out.println(mybytearray[current +2]);
+                        
+                        
+                        System.out.println("File size is : "+current);
+                        //bytesRead = is.read(mybytearray,0,current);
+                        //bos.write(mybytearray, 0 , file_size);
+
+                        for(int i = pointer; i<pointer+current;i++){
+                            to_mp4_full[i] = mybytearray[i-pointer]; // [0-current]
                         }
-                        else{
-                            //if(current == 1700000)break;
-                            current++;
-                            //System.out.println("mpika4 "+ current);
+                        pointer+=current;//proti fora 100.000 , deyteri fora 109.481
+                        System.out.println("Pointer is : "+pointer);
+                        //bos.write(mybytearray, 0 , current-1);
+                        //bos.flush();
+                        
+                    }
+                    catch(FileNotFoundException e){
+                        
+                    }
+                    
+                    //System.out.println("File " + video_file
+                    //    + " downloaded (" + current + " bytes read)");
+    
+                    
+    
+                    if (current < 100000) {
+                        System.out.println("Breaking");
+                        break;
+                    }
+                    //fos.close();
+                    //bos.close();
+                    
+                    //end new ----------------------------------------------------------------------------
+                    /*
+                    out = new PrintWriter(clientSocket.getOutputStream(), true);
+                    in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                    while(true){
+                        
+                        str =  reader.readLine();
+                        out.println(str);
+                        if(str.equals("..")){
+                            System.exit(0);
                         }
-                    } while(true);
-                    System.out.println("vgika");
-                    System.out.println(mybytearray[current ]);
-                    System.out.println(mybytearray[current +1]);
-                    System.out.println(mybytearray[current +2]);
-                    
-                    
-                    System.out.println("File size is : "+current);
-                    //bytesRead = is.read(mybytearray,0,current);
-                    //bos.write(mybytearray, 0 , file_size);
-                    
-                    bos.write(mybytearray, 0 , current-1);
-                    bos.flush();
-                    
+                        message_from_server = in.readLine();
+                        System.out.println("Broker "+port+" said : "+message_from_server);
+                    }
+                    */
                 }
-                catch(FileNotFoundException e){
-                    
-                }
-                
+                bos.write(to_mp4_full, 0 , pointer);
+                bos.flush();
                 System.out.println("File " + video_file
-                    + " downloaded (" + current + " bytes read)");
-
-                
-
-                if (current < 100000) break;
+                    + " downloaded (" + pointer + " bytes read)");
                 fos.close();
                 bos.close();
                 is.close();
-                //end new ----------------------------------------------------------------------------
-                /*
-                out = new PrintWriter(clientSocket.getOutputStream(), true);
-                in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                while(true){
-                    
-                    str =  reader.readLine();
-                    out.println(str);
-                    if(str.equals("..")){
-                        System.exit(0);
-                    }
-                    message_from_server = in.readLine();
-                    System.out.println("Broker "+port+" said : "+message_from_server);
-                }
-                */
-                
             }
             catch (Exception e){
     
             }
-        }
-        
+            
     }
     public void disconnect(){
         try{
