@@ -104,8 +104,6 @@ public class Consumer extends Thread implements Consumer_interface,Node {
                 fos = new FileOutputStream(video_file);
                 bos = new BufferedOutputStream(fos);
                 while (true){
-                    part++;
-                    if(part == 10) System.exit(0); //<----- na bgei melodika
                     //String video_file  = "C://Users//iason//Desktop//Ergasia-TikTok//Tik-Tok//source-downloaded-"+port+"-"+id+"-part-"+part+".txt";
         
                     // receive file

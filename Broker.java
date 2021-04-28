@@ -166,6 +166,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                     if( (pointer_in_file + 100000) > (int)myFile.length() ){
                         chunk = (int)myFile.length()%100000;
                         System.out.println("The chunk is : "+chunk);
+                        //if(chunk < 100000) break;
                     }
                     byte [] mybytearray  = new byte [chunk+3];
                     System.out.println("Length : "+mybytearray.length);
@@ -192,12 +193,13 @@ public class Broker extends Thread implements Broker_interface,Node{
                     os.flush();
                     System.out.println("Done.");
                     pointer_in_file += 100000;
-                    System.out.println(pointer_in_file);
-                    
+                    System.out.println(pointer_in_file);                    
                 }
                 bis.close();
                 fis.close();
                 os.close();
+
+                System.exit(0);
                 /*
                 byte [] mybytearray  = new byte [(int)myFile.length()+3];
 
@@ -224,7 +226,6 @@ public class Broker extends Thread implements Broker_interface,Node{
                 System.out.println("Done.");
                 */
 
-                System.exit(0);
                 
                 //end new -----------------------------------------------------------------------
 
