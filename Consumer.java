@@ -64,12 +64,12 @@ public class Consumer extends Thread implements Consumer_interface,Node {
         
         try{
             //new ----------------------------------------------------------------------------
-            int file_size = 10000000;
+            int file_size = 150000;
             int bytesRead;
             int current = 0;
             FileOutputStream fos = null;
             BufferedOutputStream bos = null;
-            String video_file = "C://Users//iason//Desktop//Ergasia-TikTok//Tik-Tok//source-downloaded.mp4";
+            String video_file = "C://Users//iason//OneDrive//Desktop//Tik-Tok//source-downloaded.mp4";
 
             // receive file
 

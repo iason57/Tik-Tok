@@ -141,7 +141,7 @@ public class Broker extends Thread implements Broker_interface,Node{
             OutputStream os = null;
             try{
                
-                String video_file_to_send = "C://Users//iason//Desktop//Ergasia-TikTok//Tik-Tok//s.mp4";
+                String video_file_to_send = "C://Users//iason//OneDrive//Desktop//Tik-Tok//source.mp4";
                 // send file
                 File myFile = new File (video_file_to_send);
                 byte [] mybytearray  = new byte [(int)myFile.length()+3];
