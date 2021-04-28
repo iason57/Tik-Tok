@@ -90,12 +90,12 @@ public class Consumer extends Thread implements Consumer_interface,Node {
             part++;
             try{
                 //new ----------------------------------------------------------------------------
-                int file_size = 110000;
+                int file_size = 100030;
                 int bytesRead;
                 int current = 0;
                 FileOutputStream fos = null;
                 BufferedOutputStream bos = null;
-                String video_file  = "C://Users//iason//OneDrive//Desktop//Tik-Tok//source-downloaded-"+port+"-"+id+"-part-"+part+".mp4";
+                String video_file  = "C://Users//Admin//Desktop//Tik-Tok//source-downloaded-"+port+"-"+id+"-part-"+part+".mp4";
     
                 // receive file
     
@@ -113,8 +113,6 @@ public class Consumer extends Thread implements Consumer_interface,Node {
                     current = 0;
                     System.out.println("Step2");
                     
-                    
-    
                     
     
                     /*
@@ -137,7 +135,6 @@ public class Consumer extends Thread implements Consumer_interface,Node {
                     System.out.println("ok, done test kai current : "+current);
     
                     */
-                    
                     System.out.println("Step3");
                     do {
                         if(w1.equals(new Byte(mybytearray[current]))){
@@ -159,8 +156,10 @@ public class Consumer extends Thread implements Consumer_interface,Node {
                         else{
                             //if(current == 1700000)break;
                             current++;
+                            //System.out.println("mpika4 "+ current);
                         }
                     } while(true);
+                    System.out.println("vgika");
                     System.out.println(mybytearray[current ]);
                     System.out.println(mybytearray[current +1]);
                     System.out.println(mybytearray[current +2]);

@@ -148,7 +148,7 @@ public class Broker extends Thread implements Broker_interface,Node{
             
             try{
                
-                String video_file_to_send = "C://Users//iason//OneDrive//Desktop//Tik-Tok//source.mp4";
+                String video_file_to_send = "C://Users//Admin//Desktop//Tik-Tok//source.mp4";
                 // send file
                 File myFile = new File (video_file_to_send);
                 int pointer_in_file=0;
@@ -163,20 +163,22 @@ public class Broker extends Thread implements Broker_interface,Node{
                     String k = "end";
                     byte[] b = k.getBytes();
                     //System.out.println(b.length);
-                    mybytearray[chunk - 3] = b[0];
-                    mybytearray[chunk - 2] = b[1];
-                    mybytearray[chunk - 1] = b[2];
+                    mybytearray[mybytearray.length - 3] = b[0]; //???????
+                    mybytearray[mybytearray.length  - 2] = b[1];  //???????
+                    mybytearray[mybytearray.length  - 1] = b[2];
+                    
 
-                    System.out.println("here");
+                    System.out.println("here"); 
                     FileInputStream fis = null;
                     BufferedInputStream bis = null;
                     OutputStream os = null;
                     fis = new FileInputStream(myFile);
                     bis = new BufferedInputStream(fis);
-                    bis.read(mybytearray,pointer_in_file,pointer_in_file+chunk);
+                    bis.read(mybytearray,pointer_in_file,pointer_in_file+chunk); //chunk + 3?? thelo to pointer in file?
+
                     os = clientSocket.getOutputStream();
                     System.out.println("Sending " + video_file_to_send + "(" + (mybytearray.length -3) + "bytes) part :"+(pointer_in_file/100000 +1 ) );    
-                    os.write(mybytearray,0,chunk);
+                    os.write(mybytearray,0,chunk+3);
                     os.flush();
                     System.out.println("Done.");
                     pointer_in_file += 100000;
