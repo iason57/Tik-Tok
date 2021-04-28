@@ -66,8 +66,8 @@ public class Consumer extends Thread implements Consumer_interface,Node {
     
     public void init(int port){
         try{
-            //clientSocket = new Socket(Inet4Address.getLocalHost().getHostAddress(), port);
-            clientSocket = new Socket("192.168.1.14", port);
+            clientSocket = new Socket(Inet4Address.getLocalHost().getHostAddress(), port);
+            //clientSocket = new Socket(specific private ip in both computers, port);
         }
         catch(Exception e){
 
