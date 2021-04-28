@@ -66,7 +66,8 @@ public class Consumer extends Thread implements Consumer_interface,Node {
     
     public void init(int port){
         try{
-            clientSocket = new Socket(Inet4Address.getLocalHost().getHostAddress(), port);
+            //clientSocket = new Socket(Inet4Address.getLocalHost().getHostAddress(), port);
+            clientSocket = new Socket("192.168.1.14", port);
         }
         catch(Exception e){
 
@@ -100,7 +101,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
                 //mpakale test
                 byte [] to_mp4_full  = new byte [10000000];
                 int pointer = 0;
-                String video_file  = "C://Users//iason//Desktop//Ergasia-TikTok//Tik-Tok//source-downloaded-"+port+"-"+id+".mp4";
+                String video_file  = "source-downloaded-"+port+"-"+id+".mp4";
                 fos = new FileOutputStream(video_file);
                 bos = new BufferedOutputStream(fos);
                 while (true){
