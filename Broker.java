@@ -32,6 +32,11 @@ public class Broker extends Thread implements Broker_interface,Node{
         port = p;
     }
 
+    /*
+    public int get_Broker_(){
+        return number_of_thread;
+    }
+    */
     //--------------------------------------------------------------------
 
     public void calculateKeys(){
@@ -51,6 +56,10 @@ public class Broker extends Thread implements Broker_interface,Node{
                 
                 System.out.println(port);
                 number_of_clients.set(0, number_of_clients.get(0)+1);
+                Consumer temp = new Consumer(clSocket,number_of_thread+1,port);
+                temp.setBroker(this);
+                registeredUsers.add(new Consumer(temp));
+                System.out.println(registeredUsers.size());
                 new Consumer_handlers(clSocket,number_of_thread++,port).start();
             }
             catch(Exception e){
@@ -136,14 +145,46 @@ public class Broker extends Thread implements Broker_interface,Node{
                 new InputStreamReader(System.in));
 
             //new ---------------------------------------------------------------------------
-            FileInputStream fis = null;
-            BufferedInputStream bis = null;
-            OutputStream os = null;
+            
             try{
                
                 String video_file_to_send = "C://Users//iason//OneDrive//Desktop//Tik-Tok//source.mp4";
                 // send file
                 File myFile = new File (video_file_to_send);
+                int pointer_in_file=0;
+                int chunk = 100000;
+                while((int)myFile.length() > pointer_in_file){
+                    if( (pointer_in_file + 100000) > (int)myFile.length() ){
+                        chunk = (int)myFile.length()%100000;
+                        System.out.println(chunk);
+                    }
+                    byte [] mybytearray  = new byte [chunk+3];
+                    System.out.println("ok1.");
+                    String k = "end";
+                    byte[] b = k.getBytes();
+                    //System.out.println(b.length);
+                    mybytearray[chunk - 3] = b[0];
+                    mybytearray[chunk - 2] = b[1];
+                    mybytearray[chunk - 1] = b[2];
+
+                    System.out.println("here");
+                    FileInputStream fis = null;
+                    BufferedInputStream bis = null;
+                    OutputStream os = null;
+                    fis = new FileInputStream(myFile);
+                    bis = new BufferedInputStream(fis);
+                    bis.read(mybytearray,pointer_in_file,pointer_in_file+chunk);
+                    os = clientSocket.getOutputStream();
+                    System.out.println("Sending " + video_file_to_send + "(" + (mybytearray.length -3) + "bytes) part :"+(pointer_in_file/100000 +1 ) );    
+                    os.write(mybytearray,0,chunk);
+                    os.flush();
+                    System.out.println("Done.");
+                    pointer_in_file += 100000;
+                    bis.close();
+                    fis.close();
+                    os.close();
+                }
+                /*
                 byte [] mybytearray  = new byte [(int)myFile.length()+3];
 
                 System.out.println("ok1.");
@@ -167,6 +208,8 @@ public class Broker extends Thread implements Broker_interface,Node{
                 os.write(mybytearray,0,mybytearray.length);
                 os.flush();
                 System.out.println("Done.");
+                */
+
                 System.exit(0);
                 
                 //end new -----------------------------------------------------------------------
@@ -201,6 +244,10 @@ public class Broker extends Thread implements Broker_interface,Node{
 
         Broker b1 = new Broker(6666);
         b1.start();
+
+        // an o broker poy kanei handle ena consumer den exei to hashtag poy thelei o consumer tote 
+        // allazei to port ston consumer kai e3hpeireteitai apo allon
+        
         /*
         Broker b2 = new Broker(6667);
         b2.start();
@@ -208,5 +255,6 @@ public class Broker extends Thread implements Broker_interface,Node{
         Broker b3 = new Broker(6668);
         b3.start();
         */
+        
     }
 }
