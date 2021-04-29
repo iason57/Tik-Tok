@@ -64,7 +64,6 @@ public class Broker extends Thread implements Broker_interface,Node{
     }
 
     public void acceptConnection(){ //parametros : Consumer c - type : Consumer
-        while (true){
             try{
                 //Socket clSocket = serverSocket.accept();
                 /*
@@ -81,12 +80,11 @@ public class Broker extends Thread implements Broker_interface,Node{
                 new Consumer_handlers(clSocket,number_of_thread++,port).start();*/
                 Accept_Consumer_handlers con_handler = new Accept_Consumer_handlers(this, serverSocket, port, number_of_thread, registeredUsers);
                 con_handler.start();
-                new Accept_Publisher_handlers(publisherServerSocket, port, number_of_thread, registeredPublishers).start();
             }
             catch(Exception e){
             }
-        }
     }
+
     public void notifyPublisher(String str){
 
     }
@@ -200,7 +198,7 @@ public class Broker extends Thread implements Broker_interface,Node{
             
             try{
                
-                String video_file_to_send = "5min.mp4";
+                String video_file_to_send = "source2.mp4";
                 // send file
                 File myFile = new File (video_file_to_send);
                 byte [] allfile  = new byte [(int)myFile.length()];
@@ -320,24 +318,25 @@ public class Broker extends Thread implements Broker_interface,Node{
         }
 
         public void run(){
-            //while (true){
                 try{
-                    Socket x=serverSocket.accept();
-                    //int thesi = number_of_clients.get(0) % brokers.size();
-                    //System.out.println("Server that accepted the connection : "+thesi);
-                    //brokers.get(thesi).registeredUsers.add(new Consumer(clSocket, this)); // kai alles metavlites
-                    //brokers.get(thesi).clientSocket = clSocket;
-                    System.out.println(port);
-                    number_of_clients.set(0, number_of_clients.get(0)+1);
-                    Consumer temp = new Consumer(x,number_of_thread+1,port);
-                    temp.setBroker(broker);
-                    registeredUsers.add(new Consumer(temp));
-                    System.out.println(registeredUsers.size());
-                    new Consumer_handlers(x,number_of_thread++,port).start();
+                    while (true){
+                        Socket x=serverSocket.accept();
+                        //int thesi = number_of_clients.get(0) % brokers.size();
+                        //System.out.println("Server that accepted the connection : "+thesi);
+                        //brokers.get(thesi).registeredUsers.add(new Consumer(clSocket, this)); // kai alles metavlites
+                        //brokers.get(thesi).clientSocket = clSocket;
+                        System.out.println(port);
+                        number_of_clients.set(0, number_of_clients.get(0)+1);
+                        Consumer temp = new Consumer(x,number_of_thread+1,port);
+                        temp.setBroker(broker);
+                        registeredUsers.add(new Consumer(temp));
+                        System.out.println(registeredUsers.size());
+                        new Consumer_handlers(x,number_of_thread++,port).start();
+                    }
                 }
                 catch(Exception e){
                 }
-            //}
+            
         }
     }
 
@@ -357,11 +356,14 @@ public class Broker extends Thread implements Broker_interface,Node{
 
         public void run(){
             try{
-                publisherServerSocket.accept();
-                System.out.println("edwwwwwwwwwwww");
-                System.out.println("publisher accept");
-                number_of_publishers.set(0, number_of_publishers.get(0)+1);
-                System.out.println(number_of_publishers.get(0));
+                while(true){
+                    publisherServerSocket.accept();
+                    System.out.println("edwwwwwwwwwwww");
+                    System.out.println("publisher accept");
+                    number_of_publishers.set(0, number_of_publishers.get(0)+1);
+                    System.out.println(number_of_publishers.get(0));
+                }
+                
             }
             catch(Exception e){
                 System.out.println("exception ston gamwpublisher");
