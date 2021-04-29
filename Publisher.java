@@ -39,7 +39,7 @@ public class Publisher implements Publisher_interface,Node{
     public void connect(){
 
     }
-    public void disconnect(){
+    public void disconnect(int y){
 
     }
     public void updateNodes(){

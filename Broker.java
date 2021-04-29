@@ -52,20 +52,21 @@ public class Broker extends Thread implements Broker_interface,Node{
 
     }
     public void publisherAcceptConnection(){
-        System.out.println("edwwwwwwwwwwww");
-        try{
-            Socket pubSocket = publisherServerSocket.accept();
-            Accept_Publisher_handlers pub_handler = new Accept_Publisher_handlers(pubSocket, port, number_of_thread, registeredPublishers);
-        }
-        catch(Exception e){
-            System.out.println("exception ston gamwpublisher");
+        while(true){
+            try{
+                //Socket pubSocket = publisherServerSocket.accept();
+                new Accept_Publisher_handlers(publisherServerSocket.accept(), port, number_of_thread, registeredPublishers).start();
+            }
+            catch(Exception e){
+                System.out.println("exception ston gamwpublisher");
+            }
         }
     }
 
     public void acceptConnection(){ //parametros : Consumer c - type : Consumer
         while (true){
             try{
-                Socket clSocket = serverSocket.accept();
+                //Socket clSocket = serverSocket.accept();
                 /*
                 //int thesi = number_of_clients.get(0) % brokers.size();
                 //System.out.println("Server that accepted the connection : "+thesi);
@@ -78,7 +79,8 @@ public class Broker extends Thread implements Broker_interface,Node{
                 registeredUsers.add(new Consumer(temp));
                 System.out.println(registeredUsers.size());
                 new Consumer_handlers(clSocket,number_of_thread++,port).start();*/
-                Accept_Consumer_handlers con_handler = new Accept_Consumer_handlers(clSocket, port, number_of_thread, registeredUsers);
+                Accept_Consumer_handlers con_handler = new Accept_Consumer_handlers(this, serverSocket.accept(), port, number_of_thread, registeredUsers);
+                con_handler.start();
             }
             catch(Exception e){
             }
@@ -292,13 +294,15 @@ public class Broker extends Thread implements Broker_interface,Node{
     }
 
     private static class Accept_Consumer_handlers extends Thread {
+        private Broker broker;
         private Socket serverSocket;
         private int port;
         private int number_of_thread = 1;
         private List<Consumer> registeredUsers;
 
 
-        public Accept_Consumer_handlers(Socket socket, int p, int nof, List<Consumer> registers) {
+        public Accept_Consumer_handlers(Broker b, Socket socket, int p, int nof, List<Consumer> registers) {
+            this.broker = b;
             this.serverSocket = socket;
             this.port = p;
             this.number_of_thread = nof;
@@ -306,7 +310,7 @@ public class Broker extends Thread implements Broker_interface,Node{
         }
 
         public void run(){
-            while (true){
+            //while (true){
                 try{
                     Socket clSocket = serverSocket;
                     //int thesi = number_of_clients.get(0) % brokers.size();
@@ -316,14 +320,14 @@ public class Broker extends Thread implements Broker_interface,Node{
                     System.out.println(port);
                     number_of_clients.set(0, number_of_clients.get(0)+1);
                     Consumer temp = new Consumer(clSocket,number_of_thread+1,port);
-                    temp.setBroker(this);
+                    temp.setBroker(broker);
                     registeredUsers.add(new Consumer(temp));
                     System.out.println(registeredUsers.size());
                     new Consumer_handlers(clSocket,number_of_thread++,port).start();
                 }
                 catch(Exception e){
                 }
-            }
+            //}
         }
     }
 
@@ -335,16 +339,15 @@ public class Broker extends Thread implements Broker_interface,Node{
 
 
         public Accept_Publisher_handlers(Socket socket, int p, int nof, List<Publisher> registers) {
-            this.serverSocket = socket;
+            this.publisherServerSocket = socket;
             this.port = p;
             this.number_of_thread = nof;
-            this.registeredUsers = registers;
+            this.registeredPublishers = registers;
         }
 
         public void run(){
             System.out.println("edwwwwwwwwwwww");
         try{
-            Socket pubSocket = publisherServerSocket.accept();
             System.out.println("publisher accept");
             number_of_publishers.set(0, number_of_publishers.get(0)+1);
             System.out.println(number_of_publishers.get(0));

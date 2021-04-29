@@ -280,10 +280,6 @@ public class Consumer extends Thread implements Consumer_interface,Node {
         Consumer t4 = new Consumer(5666,3);
         
         t4.start();
-
-        Consumer t5 = new Consumer(5666,4);
-        
-        t5.start();
        
         /*
         Consumer t2 = new Consumer(6667,1);
