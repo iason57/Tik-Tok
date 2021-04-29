@@ -96,9 +96,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
         Byte w3 = new Byte(b[2]);
         int part = 0;
         FileOutputStream fos = null;
-        BufferedOutputStream bos = null;
-        
-            
+        BufferedOutputStream bos = null;            
             try{
                 //new ----------------------------------------------------------------------------
                 int file_size = 100003;
@@ -119,18 +117,18 @@ public class Consumer extends Thread implements Consumer_interface,Node {
 
                     mybytearray  = new byte [file_size];
                     
-                    System.out.println("Step1");
+                    //System.out.println("Step1");
                     try{
-                        System.out.println("new");
+                        //System.out.println("new");
                         //fos = new FileOutputStream(video_file);
                         //bos = new BufferedOutputStream(fos);
                         
-                        System.out.println(mybytearray.length);
+                        //System.out.println(mybytearray.length);
                         bytesRead = is.read(mybytearray,0,mybytearray.length);
                         
                         //current = bytesRead;
                         current = 0;
-                        System.out.println("Step2");
+                        //System.out.println("Step2");
                         
                         do {
                             if(w1.equals(new Byte(mybytearray[current]))){
@@ -150,19 +148,19 @@ public class Consumer extends Thread implements Consumer_interface,Node {
                                 }
                             }
                             else{
-                                if (current==100000){
-                                    System.out.println(mybytearray[current]);
-                                    System.out.println(mybytearray[current +1]);
-                                    System.out.println(mybytearray[current +2]);
-                                }
+                                //if (current==100000){
+                                    //System.out.println(mybytearray[current]);
+                                    //System.out.println(mybytearray[current +1]);
+                                    //System.out.println(mybytearray[current +2]);
+                                //}
                                 current++;
                             }
                         } while(true);
 
-                        System.out.println("vgika");
-                        System.out.println(mybytearray[current]);
-                        System.out.println(mybytearray[current +1]);
-                        System.out.println(mybytearray[current +2]);
+                        //System.out.println("vgika");
+                        //System.out.println(mybytearray[current]);
+                        //System.out.println(mybytearray[current +1]);
+                        //System.out.println(mybytearray[current +2]);
                         
                         
                         System.out.println("File size is : "+current);
@@ -173,7 +171,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
                             to_mp4_full[i] = mybytearray[i-pointer]; // [0-current]
                         }
                         pointer+=current;//proti fora 100.000 , deyteri fora 109.481
-                        System.out.println("Pointer is : "+pointer);
+                        //System.out.println("Pointer is : "+pointer);
                         //bos.write(mybytearray, 0 , current-1);
                         //bos.flush();
                         
@@ -188,7 +186,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
                     
     
                     if (current < 100000 ) {
-                        System.out.println("Breaking");
+                        //System.out.println("Breaking");
                         break;
                     }
                     //fos.close();
@@ -217,11 +215,12 @@ public class Consumer extends Thread implements Consumer_interface,Node {
                 fos.close();
                 bos.close();
                 is.close();
+                System.out.println("Closing readers");
                 //Thread.sleep(10000 * (id-1));
                 //this.playData(video_file);
             }
             catch (Exception e){
-                System.out.println("AAAAAAAAAAAAAAAAAA.");
+                System.out.println("Exception in connect in consumer.");
             }
             
     }
@@ -288,7 +287,16 @@ public class Consumer extends Thread implements Consumer_interface,Node {
         Consumer t5 = new Consumer(5666,4);
         
         t5.start();
-       
+
+        
+        try{
+            Thread.sleep(4000);
+            System.exit(0);
+            //t1.currentThread().interrupt(); t11.currentThread().interrupt(); t2.currentThread().interrupt(); t3.currentThread().interrupt(); t4.currentThread().interrupt(); t5.currentThread().interrupt();
+        }
+        catch(Exception e){
+            System.out.println("Something went wrong with closing the threads.");
+        }    
         /*
         Consumer t2 = new Consumer(6667,1);
         

@@ -52,7 +52,7 @@ public class Broker extends Thread implements Broker_interface,Node{
 
     }
     public void publisherAcceptConnection(){
-        while(true){
+        //while(true){
             try{
                 //Socket pubSocket = publisherServerSocket.accept();
                 new Accept_Publisher_handlers(publisherServerSocket, port, number_of_thread, registeredPublishers).start();
@@ -60,7 +60,7 @@ public class Broker extends Thread implements Broker_interface,Node{
             catch(Exception e){
                 System.out.println("exception ston gamwpublisher");
             }
-        }
+        //}
     }
 
     public void acceptConnection(){ //parametros : Consumer c - type : Consumer
@@ -156,12 +156,15 @@ public class Broker extends Thread implements Broker_interface,Node{
                 //server.acceptConnection();
                 
                 this.init(port);
+                System.out.println("Broker's consumer port: "+port);
                 this.init2(publisher_port);
+                System.out.println("Broker's publisher port: "+publisher_port);
                 /*Broker temp = new Broker(this);
                 temp.publisherAcceptConnection();*/
                 this.acceptConnection(); 
                 this.publisherAcceptConnection();
-                System.out.println(publisher_port);
+                //System.out.println(publisher_port);
+                //System.out.println("Number of clients : "+number_of_clients.get(0));
             //}
 
             //System.out.println(brokers);
@@ -198,7 +201,7 @@ public class Broker extends Thread implements Broker_interface,Node{
             
             try{
                
-                String video_file_to_send = "source2.mp4";
+                String video_file_to_send = "5min.mp4";
                 // send file
                 File myFile = new File (video_file_to_send);
                 byte [] allfile  = new byte [(int)myFile.length()];
@@ -218,7 +221,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                         //if(chunk < 100000) break;
                     }
                     byte [] mybytearray  = new byte [chunk+3];
-                    System.out.println("Length : "+mybytearray.length);
+                    //System.out.println("Length : "+mybytearray.length);
                     String k = "end";
                     byte[] b = k.getBytes();
                     //System.out.println(b.length);
@@ -226,22 +229,18 @@ public class Broker extends Thread implements Broker_interface,Node{
                     mybytearray[mybytearray.length  - 2] = b[1];
                     mybytearray[mybytearray.length  - 1] = b[2];
 
-                    System.out.println("here"); 
-                    
                     
                     //bis.read(mybytearray,pointer_in_file,pointer_in_file+chunk); //chunk + 3?? thelo to pointer in file?
-                    System.out.println("here1"); 
                     for(int i=pointer_in_file;i < (pointer_in_file+chunk);i++){
                         mybytearray[i-pointer_in_file] = allfile[i];
                     }
-                    System.out.println("here2"); 
                     
                     System.out.println("Sending " + video_file_to_send + "(" + (mybytearray.length -3) + "bytes) part :"+(pointer_in_file/100000 +1 ) );    
                     os.write(mybytearray,0,mybytearray.length);
                     os.flush();
-                    System.out.println("Done.");
+                    System.out.println("Done sending.");
                     pointer_in_file += 100000;
-                    System.out.println(pointer_in_file);                    
+                    //System.out.println(pointer_in_file);                    
                 }
                 bis.close();
                 fis.close();
@@ -321,16 +320,17 @@ public class Broker extends Thread implements Broker_interface,Node{
                 try{
                     while (true){
                         Socket x=serverSocket.accept();
+                        System.out.println("consumer accept");
                         //int thesi = number_of_clients.get(0) % brokers.size();
                         //System.out.println("Server that accepted the connection : "+thesi);
                         //brokers.get(thesi).registeredUsers.add(new Consumer(clSocket, this)); // kai alles metavlites
                         //brokers.get(thesi).clientSocket = clSocket;
-                        System.out.println(port);
+                        //System.out.println(port);
                         number_of_clients.set(0, number_of_clients.get(0)+1);
                         Consumer temp = new Consumer(x,number_of_thread+1,port);
                         temp.setBroker(broker);
                         registeredUsers.add(new Consumer(temp));
-                        System.out.println(registeredUsers.size());
+                        System.out.println("CONSUMERS : "+registeredUsers.size());
                         new Consumer_handlers(x,number_of_thread++,port).start();
                     }
                 }
@@ -358,10 +358,9 @@ public class Broker extends Thread implements Broker_interface,Node{
             try{
                 while(true){
                     publisherServerSocket.accept();
-                    System.out.println("edwwwwwwwwwwww");
                     System.out.println("publisher accept");
                     number_of_publishers.set(0, number_of_publishers.get(0)+1);
-                    System.out.println(number_of_publishers.get(0));
+                    System.out.println("NUMBER OF PUBLISHERS :"+number_of_publishers.get(0));
                 }
                 
             }
@@ -379,6 +378,8 @@ public class Broker extends Thread implements Broker_interface,Node{
 
         Broker b1 = new Broker(6666, 5666);
         b1.start();
+
+        
 
         // an o broker poy kanei handle ena consumer den exei to hashtag poy thelei o consumer tote 
         // allazei to port ston consumer kai e3hpeireteitai apo allon
