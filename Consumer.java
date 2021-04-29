@@ -1,6 +1,7 @@
 import java.util.*;
 import java.net.*;
 import java.io.*;
+import java.awt.Desktop;
 
 public class Consumer extends Thread implements Consumer_interface,Node {
 
@@ -53,13 +54,20 @@ public class Consumer extends Thread implements Consumer_interface,Node {
     //--------------------------------------------------------------
 
     public void register(Broker b,String str){
-
+        //have no idea what to do with the str input...
+        b.registeredUsers.add(this);
     }
     public void disconnect(Broker b,String str){
 
     }
-    public void playData(String str,Value v){
+    public void playData(String str){//,Value v
+        try{
+            Desktop.getDesktop().open(new File(str)); //opening the file after client gets it.
+        }
+        catch(Exception e){
 
+        }
+        
     }
     
     //Node methods
@@ -142,12 +150,17 @@ public class Consumer extends Thread implements Consumer_interface,Node {
                                 }
                             }
                             else{
+                                if (current==100000){
+                                    System.out.println(mybytearray[current]);
+                                    System.out.println(mybytearray[current +1]);
+                                    System.out.println(mybytearray[current +2]);
+                                }
                                 current++;
                             }
                         } while(true);
 
                         System.out.println("vgika");
-                        System.out.println(mybytearray[current ]);
+                        System.out.println(mybytearray[current]);
                         System.out.println(mybytearray[current +1]);
                         System.out.println(mybytearray[current +2]);
                         
@@ -166,7 +179,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
                         
                     }
                     catch(FileNotFoundException e){
-                        
+                        System.out.println("Exception bro.");
                     }
                     
                     //System.out.println("File " + video_file
@@ -204,13 +217,15 @@ public class Consumer extends Thread implements Consumer_interface,Node {
                 fos.close();
                 bos.close();
                 is.close();
+                //Thread.sleep(10000 * (id-1));
+                //this.playData(video_file);
             }
             catch (Exception e){
-    
+                System.out.println("AAAAAAAAAAAAAAAAAA.");
             }
             
     }
-    public void disconnect(){
+    public void disconnect(int d){
         try{
             in.close();
             out.close();
@@ -221,6 +236,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
         }
         
     }
+
     // den exoyme idea ti kanei
     public void updateNodes(){
 
@@ -249,22 +265,45 @@ public class Consumer extends Thread implements Consumer_interface,Node {
         
         t1.start();
         
-        /*
+        
 
+        
+        Consumer t2 = new Consumer(5666,1);
+        
+        t2.start();
+
+        Consumer t3 = new Consumer(5666,2);
+        
+        t3.start();
+
+         
+        Consumer t4 = new Consumer(5666,3);
+        
+        t4.start();
+
+        Consumer t5 = new Consumer(5666,4);
+        
+        t5.start();
+       
+        /*
         Consumer t2 = new Consumer(6667,1);
         
         t2.start();
 
+        
+
+        
         Consumer t3 = new Consumer(6668,1);
         
         t3.start();
 
         
+
         Consumer t4 = new Consumer(6666,2);
         
         t4.start();
-        
         */
+        
         
     }
 }
