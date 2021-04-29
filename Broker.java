@@ -79,7 +79,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                 registeredUsers.add(new Consumer(temp));
                 System.out.println(registeredUsers.size());
                 new Consumer_handlers(clSocket,number_of_thread++,port).start();*/
-                Accept_Consumer_handlers con_handler = new Accept_Consumer_handlers(this, serverSocket.accept(), port, number_of_thread, registeredUsers);
+                Accept_Consumer_handlers con_handler = new Accept_Consumer_handlers(this, serverSocket, port, number_of_thread, registeredUsers);
                 con_handler.start();
             }
             catch(Exception e){
@@ -295,13 +295,13 @@ public class Broker extends Thread implements Broker_interface,Node{
 
     private static class Accept_Consumer_handlers extends Thread {
         private Broker broker;
-        private Socket serverSocket;
+        private ServerSocket serverSocket;
         private int port;
         private int number_of_thread = 1;
         private List<Consumer> registeredUsers;
 
 
-        public Accept_Consumer_handlers(Broker b, Socket socket, int p, int nof, List<Consumer> registers) {
+        public Accept_Consumer_handlers(Broker b, ServerSocket socket, int p, int nof, List<Consumer> registers) {
             this.broker = b;
             this.serverSocket = socket;
             this.port = p;
@@ -312,18 +312,18 @@ public class Broker extends Thread implements Broker_interface,Node{
         public void run(){
             //while (true){
                 try{
-                    Socket clSocket = serverSocket;
+                    Socket x=serverSocket.accept();
                     //int thesi = number_of_clients.get(0) % brokers.size();
                     //System.out.println("Server that accepted the connection : "+thesi);
                     //brokers.get(thesi).registeredUsers.add(new Consumer(clSocket, this)); // kai alles metavlites
                     //brokers.get(thesi).clientSocket = clSocket;
                     System.out.println(port);
                     number_of_clients.set(0, number_of_clients.get(0)+1);
-                    Consumer temp = new Consumer(clSocket,number_of_thread+1,port);
+                    Consumer temp = new Consumer(x,number_of_thread+1,port);
                     temp.setBroker(broker);
                     registeredUsers.add(new Consumer(temp));
                     System.out.println(registeredUsers.size());
-                    new Consumer_handlers(clSocket,number_of_thread++,port).start();
+                    new Consumer_handlers(x,number_of_thread++,port).start();
                 }
                 catch(Exception e){
                 }
