@@ -48,14 +48,14 @@ public class Broker extends Thread implements Broker_interface,Node{
     */
     //--------------------------------------------------------------------
 
-    public void calculateKeys(){
+    public void calculateKeys(){ //???????
 
     }
     public void publisherAcceptConnection(){
         while(true){
             try{
                 //Socket pubSocket = publisherServerSocket.accept();
-                new Accept_Publisher_handlers(publisherServerSocket.accept(), port, number_of_thread, registeredPublishers).start();
+                new Accept_Publisher_handlers(publisherServerSocket, port, number_of_thread, registeredPublishers).start();
             }
             catch(Exception e){
                 System.out.println("exception ston gamwpublisher");
@@ -81,6 +81,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                 new Consumer_handlers(clSocket,number_of_thread++,port).start();*/
                 Accept_Consumer_handlers con_handler = new Accept_Consumer_handlers(this, serverSocket, port, number_of_thread, registeredUsers);
                 con_handler.start();
+                new Accept_Publisher_handlers(publisherServerSocket, port, number_of_thread, registeredPublishers).start();
             }
             catch(Exception e){
             }
@@ -127,7 +128,7 @@ public class Broker extends Thread implements Broker_interface,Node{
     }
     public void disconnect(int id_client){
         for(int i=0;i<registeredUsers.size();i++){
-            if(registeredUsers.get(i).port == id_client){
+            if(registeredUsers.get(i).id == id_client){
                 registeredUsers.remove(i);
                 break;
             }
@@ -138,6 +139,15 @@ public class Broker extends Thread implements Broker_interface,Node{
     }
     public List<Broker> getBrokers(){
         return brokers;
+    }
+
+    public boolean isRegistered(int id_client) {
+        for(int i=0;i<registeredUsers.size();i++){
+            if(registeredUsers.get(i).id == id_client){
+                return true;
+            }
+        }
+        return false;
     }
 
     public void run(){
@@ -190,7 +200,7 @@ public class Broker extends Thread implements Broker_interface,Node{
             
             try{
                
-                String video_file_to_send = "source.mp4";
+                String video_file_to_send = "5min.mp4";
                 // send file
                 File myFile = new File (video_file_to_send);
                 byte [] allfile  = new byte [(int)myFile.length()];
@@ -332,13 +342,13 @@ public class Broker extends Thread implements Broker_interface,Node{
     }
 
     private static class Accept_Publisher_handlers extends Thread {
-        private Socket publisherServerSocket;
+        private ServerSocket publisherServerSocket;
         private int port;
         private int number_of_thread = 1;
         public List<Publisher> registeredPublishers;
 
 
-        public Accept_Publisher_handlers(Socket socket, int p, int nof, List<Publisher> registers) {
+        public Accept_Publisher_handlers(ServerSocket socket, int p, int nof, List<Publisher> registers) {
             this.publisherServerSocket = socket;
             this.port = p;
             this.number_of_thread = nof;
@@ -346,16 +356,16 @@ public class Broker extends Thread implements Broker_interface,Node{
         }
 
         public void run(){
-            System.out.println("edwwwwwwwwwwww");
-        try{
-            System.out.println("publisher accept");
-            number_of_publishers.set(0, number_of_publishers.get(0)+1);
-            System.out.println(number_of_publishers.get(0));
-
-        }
-        catch(Exception e){
-            System.out.println("exception ston gamwpublisher");
-        }
+            try{
+                publisherServerSocket.accept();
+                System.out.println("edwwwwwwwwwwww");
+                System.out.println("publisher accept");
+                number_of_publishers.set(0, number_of_publishers.get(0)+1);
+                System.out.println(number_of_publishers.get(0));
+            }
+            catch(Exception e){
+                System.out.println("exception ston gamwpublisher");
+            }
         }
     }
 
