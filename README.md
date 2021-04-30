@@ -20,5 +20,6 @@ in the List and not randomly
 * [ ta parnei ola ] --> 1 broker
 * [ brokers.get(0).port + IP < ] An to hash tou channel Name einai mikrotero paei ston 1--> 2 brokers
 * [ mirkotero tou prwtou-ston prwto < anamesa-ston deytero < edw trito ]
-* omoiws
+* omoiws 
+## ^ done
  
