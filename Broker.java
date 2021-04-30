@@ -290,27 +290,26 @@ public class Broker extends Thread implements Broker_interface,Node{
                 for (int i=0; i<channels.size(); i++){
                     //---------------------------------------------------
                     
-                    System.out.println(sb.toString());
                     //int hashed_chName = Integer.parseInt(Inet4Address.getLocalHost().getHostAddress().replace(".", "")) + broker.port;   
                     String hashed_chName = (broker.calculateKeys(channels.get(i).getChannelName()));
-                    test = test.replace(" ","");
-                    int len = test.length();
-                    String test2 = test.substring(len-3);
+                    int len = hashed_chName.length();
+                    String test2 = hashed_chName.substring(len-3);
+                    System.out.println("Test 2 : "+test2);
                     StringBuilder sb = new StringBuilder();
                     for (int k = 0; k < test2.length(); k++) {
                         if (Character.isLetter(test2.charAt(k))) {
                             int m = test2.charAt(k);
                             sb.append(m); // add the ascii value to the string
                         } else {
-                            sb.append(test2.charAt(i)); // add the normal character
+                            sb.append(test2.charAt(k)); // add the normal character
                         }
                     }
                     System.out.println(test2);
                     System.out.println("prospathw");
-                    int hashed = Integer.parseInt(test2);
-                    System.out.println("prospathw2");
+                    int hashed = Integer.parseInt(sb.toString());
+                    System.out.println("prospathw2 -- "+hashed);
                     int hashed_key = hashed % 4;
-                    
+                    System.out.println("hashed : -- "+hashed_key);
 
                     boolean flag=false;
                     if (hashed_key==0){
@@ -325,23 +324,56 @@ public class Broker extends Thread implements Broker_interface,Node{
                     else if(hashed_key==3){
                         brokers.get(3).channels_serviced.add(channels.get(i));
                     }
-                    /*
-                    for (int j=0; j<delimiter_of_Brokers.size(); j++){
-                        if (hashed_chName.compareTo(broker.delimiter_of_Brokers.get(j)) < 0){
-                            brokers.get(j).channels_serviced.add(hashed_chName);
-                            flag=true;
-                            break;
-                        }
-                    }
-                    if (flag==false) {
-                        brokers.get(delimiter_of_Brokers.size()).channels_serviced.add(hashed_chName);
-                    }
-                    */
                 }
                 System.out.println("edw typwnw ta hashed channel name tou broker 0: " +brokers.get(0).channels_serviced);
                 System.out.println("edw typwnw ta hashed channel name tou broker 1: " +brokers.get(1).channels_serviced);
                 System.out.println("edw typwnw ta hashed channel name tou broker 2: " +brokers.get(2).channels_serviced);
                 System.out.println("edw typwnw ta hashed channel name tou broker 3: " +brokers.get(3).channels_serviced);
+
+
+
+                for (int i=0; i<hash.size(); i++){
+                    //---------------------------------------------------
+                    
+                    //int hashed_chName = Integer.parseInt(Inet4Address.getLocalHost().getHostAddress().replace(".", "")) + broker.port;   
+                    String hashed_hashtag = (broker.calculateKeys(hash.get(i)));
+                    int len = hashed_hashtag.length();
+                    String test2 = hashed_hashtag.substring(len-3);
+                    System.out.println("Test 2 : "+test2);
+                    StringBuilder sb = new StringBuilder();
+                    for (int k = 0; k < test2.length(); k++) {
+                        if (Character.isLetter(test2.charAt(k))) {
+                            int m = test2.charAt(k);
+                            sb.append(m); // add the ascii value to the string
+                        } else {
+                            sb.append(test2.charAt(k)); // add the normal character
+                        }
+                    }
+                    System.out.println(test2);
+                    System.out.println("prospathw");
+                    int hashed = Integer.parseInt(sb.toString());
+                    System.out.println("prospathw2 -- "+hashed);
+                    int hashed_key = hashed % 4;
+                    System.out.println("hashed : -- "+hashed_key);
+
+                    boolean flag=false;
+                    if (hashed_key==0 && !brokers.get(0).hashtags_serviced.contains(hash.get(i))){
+                        brokers.get(0).hashtags_serviced.add(hash.get(i));
+                    }
+                    else if(hashed_key==1 && !brokers.get(1).hashtags_serviced.contains(hash.get(i))){
+                        brokers.get(1).hashtags_serviced.add(hash.get(i));
+                    }
+                    else if(hashed_key==2 && !brokers.get(2).hashtags_serviced.contains(hash.get(i))){
+                        brokers.get(2).hashtags_serviced.add(hash.get(i));
+                    }
+                    else if(hashed_key==3 && !brokers.get(3).hashtags_serviced.contains(hash.get(i)) ){
+                        brokers.get(3).hashtags_serviced.add(hash.get(i));
+                    }
+                }
+
+
+
+                /*
                 //--------------------------------------------------------------------------------------------------------
                 //Katanomh stouw brokers me bash ta HASHTAGS.
                 for (int i=0; i<hash.size(); i++){
@@ -364,12 +396,14 @@ public class Broker extends Thread implements Broker_interface,Node{
                         }
                     }
                 }
+                */
                 System.out.println("edw typwnw ta hashed hashtags tou broker 0: " +brokers.get(0).hashtags_serviced);
                 System.out.println("edw typwnw ta hashed hashtags tou broker 1: " +brokers.get(1).hashtags_serviced);
                 System.out.println("edw typwnw ta hashed hashtags tou broker 2: " +brokers.get(2).hashtags_serviced);
                 System.out.println("edw typwnw ta hashed hashtags tou broker 3: " +brokers.get(3).hashtags_serviced);
                 //-----------------------------------------------------------------------------
-
+                
+                
                 //adding new video's hashtags in channel's hashtagsList--if not exist.
                 boolean flag;
                 for(int i=0; i<hash.size(); i++){
