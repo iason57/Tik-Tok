@@ -251,6 +251,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");  
                 LocalDateTime now = LocalDateTime.now();  
                 //System.out.println(dtf.format(now)); 
+                //--------------------------------------------------------------------
                 ChannelName ch = new ChannelName("iasonas");
                 channels.add(ch);
                 ChannelName ch2 = new ChannelName("kauta podia elenas");
@@ -264,12 +265,18 @@ public class Broker extends Thread implements Broker_interface,Node{
                 ChannelName ch6 = new ChannelName("kal");
                 channels.add(ch6);
                 ArrayList<String> hash = new ArrayList<String>();
-                hash.add("sky");
-                hash.add("music");
+                hash.add("#sky");
+                hash.add("#music");
+                hash.add("#amazing");
+                hash.add("#nofilterneeded");
+                hash.add("#instapic");
+                hash.add("#instapic");
+                hash.add("#follow");
                 VideoFile new_video = new VideoFile("peace",ch,(String)dtf.format(now),"5min.mp4",hash);
                 ch.getAllVideos().add(new_video);
                 ch2.getAllVideos().add(new_video);
                 //-----------------------------------------------------------------------------
+                //Katanomh stouw brokers me bash ta CHANNEL NAMES.
                 for (int i=0; i<channels.size(); i++){
                     String hashed_chName = (broker.calculateKeys(channels.get(i).getChannelName()));
                     boolean flag=false;
@@ -287,11 +294,34 @@ public class Broker extends Thread implements Broker_interface,Node{
                 System.out.println("edw typwnw ta hashed channel name tou broker 0: " +brokers.get(0).channels_serviced);
                 System.out.println("edw typwnw ta hashed channel name tou broker 1: " +brokers.get(1).channels_serviced);
                 System.out.println("edw typwnw ta hashed channel name tou broker 2: " +brokers.get(2).channels_serviced);
-                System.exit(0);
+                //--------------------------------------------------------------------------------------------------------
+                //Katanomh stouw brokers me bash ta HASHTAGS.
+                for (int i=0; i<hash.size(); i++){
+                    String hashed_hashtag = (broker.calculateKeys(hash.get(i)));
+                    boolean flag=false;
+                    boolean flag2=false;
+                    for (int j=0; j<delimiter_of_Brokers.size(); j++){
+                        if (hashed_hashtag.compareTo(broker.delimiter_of_Brokers.get(j)) < 0 && flag2==false){
+                            flag2=true;
+                            if (!brokers.get(j).hashtags_serviced.contains(hashed_hashtag)) {
+                                brokers.get(j).hashtags_serviced.add(hashed_hashtag);
+                                flag=true;
+                                break;
+                            }
+                        }
+                    }
+                    if (flag==false && flag2==false) {
+                        if (!brokers.get(delimiter_of_Brokers.size()).hashtags_serviced.contains(hashed_hashtag)) {
+                            brokers.get(delimiter_of_Brokers.size()).hashtags_serviced.add(hashed_hashtag);
+                        }
+                    }
+                }
+                System.out.println("edw typwnw ta hashed hashtags tou broker 0: " +brokers.get(0).hashtags_serviced);
+                System.out.println("edw typwnw ta hashed hashtags tou broker 1: " +brokers.get(1).hashtags_serviced);
+                System.out.println("edw typwnw ta hashed hashtags tou broker 2: " +brokers.get(2).hashtags_serviced);
                 //-----------------------------------------------------------------------------
 
-                System.out.println(broker.calculateKeys(ch.getChannelName()));
-
+                //adding new video's hashtags in channel's hashtagsList--if not exist.
                 boolean flag;
                 for(int i=0; i<hash.size(); i++){
                     flag = true;
@@ -300,6 +330,8 @@ public class Broker extends Thread implements Broker_interface,Node{
                     }
                     if(flag) ch.getHashtagsPublished().add(hash.get(i));
                 }
+
+                System.out.println(ch.getHashtagsPublished());
 
                 /*
                 System.out.println(ch.getChannelName());
