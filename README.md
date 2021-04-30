@@ -13,4 +13,12 @@ in the List and not randomly
 3. Make publisher exactly like broker
 4. Make hashtags and values, subscribe
 5. Make classes of video_file, etc
+6. Stop threads ? Consumer continues to run and doesn't stop
+
+## broker hashing - even workload
+* hash(port+ip) : ip dottes replaced with ""
+* [ ta parnei ola ] --> 1 broker
+* [ brokers.get(0).port + IP < ] An to hash tou channel Name einai mikrotero paei ston 1--> 2 brokers
+* [ mirkotero tou prwtou-ston prwto < anamesa-ston deytero < edw trito ]
+* omoiws
  

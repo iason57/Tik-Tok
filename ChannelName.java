@@ -6,18 +6,31 @@ import java.lang.*;
 public class ChannelName{
 
     private String channelName;
-    private ArrayList<String> frameHeight;
-    private HashMap<String, ArrayList<Value>> userVideoFilesMap;
+    private ArrayList<String> hashtagsPublished;
+    //private HashMap<String, ArrayList<Value>> userVideoFilesMap; // <path ,  object of video> 
+    private ArrayList<VideoFile> listofVideos; 
 
     public ChannelName(){
-        this.channelName = new String();
-        this.frameHeight = new ArrayList<String>();
-        this.userVideoFilesMap = new  HashMap<String, ArrayList<Value>>();
+        this.channelName = "";
+        this.hashtagsPublished = new ArrayList<String>();
+        this.listofVideos = new ArrayList<VideoFile>();
     }
 
-    public ChannelName(String channel, ArrayList<String> height, HashMap<String, ArrayList<Value>> map){
+    public ChannelName(String channel){
         this.channelName = channel;
-        this.frameHeight = height;
-        this.userVideoFilesMap = map;
+        this.hashtagsPublished = new ArrayList<String>();
+        this.listofVideos = new ArrayList<VideoFile>();
+    }
+
+    public String getChannelName(){
+        return channelName;
+    }
+
+    public ArrayList<String> getHashtagsPublished(){
+        return hashtagsPublished;
+    }
+
+    public ArrayList<VideoFile> getAllVideos(){
+        return listofVideos;
     }
 }

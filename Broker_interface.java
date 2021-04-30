@@ -1,5 +1,6 @@
 interface Broker_interface{
-    public void calculateKeys();
+    //public void calculateKeys();
+    public String calculateKeys(String str);
     //public Publisher acceptConnection(Publisher p);
     //public Consumer acceptConnection(Consumer c);
     public void notifyPublisher(String str);

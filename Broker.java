@@ -1,6 +1,12 @@
 import java.util.*;
 import java.net.*;
 import java.io.*;
+import java.time.format.DateTimeFormatter;  
+import java.time.LocalDateTime; 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 
 public class Broker extends Thread implements Broker_interface,Node{
 
@@ -14,6 +20,9 @@ public class Broker extends Thread implements Broker_interface,Node{
     public int port;
     public int publisher_port;
     public ServerSocket publisherServerSocket;
+    public ArrayList<String> channels_serviced;
+    public ArrayList<String> hashtags_serviced;
+    
 
     public Broker(Broker br){
         this.registeredUsers = br.registeredUsers;
@@ -26,19 +35,26 @@ public class Broker extends Thread implements Broker_interface,Node{
         this.port = br.port;
         this.publisher_port = br.publisher_port;
         this.publisherServerSocket = br.publisherServerSocket;
+        this.channels_serviced = new ArrayList<String>(br.channels_serviced);
+        this.hashtags_serviced = new ArrayList<String>(br.hashtags_serviced);
     }
 
     public Broker(){
-
+        this.channels_serviced = new ArrayList<String>();
+        this.hashtags_serviced = new ArrayList<String>();
     }
 
     public Broker(int p){
         port = p;
+        this.channels_serviced = new ArrayList<String>();
+        this.hashtags_serviced = new ArrayList<String>();
     }
 
     public Broker(int p,int port_p){
         port = p;
         publisher_port = port_p;
+        this.channels_serviced = new ArrayList<String>();
+        this.hashtags_serviced = new ArrayList<String>();
     }
 
     /*
@@ -48,8 +64,33 @@ public class Broker extends Thread implements Broker_interface,Node{
     */
     //--------------------------------------------------------------------
 
-    public void calculateKeys(){ //???????
+    // vazoume me thn seira 6666,6667,...
+    // 
 
+    public String calculateKeys(String input){ // topics = channel_name, hashtags
+        try {
+  
+            // Static getInstance method is called with hashing MD5
+            MessageDigest md = MessageDigest.getInstance("MD5");
+  
+            // digest() method is called to calculate message digest
+            //  of an input digest() return array of byte
+            byte[] messageDigest = md.digest(input.getBytes());
+  
+            // Convert byte array into signum representation
+            BigInteger no = new BigInteger(1, messageDigest);
+  
+            // Convert message digest into hex value
+            String hashtext = no.toString(16);
+            while (hashtext.length() < 32) {
+                hashtext = "0" + hashtext;
+            }
+            return hashtext;
+        }
+        // For specifying wrong message digest algorithms
+        catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
     public void publisherAcceptConnection(){
         //while(true){
@@ -184,11 +225,13 @@ public class Broker extends Thread implements Broker_interface,Node{
         private BufferedReader in;
         private int id;
         private int pport;
+        private Broker broker;
 
-        public Consumer_handlers(Socket socket,int num,int p) {
+        public Consumer_handlers(Socket socket,int num,int p, Broker b) {
             this.clientSocket = socket;
             id = num;
             pport = p;
+            broker = b;
         }
 
         public void run() {           
@@ -200,8 +243,42 @@ public class Broker extends Thread implements Broker_interface,Node{
             //new ---------------------------------------------------------------------------
             
             try{
-               
-                String video_file_to_send = "source5.mp4";
+                /*
+                dokimastika to ftiaxnoume edw --> douleia toy publisher
+                */
+                
+                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");  
+                LocalDateTime now = LocalDateTime.now();  
+                //System.out.println(dtf.format(now)); 
+                ChannelName ch = new ChannelName("Drake");
+                ArrayList<String> hash = new ArrayList<String>();
+                hash.add("sky");
+                hash.add("music");
+                VideoFile new_video = new VideoFile("peace",ch,(String)dtf.format(now),"source5.mp4",hash);
+                ch.getAllVideos().add(new_video);
+
+                System.out.println(broker.calculateKeys(ch.getChannelName()));
+
+                boolean flag;
+                for(int i=0; i<hash.size(); i++){
+                    flag = true;
+                    for(int j=0; j<ch.getHashtagsPublished().size();j++){
+                        if( (hash.get(i)).equals( ch.getHashtagsPublished().get(j) ) ) flag = false;
+                    }
+                    if(flag) ch.getHashtagsPublished().add(hash.get(i));
+                }
+
+                /*
+                System.out.println(ch.getChannelName());
+                System.out.println(ch.getHashtagsPublished());
+                
+                for(int i=0; i<ch.getAllVideos().size(); i++){
+                    System.out.println(ch.getAllVideos().get(i).getName());
+                }
+                */
+
+                String video_file_to_send = new_video.getPath();
+                //System.out.println(new_video.getHashtags());
                 // send file
                 File myFile = new File (video_file_to_send);
                 byte [] allfile  = new byte [(int)myFile.length()];
@@ -217,7 +294,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                 while((int)myFile.length() > pointer_in_file){
                     if( (pointer_in_file + 100000) > (int)myFile.length() ){
                         chunk = (int)myFile.length()%100000;
-                        System.out.println("The chunk is : "+chunk);
+                        //System.out.println("The chunk is : "+chunk);
                         //if(chunk < 100000) break;
                     }
                     byte [] mybytearray  = new byte [chunk+3];
@@ -246,7 +323,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                 fis.close();
                 os.close();
 
-                System.out.println("File size is : "+(int)myFile.length());
+                System.out.println("File total size is : "+(int)myFile.length());
                 /*
                 byte [] mybytearray  = new byte [(int)myFile.length()+3];
 
@@ -320,7 +397,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                 try{
                     while (true){
                         Socket x=serverSocket.accept();
-                        System.out.println("consumer accept");
+                        System.out.println("                                consumer accept");
                         //int thesi = number_of_clients.get(0) % brokers.size();
                         //System.out.println("Server that accepted the connection : "+thesi);
                         //brokers.get(thesi).registeredUsers.add(new Consumer(clSocket, this)); // kai alles metavlites
@@ -330,8 +407,8 @@ public class Broker extends Thread implements Broker_interface,Node{
                         Consumer temp = new Consumer(x,number_of_thread+1,port);
                         temp.setBroker(broker);
                         registeredUsers.add(new Consumer(temp));
-                        System.out.println("CONSUMERS : "+registeredUsers.size());
-                        new Consumer_handlers(x,number_of_thread++,port).start();
+                        System.out.println("number of consumers : "+registeredUsers.size());
+                        new Consumer_handlers(x,number_of_thread++,port,broker).start();
                     }
                 }
                 catch(Exception e){
@@ -358,7 +435,7 @@ public class Broker extends Thread implements Broker_interface,Node{
             try{
                 while(true){
                     publisherServerSocket.accept();
-                    System.out.println("publisher accept");
+                    System.out.println("                                publisher accept");
                     number_of_publishers.set(0, number_of_publishers.get(0)+1);
                     System.out.println("NUMBER OF PUBLISHERS :"+number_of_publishers.get(0));
                 }
@@ -375,11 +452,37 @@ public class Broker extends Thread implements Broker_interface,Node{
         
         number_of_clients.add(0);
         number_of_publishers.add(0);
+        int count =0;
 
         Broker b1 = new Broker(6666, 5666);
         b1.start();
-
+        count++;
+      
+        brokers.add(b1);
+        Broker b2 = new Broker(6667,5667);
+        b2.start();
+        count++;
+        brokers.add(b2);
+        try{
+            int x = Integer.parseInt(Inet4Address.getLocalHost().getHostAddress().replace(".", ""));  
+            System.out.println(x);
+            String str="";
+    
+            for(int i =1; i<=count-1;i++){
+                //System.out.println("Inside.");
+                str = Integer.toString(x+brokers.get(i-1).port);
+                //System.out.println(x+brokers.get(i-1).port);
+                delimiter_of_Brokers.add(b1.calculateKeys(str));
+                //System.out.println(delimiter_of_Brokers.get(i-1));
+            }
+        }
+        catch(Exception e){
+            System.out.println("Problem.");
+        }
         
+       
+        
+
 
         // an o broker poy kanei handle ena consumer den exei to hashtag poy thelei o consumer tote 
         // allazei to port ston consumer kai e3hpeireteitai apo allon

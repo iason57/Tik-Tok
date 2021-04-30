@@ -5,6 +5,7 @@ interface Node{
     public List<Broker> brokers = new ArrayList<Broker>(); // statikh domh, dld den tha allazei to hashing
     public List<Integer> number_of_clients = new ArrayList<Integer>();
     public List<Integer> number_of_publishers = new ArrayList<Integer>();
+    public ArrayList<String> delimiter_of_Brokers = new ArrayList<String>();
     
     //-----------------------------------
 

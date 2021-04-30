@@ -163,7 +163,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
                         //System.out.println(mybytearray[current +2]);
                         
                         
-                        System.out.println("File size is : "+current);
+                        //System.out.println("File size is : "+current);
                         //bytesRead = is.read(mybytearray,0,current);
                         //bos.write(mybytearray, 0 , file_size);
 
@@ -268,6 +268,16 @@ public class Consumer extends Thread implements Consumer_interface,Node {
         
         t11.start();
         
+        /*
+
+        Consumer t8 = new Consumer(6667,1);
+        
+        t8.start();
+
+        Consumer t9 = new Consumer(6667,2);
+        
+        t9.start();
+        */
         
 
         
