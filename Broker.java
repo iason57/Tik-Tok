@@ -226,6 +226,7 @@ public class Broker extends Thread implements Broker_interface,Node{
         private int id;
         private int pport;
         private Broker broker;
+        private ArrayList<ChannelName> channels = new ArrayList<ChannelName>();
 
         public Consumer_handlers(Socket socket,int num,int p, Broker b) {
             this.clientSocket = socket;
@@ -250,12 +251,44 @@ public class Broker extends Thread implements Broker_interface,Node{
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");  
                 LocalDateTime now = LocalDateTime.now();  
                 //System.out.println(dtf.format(now)); 
-                ChannelName ch = new ChannelName("Drake");
+                ChannelName ch = new ChannelName("iasonas");
+                channels.add(ch);
+                ChannelName ch2 = new ChannelName("kauta podia elenas");
+                channels.add(ch2);
+                ChannelName ch3 = new ChannelName("myrwdia");
+                channels.add(ch3);
+                ChannelName ch4 = new ChannelName("vana");
+                channels.add(ch4);
+                ChannelName ch5 = new ChannelName("e");
+                channels.add(ch5);
+                ChannelName ch6 = new ChannelName("kal");
+                channels.add(ch6);
                 ArrayList<String> hash = new ArrayList<String>();
                 hash.add("sky");
                 hash.add("music");
-                VideoFile new_video = new VideoFile("peace",ch,(String)dtf.format(now),"source5.mp4",hash);
+                VideoFile new_video = new VideoFile("peace",ch,(String)dtf.format(now),"5min.mp4",hash);
                 ch.getAllVideos().add(new_video);
+                ch2.getAllVideos().add(new_video);
+                //-----------------------------------------------------------------------------
+                for (int i=0; i<channels.size(); i++){
+                    String hashed_chName = (broker.calculateKeys(channels.get(i).getChannelName()));
+                    boolean flag=false;
+                    for (int j=0; j<delimiter_of_Brokers.size(); j++){
+                        if (hashed_chName.compareTo(broker.delimiter_of_Brokers.get(j)) < 0){
+                            brokers.get(j).channels_serviced.add(hashed_chName);
+                            flag=true;
+                            break;
+                        }
+                    }
+                    if (flag==false) {
+                        brokers.get(delimiter_of_Brokers.size()).channels_serviced.add(hashed_chName);
+                    }
+                }
+                System.out.println("edw typwnw ta hashed channel name tou broker 0: " +brokers.get(0).channels_serviced);
+                System.out.println("edw typwnw ta hashed channel name tou broker 1: " +brokers.get(1).channels_serviced);
+                System.out.println("edw typwnw ta hashed channel name tou broker 2: " +brokers.get(2).channels_serviced);
+                System.exit(0);
+                //-----------------------------------------------------------------------------
 
                 System.out.println(broker.calculateKeys(ch.getChannelName()));
 
@@ -463,18 +496,29 @@ public class Broker extends Thread implements Broker_interface,Node{
         b2.start();
         count++;
         brokers.add(b2);
+
+        Broker b3 = new Broker(6668,5668);
+        b3.start();
+        count++;
+        brokers.add(b3);
+
         try{
             int x = Integer.parseInt(Inet4Address.getLocalHost().getHostAddress().replace(".", ""));  
             System.out.println(x);
             String str="";
+            String str2="";
     
-            for(int i =1; i<=count-1;i++){
-                //System.out.println("Inside.");
+            
+            for(int i=1; i<=count-1;i++){
+                System.out.println("Inside.");
                 str = Integer.toString(x+brokers.get(i-1).port);
                 //System.out.println(x+brokers.get(i-1).port);
-                delimiter_of_Brokers.add(b1.calculateKeys(str));
-                //System.out.println(delimiter_of_Brokers.get(i-1));
+                delimiter_of_Brokers.add(brokers.get(i-1).calculateKeys(str));
+                //delimiter_of_Brokers.add(b2.calculateKeys(str));
+                System.out.println(brokers.get(i-1).calculateKeys(str));
+                //System.out.println(b2.calculateKeys(str));
             }
+            
         }
         catch(Exception e){
             System.out.println("Problem.");
