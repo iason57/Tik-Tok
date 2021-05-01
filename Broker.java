@@ -22,6 +22,7 @@ public class Broker extends Thread implements Broker_interface,Node{
     public ServerSocket publisherServerSocket;
     public ArrayList<ChannelName> channels_serviced;
     public ArrayList<String> hashtags_serviced;
+    public ArrayList< ArrayList<Consumer> > subscribers; // to every channel name (Publisher). 1-1 antistoixish
     
 
     public Broker(Broker br){
@@ -227,20 +228,24 @@ public class Broker extends Thread implements Broker_interface,Node{
         private int pport;
         private Broker broker;
         private ArrayList<ChannelName> channels = new ArrayList<ChannelName>();
+        private List<Consumer> sub;
+        private Consumer c;
 
-        public Consumer_handlers(Socket socket,int num,int p, Broker b) {
+        public Consumer_handlers(Socket socket,int num,int p, Broker b, List<Consumer> registers) {//, Consumer temp
             this.clientSocket = socket;
             id = num;
             pport = p;
             broker = b;
+            sub = registers;
+            //c = temp;
         }
 
 
 
         public void run() {           
             String str;
-            BufferedReader reader = new BufferedReader(
-                new InputStreamReader(System.in));
+            //BufferedReader reader = new BufferedReader(
+            //    new InputStreamReader(System.in));
             int hashed=0;
             int hashed_key =0;
 
@@ -359,6 +364,24 @@ public class Broker extends Thread implements Broker_interface,Node{
                 System.out.println("edw typwnw ta hashed channel name tou broker 3: " +brokers.get(3).channels_serviced.getChannelName());
                 */
 
+                /*
+                //edw tha doyme an leitoyrgei to subscribe
+
+                for(int l=0; l< channels.size();l++){
+                    // gia kathe channel
+                    for(int i=0; i< brokers.size();i++){
+                        // psaxnw an einai ston broker
+                        for(x : brokers.get(i).channels_serviced){
+                            // etsi psaxnw
+                            if(x.getChannelName().equals(channels.get(l))){
+                                c.register(broker,channels.get(i).getChannelName());
+                            }
+                        }
+                    }
+                }
+                */
+
+                
 
                 for (int i=0; i<hash.size(); i++){
                     //---------------------------------------------------
@@ -540,10 +563,65 @@ public class Broker extends Thread implements Broker_interface,Node{
                 //end new -----------------------------------------------------------------------
 
                 /*
+                try{
+                    out = new PrintWriter(clientSocket.getOutputStream(), true);
+                    in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                    System.out.println("Starting to talk with consumer : "+id+" and broker : "+ pport);
+                    //registeredUsers.add(id);
+                    String greeting = in.readLine();
+                    while (!greeting.equals(".")) {
+                        System.out.println("Client "+id+" said to broker "+ pport +" : "+greeting);
+                        str =  reader.readLine();
+                        out.println("Response to "+greeting+", "+str + " message to "+id);
+                        greeting = in.readLine();
+                    }
+                    
+                    in.close();
+                    out.close();
+                    clientSocket.close();     
+                }
+                catch(Exception e){
+    
+                } 
+                */  
+                
+            }
+            catch(Exception e){
+    
+            }                         
+        }
+    }
+
+    private static class Consumer_handlers_messages extends Thread {
+        private Socket clientSocket;
+        private PrintWriter out;
+        private BufferedReader in;
+        private int id;
+        private int pport;
+        private Broker broker;
+        private ArrayList<ChannelName> channels = new ArrayList<ChannelName>();
+        private List<Consumer> sub;
+        private Consumer c;
+
+        public Consumer_handlers_messages(Socket socket,int num,int p, Broker b, List<Consumer> registers) {//, Consumer temp
+            this.clientSocket = socket;
+            id = num;
+            pport = p;
+            broker = b;
+            sub = registers;
+            //c = temp;
+        }
+
+        public void run() {
+            BufferedReader reader = new BufferedReader(
+                new InputStreamReader(System.in));
+            String str;
+            try{
                 out = new PrintWriter(clientSocket.getOutputStream(), true);
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 System.out.println("Starting to talk with consumer : "+id+" and broker : "+ pport);
                 //registeredUsers.add(id);
+                out.println("Server's stream working");
                 String greeting = in.readLine();
                 while (!greeting.equals(".")) {
                     System.out.println("Client "+id+" said to broker "+ pport +" : "+greeting);
@@ -551,15 +629,14 @@ public class Broker extends Thread implements Broker_interface,Node{
                     out.println("Response to "+greeting+", "+str + " message to "+id);
                     greeting = in.readLine();
                 }
-                */
+                
                 in.close();
                 out.close();
-                clientSocket.close();
-                
+                clientSocket.close();    
             }
             catch(Exception e){
     
-            }            
+            }                         
         }
     }
 
@@ -594,7 +671,9 @@ public class Broker extends Thread implements Broker_interface,Node{
                         temp.setBroker(broker);
                         registeredUsers.add(new Consumer(temp));
                         //System.out.println("number of consumers : "+registeredUsers.size());
-                        new Consumer_handlers(x,number_of_thread++,port,broker).start();
+                        //new Consumer_handlers(x,number_of_thread++,port,broker,registeredUsers).start();//,registeredUsers.get(registeredUsers.size()-1) //<-------------------------------------- that
+                        //Thread.sleep(5000);
+                        new Consumer_handlers_messages(x,number_of_thread++,port,broker,registeredUsers).start();
                     }
                 }
                 catch(Exception e){

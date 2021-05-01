@@ -52,10 +52,14 @@ public class Consumer extends Thread implements Consumer_interface,Node {
     }
 
     //--------------------------------------------------------------
-
+    
     public void register(Broker b,String str){
         //have no idea what to do with the str input...
-        b.registeredUsers.add(this);
+        for(int i =0; i<b.channels_serviced.size();i++){
+            if(str.equals(b.channels_serviced.get(i).getChannelName())){
+                b.subscribers.get(i).add(this);
+            }
+        }
     }
     public void disconnect(Broker b,String str){
 
@@ -83,10 +87,37 @@ public class Consumer extends Thread implements Consumer_interface,Node {
         
     }
 
-    public void connect(){
+    public void messages(){
+        System.out.println("Message section : ");
         String str;
         BufferedReader reader = new BufferedReader(
             new InputStreamReader(System.in));
+        String message_from_server;
+        System.out.println("Reader ok ");
+        try{
+            out = new PrintWriter(clientSocket.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            message_from_server = in.readLine();
+            System.out.println("Connection established, server said : "+message_from_server);
+            while(true){
+                str =  reader.readLine();
+                out.println(str);
+                if(str.equals("..")){
+                    System.exit(0);
+                }
+                message_from_server = in.readLine();
+                System.out.println("Broker "+port+" said : "+message_from_server);
+            }
+        }
+        catch(Exception e){
+            System.out.println("Exception in messages");
+        }
+    }
+
+    public void connect(){
+        String str;
+        //BufferedReader reader = new BufferedReader(
+        //    new InputStreamReader(System.in));
         String message_from_server;
         String k = "end";
         byte[] b = k.getBytes();
@@ -216,6 +247,32 @@ public class Consumer extends Thread implements Consumer_interface,Node {
                 bos.close();
                 is.close();
                 System.out.println("Closing readers");
+                /*
+                Thread.sleep(5000);
+                InputStream receive = clientSocket.getInputStream();
+                System.out.println("Closing 1");
+                OutputStream send = clientSocket.getOutputStream();
+                System.out.println("Closing 2");
+                out = new PrintWriter(send, true);
+                System.out.println("Closing 3");
+                in = new BufferedReader(new InputStreamReader(receive));
+                System.out.println("Closing 4");
+                System.out.println("Starting to talk with consumer : "+id+" and broker : "+ port);
+                //registeredUsers.add(id);
+                String greeting = in.readLine();
+                while (!greeting.equals(".")) {
+                    System.out.println("Client "+id+" said to broker "+ port +" : "+greeting);
+                    str =  reader.readLine();
+                    out.println("Response to "+greeting+", "+str + " message to "+id);
+                    greeting = in.readLine();
+                }
+                
+                in.close();
+                out.close();
+                */
+
+                
+                
                 //Thread.sleep(10000 * (id-1));
                 //this.playData(video_file);
             }
@@ -247,7 +304,9 @@ public class Consumer extends Thread implements Consumer_interface,Node {
     public void run(){
         try{
             this.init(port);
-            this.connect();//<--------------------------------
+            //this.connect();//<-------------------------------------- that
+            //Thread.sleep(10000);
+            this.messages();
             //Consumer client = new Consumer(port);
             //client.init(port);
             //client.connect();
@@ -297,7 +356,9 @@ public class Consumer extends Thread implements Consumer_interface,Node {
         t9.start();
         */
         
+        /*
 
+        // Publishers
         
         Consumer t2 = new Consumer(5666,1);
         
@@ -315,12 +376,12 @@ public class Consumer extends Thread implements Consumer_interface,Node {
         Consumer t5 = new Consumer(5666,4);
         
         t5.start();
+        */
 
         
         try{
             Thread.sleep(4000);
-            System.exit(0);
-            //t1.currentThread().interrupt(); t11.currentThread().interrupt(); t2.currentThread().interrupt(); t3.currentThread().interrupt(); t4.currentThread().interrupt(); t5.currentThread().interrupt();
+            //System.exit(0); // <----------------------------------------------------------------------------------------------------------
         }
         catch(Exception e){
             System.out.println("Something went wrong with closing the threads.");
