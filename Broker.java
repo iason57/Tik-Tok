@@ -671,8 +671,8 @@ public class Broker extends Thread implements Broker_interface,Node{
                         temp.setBroker(broker);
                         registeredUsers.add(new Consumer(temp));
                         //System.out.println("number of consumers : "+registeredUsers.size());
-                        //new Consumer_handlers(x,number_of_thread++,port,broker,registeredUsers).start();//,registeredUsers.get(registeredUsers.size()-1) //<-------------------------------------- that
-                        //Thread.sleep(5000);
+                        new Consumer_handlers(x,number_of_thread++,port,broker,registeredUsers).start();//,registeredUsers.get(registeredUsers.size()-1) //<-------------------------------------- that
+                        Thread.sleep(5000);
                         new Consumer_handlers_messages(x,number_of_thread++,port,broker,registeredUsers).start();
                     }
                 }

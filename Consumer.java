@@ -247,6 +247,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
                 bos.close();
                 is.close();
                 System.out.println("Closing readers");
+                return;
                 /*
                 Thread.sleep(5000);
                 InputStream receive = clientSocket.getInputStream();
@@ -304,8 +305,8 @@ public class Consumer extends Thread implements Consumer_interface,Node {
     public void run(){
         try{
             this.init(port);
-            //this.connect();//<-------------------------------------- that
-            //Thread.sleep(10000);
+            this.connect();//<-------------------------------------- that
+            Thread.sleep(10000);
             this.messages();
             //Consumer client = new Consumer(port);
             //client.init(port);
