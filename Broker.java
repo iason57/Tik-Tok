@@ -703,7 +703,10 @@ public class Broker extends Thread implements Broker_interface,Node{
                                 }
                             }
                         }
-                        if (!flag) out.println("Channel not found or already subscribed!"); 
+                        if (!flag) {
+                            if(!flag_c) out.println("Already subscribed!");
+                            else out.println("Channel not found!");
+                        }
                         else out.println("Subscription complete!");
                         //System.out.println("flag 5");
                     }
