@@ -108,11 +108,23 @@ public class Consumer extends Thread implements Consumer_interface,Node {
             while(true){
                 str =  reader.readLine();
                 out.println(str);
-                if(str.equals("..")){
-                    System.exit(0);
+                if(str.equals("subscribe")){
+                    System.out.println("Available channels : ");
+                    message_from_server = in.readLine();
+                    message_from_server = message_from_server.replace("Available channels : ", "");
+                    int size = Integer.parseInt(message_from_server); 
+                    for(int i =0; i< size ;i++){
+                        message_from_server = in.readLine();
+                        System.out.println(""+message_from_server);
+                    }
                 }
-                message_from_server = in.readLine();
-                System.out.println("Broker "+port1+" said : "+message_from_server);
+                else{
+                    if(str.equals("..")){
+                        System.exit(0);
+                    }
+                    message_from_server = in.readLine();
+                    System.out.println("Broker "+port1+" said : "+message_from_server);
+                }
             }
         }
         catch(Exception e){
@@ -332,7 +344,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
     }
     public static void main(String args[]) {
         
-        Consumer t1 = new Consumer(6666,1);
+        Consumer t1 = new Consumer(6667,1);
         
         t1.start();
         
@@ -344,7 +356,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
         }  
     
         
-
+        /*
         Consumer t11 = new Consumer(6667,1);
         
         t11.start();
@@ -361,6 +373,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
         Consumer t8 = new Consumer(6666,2);
         
         t8.start();
+        */
         
         /*
 

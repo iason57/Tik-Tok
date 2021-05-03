@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.concurrent.Flow.Subscriber;
 import java.net.*;
 import java.io.*;
 import java.time.format.DateTimeFormatter;  
@@ -22,8 +23,9 @@ public class Broker extends Thread implements Broker_interface,Node{
     public ServerSocket publisherServerSocket;
     public ServerSocket messagesServerSocket;
     public ArrayList<ChannelName> channels_serviced;
+    public ArrayList< ArrayList<Consumer> > subscribers; // 1-1 antistoixia me ta channels_serviced
     public ArrayList<String> hashtags_serviced;
-    public ArrayList< ArrayList<Consumer> > subscribers; // to every channel name (Publisher). 1-1 antistoixish
+    
     
 
     public Broker(Broker br){
@@ -39,17 +41,20 @@ public class Broker extends Thread implements Broker_interface,Node{
         this.publisherServerSocket = br.publisherServerSocket;
         this.channels_serviced = new ArrayList<ChannelName>(br.channels_serviced);
         this.hashtags_serviced = new ArrayList<String>(br.hashtags_serviced);
+        this.subscribers = new ArrayList< ArrayList<Consumer> >(br.subscribers);
     }
 
     public Broker(){
         this.channels_serviced = new ArrayList<ChannelName>();
         this.hashtags_serviced = new ArrayList<String>();
+        this.subscribers = new ArrayList< ArrayList<Consumer> >();
     }
 
     public Broker(int p){
         port = p;
         this.channels_serviced = new ArrayList<ChannelName>();
         this.hashtags_serviced = new ArrayList<String>();
+        this.subscribers = new ArrayList< ArrayList<Consumer> >();
     }
 
     public Broker(int p,int port_p){
@@ -57,6 +62,7 @@ public class Broker extends Thread implements Broker_interface,Node{
         publisher_port = port_p;
         this.channels_serviced = new ArrayList<ChannelName>();
         this.hashtags_serviced = new ArrayList<String>();
+        this.subscribers = new ArrayList< ArrayList<Consumer> >();
     }
 
     /*
@@ -358,8 +364,12 @@ public class Broker extends Thread implements Broker_interface,Node{
                                     break;
                                 }
                             }
-                            if(!flag) brokers.get(j).channels_serviced.add(channels.get(i));
-                        }
+                            if(!flag) {
+                                brokers.get(j).channels_serviced.add(channels.get(i));
+                                brokers.get(j).subscribers.add( new ArrayList<Consumer>() ); // 1st
+                                allChannels.add(channels.get(i));
+                            }
+                        }   
                     }
                 }
                 System.out.println(" ");
@@ -616,19 +626,20 @@ public class Broker extends Thread implements Broker_interface,Node{
         private List<Consumer> sub;
         private Consumer c;
 
-        public Consumer_handlers_messages(Socket socket,int num,int p, Broker b, List<Consumer> registers) {//, Consumer temp
+        public Consumer_handlers_messages(Socket socket,int num,int p, Broker b, List<Consumer> registers, Consumer temp) {//, Consumer temp
             this.clientSocket = socket;
             id = num;
             pport = p;
             broker = b;
             sub = registers;
-            //c = temp;
+            c = temp;
         }
 
         public void run() {
             BufferedReader reader = new BufferedReader(
                 new InputStreamReader(System.in));
-            String str;
+            String str,response_for_subscribe;
+            int hashed,hashed_key;
             try{
                 out = new PrintWriter(clientSocket.getOutputStream(), true);
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -637,9 +648,70 @@ public class Broker extends Thread implements Broker_interface,Node{
                 out.println("Server's stream working");
                 String greeting = in.readLine();
                 while (!greeting.equals(".")) {
-                    System.out.println("Client "+id+" said to broker "+ pport +" : "+greeting);
-                    str =  reader.readLine();
-                    out.println("Response to "+greeting+", "+str + " message to "+id);
+                    if(greeting.equals("subscribe")){
+                        out.println("Available channels : "+allChannels.size());
+                        for(ChannelName x : allChannels){
+                            out.println(x.getChannelName());
+                        }
+                        response_for_subscribe = in.readLine();
+
+                        // see where is the name with hash
+
+                        //System.out.println("flag 1");
+
+                        String hashed_chName = (broker.calculateKeys(response_for_subscribe));
+                        int len = hashed_chName.length();
+                        String test2 = hashed_chName.substring(len-3);
+                        //System.out.println("flag 2");
+                        //System.out.println("Test 2 : "+test2);
+                        StringBuilder sb = new StringBuilder();
+                        for (int k = 0; k < test2.length(); k++) {
+                            if (Character.isLetter(test2.charAt(k))) {
+                                int m = test2.charAt(k);
+                                sb.append(m); // add the ascii value to the string
+                            } else {
+                                sb.append(test2.charAt(k)); // add the normal character
+                            }
+                        }
+                        //System.out.println("flag 3");
+                        hashed = Integer.parseInt(sb.toString());
+                        hashed_key = hashed % brokers.size();    // h thesi ston pinaka brokers ston opoio einai to zitoymeno channel
+                        //System.out.println("flag 4");
+                        //System.out.println(brokers.get(hashed_key).channels_serviced.size());
+                        //System.out.println(brokers.get(hashed_key).subscribers.size());
+                        // ara to kanali tha einai ston broker sthn thesi hashed_key in brokers table
+                        boolean flag = false, flag_c = true;
+                        for ( int i =0; i < brokers.get(hashed_key).channels_serviced.size() ; i++ ){
+                            if ( brokers.get(hashed_key).channels_serviced.get(i).getChannelName().equals(response_for_subscribe) ){
+                                
+                                for(Consumer cons :  brokers.get(hashed_key).subscribers.get(i) ){
+                                    if(cons.port == c.port){
+                                        flag_c = false;
+                                        break;
+                                    }
+                                }
+                                if (flag_c) {
+                                    brokers.get(hashed_key).subscribers.get(i).add(c); 
+                                    // adding consumer to subscribers that have 1-1 match with channels serviced
+                                    // flag true means that it found the channel
+                                    flag = true;
+                                    System.out.println("Channel found");
+    
+                                    //System.out.println(brokers.get(hashed_key).subscribers.get(i).get( brokers.get(hashed_key).subscribers.get(i).size() -1 ).port );
+                                    System.out.println("Subscriber list size for channel '"+brokers.get(hashed_key).channels_serviced.get(i).getChannelName()+"' is : "+brokers.get(hashed_key).subscribers.get(i).size());
+                                    System.out.println("Added to broker : "+hashed_key);
+                                }
+                            }
+                        }
+                        if (!flag) out.println("Channel not found or already subscribed!"); 
+                        else out.println("Subscription complete!");
+                        //System.out.println("flag 5");
+                    }
+                    else{
+                        System.out.println("Client "+id+" said to broker "+ pport +" : "+greeting);
+                        str =  reader.readLine();
+                        out.println("Response to "+greeting+", "+str + " message to "+id);
+                    }
                     greeting = in.readLine();
                 }
                 reader.close();
@@ -689,7 +761,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                         new Consumer_handlers(x,number_of_thread++,port,broker,registeredUsers).start();//,registeredUsers.get(registeredUsers.size()-1) //<-------------------------------------- that
                         Thread.sleep(5000);
                         Socket x2= s.accept();
-                        new Consumer_handlers_messages(x2,number_of_thread++,port+1000,broker,registeredUsers).start();
+                        new Consumer_handlers_messages(x2,number_of_thread++,port+1000,broker,registeredUsers,registeredUsers.get(registeredUsers.size()-1)).start();
                     }
                 }
                 catch(Exception e){

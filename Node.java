@@ -6,6 +6,8 @@ interface Node{
     public List<Integer> number_of_clients = new ArrayList<Integer>();
     public List<Integer> number_of_publishers = new ArrayList<Integer>();
     public ArrayList<String> delimiter_of_Brokers = new ArrayList<String>();
+    public ArrayList<ChannelName> allChannels = new ArrayList<ChannelName>();
+    //public ArrayList< ArrayList<Consumer> > subscribers; // to every channel name (Publisher). 1-1 antistoixish
     
     //-----------------------------------
 
