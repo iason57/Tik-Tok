@@ -333,7 +333,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                 hash.add("#instapic");
                 hash.add("#instapic");
                 hash.add("#follow");
-                VideoFile new_video = new VideoFile("peace",ch,(String)dtf.format(now),"5min.mp4",hash);
+                VideoFile new_video = new VideoFile("peace",ch,(String)dtf.format(now),"morethan15sec.mp4",hash);
                 ch.getAllVideos().add(new_video);
                 ch2.getAllVideos().add(new_video);
                 //-----------------------------------------------------------------------------
@@ -754,7 +754,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                     }
                     else if(greeting.equals("disconnect")){
                         broker.disconnect(c.id);
-                        System.out.println("size of reg : "+broker.registeredUsers.size());
+                        System.out.println("Registered users left : "+broker.registeredUsers.size());
                     }
                     else if(greeting.equals("search")){
                         hashed_key = -1;

@@ -356,7 +356,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
     }
     public static void main(String args[]) {
         
-        Consumer t1 = new Consumer(6666,1);
+        Consumer t1 = new Consumer(6666,2);
         
         t1.start();
         
@@ -420,14 +420,16 @@ public class Consumer extends Thread implements Consumer_interface,Node {
         t5.start();
         */
 
-        
+        /*
         try{
             Thread.sleep(4000);
             //System.exit(0); // <----------------------------------------------------------------------------------------------------------
         }
         catch(Exception e){
             System.out.println("Something went wrong with closing the threads.");
-        }    
+        }  
+        */
+
         /*
         Consumer t2 = new Consumer(6667,1);
         
