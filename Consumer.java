@@ -118,6 +118,18 @@ public class Consumer extends Thread implements Consumer_interface,Node {
                         System.out.println(""+message_from_server);
                     }
                 }
+                else if(str.equals("search")){
+                    message_from_server = in.readLine();
+                    System.out.println(""+message_from_server);
+                    str =  reader.readLine();
+                    out.println(str); // name or hashtag option
+                    message_from_server = in.readLine();
+                    System.out.println(""+message_from_server);
+                    str =  reader.readLine();
+                    out.println(str); // the name of the channel or the hashtag
+                    message_from_server = in.readLine();
+                    System.out.println(""+message_from_server);
+                }
                 else{
                     if(str.equals("..")){
                         System.exit(0);
@@ -348,6 +360,8 @@ public class Consumer extends Thread implements Consumer_interface,Node {
         
         t1.start();
         
+        /*
+        
         try{
             Thread.sleep(1000);
         }
@@ -361,7 +375,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
         
         t11.start();
 
-        /*
+        
 
         try{
             Thread.sleep(1000);

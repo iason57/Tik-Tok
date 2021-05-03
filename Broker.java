@@ -100,6 +100,29 @@ public class Broker extends Thread implements Broker_interface,Node{
             throw new RuntimeException(e);
         }
     }
+
+    public int thesi_broker_hash(String s){
+        String hashed_ = (this.calculateKeys(s));
+        int len = hashed_.length();
+        String test2 = hashed_.substring(len-3);
+        int hashed,hashed_key;
+        //System.out.println("flag 2");
+        //System.out.println("Test 2 : "+test2);
+        StringBuilder sb = new StringBuilder();
+        for (int k = 0; k < test2.length(); k++) {
+            if (Character.isLetter(test2.charAt(k))) {
+                int m = test2.charAt(k);
+                sb.append(m); // add the ascii value to the string
+            } else {
+                sb.append(test2.charAt(k)); // add the normal character
+            }
+        }
+        //System.out.println("flag 3");
+        hashed = Integer.parseInt(sb.toString());
+        hashed_key = hashed % brokers.size(); 
+        return hashed_key;
+    }
+
     public void publisherAcceptConnection(){
         //while(true){
             try{
@@ -317,6 +340,10 @@ public class Broker extends Thread implements Broker_interface,Node{
                 //Katanomh stouw brokers me bash ta CHANNEL NAMES.
                 for (int i=0; i<channels.size(); i++){
                     //---------------------------------------------------
+
+                    hashed_key = broker.thesi_broker_hash(channels.get(i).getChannelName());
+
+                    /*
                     
                     //int hashed_chName = Integer.parseInt(Inet4Address.getLocalHost().getHostAddress().replace(".", "")) + broker.port;   
                     String hashed_chName = (broker.calculateKeys(channels.get(i).getChannelName()));
@@ -338,6 +365,8 @@ public class Broker extends Thread implements Broker_interface,Node{
                     //System.out.println("prospathw2 -- "+hashed);
                     hashed_key = hashed % brokers.size();
                     //System.out.println("hashed : -- "+hashed_key);
+
+                    */
 
                     boolean flag=false;
                     /*
@@ -408,6 +437,8 @@ public class Broker extends Thread implements Broker_interface,Node{
 
                 for (int i=0; i<hash.size(); i++){
                     //---------------------------------------------------
+                    hashed_key = broker.thesi_broker_hash(hash.get(i));
+                    /*
                     
                     //int hashed_chName = Integer.parseInt(Inet4Address.getLocalHost().getHostAddress().replace(".", "")) + broker.port;   
                     String hashed_hashtag = (broker.calculateKeys(hash.get(i)));
@@ -429,6 +460,8 @@ public class Broker extends Thread implements Broker_interface,Node{
                     //System.out.println("prospathw2 -- "+hashed);
                     hashed_key = hashed % brokers.size();
                     //System.out.println("hashed : -- "+hashed_key);
+
+                    */
 
                     boolean flag=false;
                     /*
@@ -640,6 +673,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                 new InputStreamReader(System.in));
             String str,response_for_subscribe;
             int hashed,hashed_key;
+            boolean theflag;
             try{
                 out = new PrintWriter(clientSocket.getOutputStream(), true);
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -659,6 +693,11 @@ public class Broker extends Thread implements Broker_interface,Node{
 
                         //System.out.println("flag 1");
 
+                        //------------------------------------------------------------------------------------------------------------------
+                        
+                        hashed_key = broker.thesi_broker_hash(response_for_subscribe);
+
+                        /*
                         String hashed_chName = (broker.calculateKeys(response_for_subscribe));
                         int len = hashed_chName.length();
                         String test2 = hashed_chName.substring(len-3);
@@ -676,6 +715,9 @@ public class Broker extends Thread implements Broker_interface,Node{
                         //System.out.println("flag 3");
                         hashed = Integer.parseInt(sb.toString());
                         hashed_key = hashed % brokers.size();    // h thesi ston pinaka brokers ston opoio einai to zitoymeno channel
+                        */
+
+                        //------------------------------------------------------------------------------------------------------------------
                         //System.out.println("flag 4");
                         //System.out.println(brokers.get(hashed_key).channels_serviced.size());
                         //System.out.println(brokers.get(hashed_key).subscribers.size());
@@ -713,6 +755,51 @@ public class Broker extends Thread implements Broker_interface,Node{
                     else if(greeting.equals("disconnect")){
                         broker.disconnect(c.id);
                         System.out.println("size of reg : "+broker.registeredUsers.size());
+                    }
+                    else if(greeting.equals("search")){
+                        hashed_key = -1;
+                        theflag = false;
+                        if(broker.isRegistered(c.id)){
+                            out.println("Want to search by Channel name or hashtag ?");
+                            greeting = in.readLine();
+                            if(greeting.contains("name") || greeting.contains("Name") || greeting.contains("channel") || greeting.contains("Channel")){
+                                // search by channel name
+                                out.println("Give name : ");
+                                greeting = in.readLine(); // den exoume kanei elegxo oti den yparxei to name i to hashtag
+                                hashed_key  = broker.thesi_broker_hash(greeting);
+                                //System.out.println("hashed key for : "+greeting+" is : "+hashed_key);
+                                for(ChannelName x : brokers.get(hashed_key).channels_serviced){
+                                    if(x.getChannelName().equals(greeting)){
+                                        out.println("kati tha stelnoyme");
+                                        theflag = true;
+                                        break;
+                                    }
+                                }
+                                if(!theflag) out.println("Not found");
+                                
+                            }
+                            else if(greeting.contains("hashtag") || greeting.contains("Hashtag")) {
+                                // search by hashtag 
+                                out.println("Give hashtag : ( in form #name_of_hashtag )");
+                                greeting = in.readLine();
+                                hashed_key  = broker.thesi_broker_hash(greeting);
+                                //System.out.println("hashed key for : "+greeting+" is : "+hashed_key);
+                                for(String x : brokers.get(hashed_key).hashtags_serviced){
+                                    if(x.equals(greeting)){
+                                        out.println("kati tha stelnoyme2");
+                                        theflag = true;
+                                        break;
+                                    }
+                                }
+                                if(!theflag) out.println("Not found");
+                            }
+                            else {
+                                out.println("Incorrect input!");
+                            }
+                        }
+                        else{
+                            // he is not registered : will see what to do
+                        }
                     }
                     else{
                         System.out.println("Client with id : "+id+", said to broker "+ pport +" : "+greeting);
