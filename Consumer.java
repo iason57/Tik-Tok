@@ -87,17 +87,23 @@ public class Consumer extends Thread implements Consumer_interface,Node {
         
     }
 
-    public void messages(){
+    public void messages(int port1){
         System.out.println("Message section : ");
         String str;
         BufferedReader reader = new BufferedReader(
             new InputStreamReader(System.in));
         String message_from_server;
         System.out.println("Reader ok ");
+        System.out.println("port is  "+ port1);
         try{
-            out = new PrintWriter(clientSocket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            Socket clientSocket2;
+            clientSocket2 = new Socket(Inet4Address.getLocalHost().getHostAddress(), port1);
+            System.out.println("edw0");
+            out = new PrintWriter(clientSocket2.getOutputStream(), true); //<----------------------------
+            System.out.println("edw1");
+            in = new BufferedReader(new InputStreamReader(clientSocket2.getInputStream()));
             message_from_server = in.readLine();
+            System.out.println("edw2");
             System.out.println("Connection established, server said : "+message_from_server);
             while(true){
                 str =  reader.readLine();
@@ -106,7 +112,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
                     System.exit(0);
                 }
                 message_from_server = in.readLine();
-                System.out.println("Broker "+port+" said : "+message_from_server);
+                System.out.println("Broker "+port1+" said : "+message_from_server);
             }
         }
         catch(Exception e){
@@ -243,9 +249,15 @@ public class Consumer extends Thread implements Consumer_interface,Node {
                 bos.flush();
                 System.out.println("File " + video_file
                     + " downloaded (" + pointer + " bytes read)");
+                
+                is.close();
                 fos.close();
                 bos.close();
-                is.close();
+
+                is=null;
+                fos=null;
+                bos=null;
+
                 System.out.println("Closing readers");
                 return;
                 /*
@@ -306,8 +318,8 @@ public class Consumer extends Thread implements Consumer_interface,Node {
         try{
             this.init(port);
             this.connect();//<-------------------------------------- that
-            Thread.sleep(10000);
-            this.messages();
+            Thread.sleep(5000);
+            this.messages(port+1000);
             //Consumer client = new Consumer(port);
             //client.init(port);
             //client.connect();
