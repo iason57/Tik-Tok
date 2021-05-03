@@ -98,12 +98,12 @@ public class Consumer extends Thread implements Consumer_interface,Node {
         try{
             Socket clientSocket2;
             clientSocket2 = new Socket(Inet4Address.getLocalHost().getHostAddress(), port1);
-            System.out.println("edw0");
+            //System.out.println("edw0");
             out = new PrintWriter(clientSocket2.getOutputStream(), true); //<----------------------------
-            System.out.println("edw1");
+            //System.out.println("edw1");
             in = new BufferedReader(new InputStreamReader(clientSocket2.getInputStream()));
             message_from_server = in.readLine();
-            System.out.println("edw2");
+            //System.out.println("edw2");
             System.out.println("Connection established, server said : "+message_from_server);
             while(true){
                 str =  reader.readLine();
@@ -330,7 +330,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
         try{
             this.init(port);
             this.connect();//<-------------------------------------- that
-            Thread.sleep(5000);
+            Thread.sleep(2000);
             this.messages(port+1000);
             //Consumer client = new Consumer(port);
             //client.init(port);
@@ -344,7 +344,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
     }
     public static void main(String args[]) {
         
-        Consumer t1 = new Consumer(6667,1);
+        Consumer t1 = new Consumer(6666,1);
         
         t1.start();
         
@@ -356,10 +356,12 @@ public class Consumer extends Thread implements Consumer_interface,Node {
         }  
     
         
-        /*
-        Consumer t11 = new Consumer(6667,1);
+        
+        Consumer t11 = new Consumer(6666,2);
         
         t11.start();
+
+        /*
 
         try{
             Thread.sleep(1000);
@@ -369,7 +371,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
         }
         
         
-
+        
         Consumer t8 = new Consumer(6666,2);
         
         t8.start();

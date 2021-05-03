@@ -710,10 +710,14 @@ public class Broker extends Thread implements Broker_interface,Node{
                         else out.println("Subscription complete!");
                         //System.out.println("flag 5");
                     }
+                    else if(greeting.equals("disconnect")){
+                        broker.disconnect(c.id);
+                        System.out.println("size of reg : "+broker.registeredUsers.size());
+                    }
                     else{
-                        System.out.println("Client "+id+" said to broker "+ pport +" : "+greeting);
+                        System.out.println("Client with id : "+id+", said to broker "+ pport +" : "+greeting);
                         str =  reader.readLine();
-                        out.println("Response to "+greeting+", "+str + " message to "+id);
+                        out.println("Response to "+greeting+", "+str + " message to client with id : "+id);
                     }
                     greeting = in.readLine();
                 }
@@ -757,14 +761,15 @@ public class Broker extends Thread implements Broker_interface,Node{
                         //brokers.get(thesi).clientSocket = clSocket;
                         //System.out.println(port);
                         number_of_clients.set(0, number_of_clients.get(0)+1);
-                        Consumer temp = new Consumer(x,number_of_thread+1,port);
+                        Consumer temp = new Consumer(x,number_of_thread,port);
                         temp.setBroker(broker);
                         registeredUsers.add(new Consumer(temp));
                         //System.out.println("number of consumers : "+registeredUsers.size());
-                        new Consumer_handlers(x,number_of_thread++,port,broker,registeredUsers).start();//,registeredUsers.get(registeredUsers.size()-1) //<-------------------------------------- that
-                        Thread.sleep(5000);
+                        new Consumer_handlers(x,number_of_thread,port,broker,registeredUsers).start();//,registeredUsers.get(registeredUsers.size()-1) //<-------------------------------------- that
+                        Thread.sleep(2000);
                         Socket x2= s.accept();
-                        new Consumer_handlers_messages(x2,number_of_thread++,port+1000,broker,registeredUsers,registeredUsers.get(registeredUsers.size()-1)).start();
+                        new Consumer_handlers_messages(x2,number_of_thread,port+1000,broker,registeredUsers,registeredUsers.get(registeredUsers.size()-1)).start();
+                        number_of_thread +=1;
                     }
                 }
                 catch(Exception e){

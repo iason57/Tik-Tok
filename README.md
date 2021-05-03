@@ -10,9 +10,10 @@ https://www.baeldung.com/a-guide-to-java-sockets
 we can send files through the home network and not only the same computer
 2. Make other methods and see how we can do that with the Consumer objects
 in the List and not randomly
-3. Make publisher exactly like broker
+3. Make publisher exactly like broker                                        (registeredUsers me disconnect-PUSH-PULL and send video send to subs klp klp)
 4. Make hashtags and values, subscribe --> sto kanali
 5. Stop threads ? Consumer continues to run and doesn't stop
+6. make interfaces with function definitions
 
 ## broker hashing - even workload
 * hash(port+ip) : ip dottes replaced with ""
