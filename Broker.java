@@ -22,8 +22,8 @@ public class Broker extends Thread implements Broker_interface,Node{
     public int publisher_port;
     public ServerSocket publisherServerSocket;
     public ServerSocket messagesServerSocket;
-    public ArrayList<ChannelName> channels_serviced;
-    public ArrayList< ArrayList<Consumer> > subscribers; // 1-1 antistoixia me ta channels_serviced
+    public ArrayList<ChannelName> channels_serviced; // ["iasonas"]
+    public ArrayList< ArrayList<Consumer> > subscribers; // 1-1 antistoixia me ta channels_serviced - get(0)-->lista subs tou iasonas
     public ArrayList<String> hashtags_serviced;
     
     
@@ -727,7 +727,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                             if ( brokers.get(hashed_key).channels_serviced.get(i).getChannelName().equals(response_for_subscribe) ){
                                 
                                 for(Consumer cons :  brokers.get(hashed_key).subscribers.get(i) ){
-                                    if(cons.port == c.port){
+                                    if(cons.port == c.port && cons.id == c.id){
                                         flag_c = false;
                                         break;
                                     }
@@ -754,7 +754,11 @@ public class Broker extends Thread implements Broker_interface,Node{
                     }
                     else if(greeting.equals("disconnect")){
                         broker.disconnect(c.id);
-                        System.out.println("Registered users left : "+broker.registeredUsers.size());
+                        int thesi =0;
+                        for(int l=0;l<brokers.size();l++){
+                            if(broker.port == brokers.get(l).port) thesi = l;
+                        }
+                        System.out.println("Registered users left in broker "+thesi+" : "+broker.registeredUsers.size());
                     }
                     else if(greeting.equals("search")){
                         hashed_key = -1;
