@@ -144,7 +144,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
         }
     }
 
-    public void connect(){
+    public void connect(int xyz){
         String str;
         //BufferedReader reader = new BufferedReader(
         //    new InputStreamReader(System.in));
@@ -341,7 +341,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
     public void run(){
         try{
             this.init(port);
-            this.connect();//<-------------------------------------- that
+            this.connect(000);//<-------------------------------------- that
             Thread.sleep(2000);
             this.messages(port+1000);
             //Consumer client = new Consumer(port);
@@ -356,7 +356,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
     }
     public static void main(String args[]) {
         
-        Consumer t1 = new Consumer(6667,2);
+        Consumer t1 = new Consumer(6667,1);
         
         t1.start();
         

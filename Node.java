@@ -12,7 +12,7 @@ interface Node{
     //-----------------------------------
 
     public void init(int i);
-    public void connect();
+    public void connect(int x);
     public void disconnect(int u);
     public void updateNodes();
     public List<Broker> getBrokers();

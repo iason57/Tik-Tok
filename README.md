@@ -14,6 +14,8 @@ in the List and not randomly
 4. Make hashtags and values, subscribe --> sto kanali
 5. Stop threads ? Consumer continues to run and doesn't stop
 6. make interfaces with function definitions
+7. o publisher na mh dexetai ta video pou exei anebasei.
+8. ftiaxnoume kai to subscribe gia na elegxei kai th lista me tous publishers pou einai kai consumers.
 
 ## broker hashing - even workload
 * hash(port+ip) : ip dottes replaced with ""
