@@ -16,6 +16,7 @@ in the List and not randomly
 6. make interfaces with function definitions
 7. o publisher na mh dexetai ta video pou exei anebasei.
 8. ftiaxnoume kai to subscribe gia na elegxei kai th lista me tous publishers pou einai kai consumers.
+9. save in broker and then remove the file
 
 ## broker hashing - even workload
 * hash(port+ip) : ip dottes replaced with ""
@@ -24,5 +25,11 @@ in the List and not randomly
 * [ mirkotero tou prwtou-ston prwto < anamesa-ston deytero < edw trito ]
 * omoiws 
 ## ^ done
- 
-> 674,675 broker kai 308,309 Consumer
+
+
+## pull
+tha vriskei ayth se poion broker that eprepe na einai to hashtag h to channel name kai tha kanei
+broker.getChannel().getAllVideos()
+
+
+> 1106
