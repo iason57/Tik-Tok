@@ -199,6 +199,7 @@ public class Publisher extends Thread implements Publisher_interface,Node{
                         if(!flag) {
                             brokers.get(j).channels_serviced.add(channelName);
                             //System.out.println("hohoho");
+                            brokers.get(j).subscribers.add( new ArrayList<Consumer>() );
                             brokers.get(j).subscribers_p.add( new ArrayList<Publisher>() );
                         }
                     }   

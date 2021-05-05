@@ -163,6 +163,8 @@ public class Consumer extends Thread implements Consumer_interface,Node {
                 int file_size = 100003;
                 int bytesRead;
                 int current = 0;
+                System.out.println("Starting socket");
+                clientSocket = new Socket(Inet4Address.getLocalHost().getHostAddress(), port);
                 InputStream is = clientSocket.getInputStream();
                 byte [] mybytearray  = new byte [file_size];
                 //mpakale test
@@ -283,7 +285,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
                 bos=null;
 
                 System.out.println("Closing readers");
-                return;
+                //return;
                 /*
                 Thread.sleep(5000);
                 InputStream receive = clientSocket.getInputStream();
@@ -341,8 +343,6 @@ public class Consumer extends Thread implements Consumer_interface,Node {
     public void run(){
         try{
             this.init(port);
-            this.connect(000);//<-------------------------------------- that
-            Thread.sleep(2000);
             this.messages(port+1000);
             System.out.println("Sending port : "+port);
             System.out.println("Messages port : "+(port+1000));
@@ -358,7 +358,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
     }
     public static void main(String args[]) {
         
-        Consumer t1 = new Consumer(6666,1);
+        Consumer t1 = new Consumer(6666,2);
         
         t1.start();
         

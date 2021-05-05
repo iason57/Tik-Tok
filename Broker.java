@@ -28,6 +28,7 @@ public class Broker extends Thread implements Broker_interface,Node{
     public ArrayList< ArrayList<Consumer> > subscribers; // 1-1 antistoixia me ta channels_serviced - get(0)-->lista subs tou iasonas
     public ArrayList< ArrayList<Publisher> > subscribers_p; // 1-1 antistoixia me ta channels_serviced - get(0)-->lista subs tou iasonas
     public ArrayList<String> hashtags_serviced;
+    public String temp_name_of_channel,temporary;
     
     
 
@@ -128,6 +129,47 @@ public class Broker extends Thread implements Broker_interface,Node{
         hashed = Integer.parseInt(sb.toString());
         hashed_key = hashed % brokers.size(); 
         return hashed_key;
+    }
+
+    public void share_to_subs(String path){
+        System.out.println("Share to subs");
+        System.out.println(channels_serviced.size());
+        System.out.println(subscribers.get(0).size());
+        System.out.println(registeredUsers.size());
+        System.out.println(temp_name_of_channel);
+        System.out.println(path);
+        try{
+            File myFile = new File (path);
+            System.out.println("File made");
+            if ((int)myFile.length() != 0) {
+                System.out.println("mesa sto if");
+                int thesi =-1;
+                for (int i=0;i<channels_serviced.size();i++){
+                    if(channels_serviced.get(i).getChannelName().equals(temp_name_of_channel)){
+                        thesi = i;
+                    }
+                }
+                System.out.println("thesi : "+thesi);
+                /*
+                for(Consumer x : subscribers.get(thesi)){
+                    x.connect(000);
+                }
+                */
+                for(Consumer x : registeredUsers){
+                    System.out.println("Sharing video with all");
+                    x.connect(000);
+                }
+                /*
+                for(Publisher x : subscribers_p){
+                    connect(000);
+                }
+                */
+            }
+        }
+        catch(Exception e)
+        {
+            //System.out.println("Problem in sharing to subs");
+        }
     }
 
     public void publisherAcceptConnection(){
@@ -378,6 +420,8 @@ public class Broker extends Thread implements Broker_interface,Node{
                 os.close();
 
                 System.out.println("File total size is : "+(int)myFile.length());
+
+               
                 /*
                 byte [] mybytearray  = new byte [(int)myFile.length()+3];
 
@@ -485,6 +529,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                 byte [] to_mp4_full  = new byte [10000000];
                 int pointer = 0;
                 String video_file  = "temporary"+tempstr+".mp4"; // to onoma pou tha xrisimopoihsoyme gia na to grapsoume
+                System.out.println("TO TEMP STR EINAI : "+ video_file);
                 fos = new FileOutputStream(video_file);
                 bos = new BufferedOutputStream(fos);
                 bos.flush();
@@ -535,7 +580,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                 bos.flush();
                 System.out.println("File " + video_file
                     + " downloaded (" + pointer + " bytes read) --> temporary");
-                
+              
                 is.close();
                 fos.close();
                 bos.close();
@@ -545,6 +590,8 @@ public class Broker extends Thread implements Broker_interface,Node{
                 bos=null;
 
                 System.out.println("Closing readers");
+                System.out.println("TO TEMP STR EINAI2 : "+ video_file);
+                broker.share_to_subs(video_file); //<--------------------------------------------------------------------------------------
                 return;
             }
             catch (Exception e){
@@ -909,6 +956,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                     else if(greeting.equals("push")){
                         out.println("Give name : ");
                         greeting = in.readLine();
+                        broker.temp_name_of_channel= c.getChannel().getChannelName();
                         out.println("Give the path for the video");
                         String path = in.readLine();
                         ArrayList<String> hash = new ArrayList<String>();
