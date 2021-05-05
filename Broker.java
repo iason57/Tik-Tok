@@ -15,6 +15,7 @@ public class Broker extends Thread implements Broker_interface,Node{
     public List<Publisher> registeredPublishers;
     public ServerSocket serverSocket;
     public ServerSocket serverSocket_forvideos;
+    public ServerSocket serverSocket_p_forvideos;
     public Socket clientSocket; // mallon oxi
     public PrintWriter out;
     public BufferedReader in;
@@ -182,6 +183,7 @@ public class Broker extends Thread implements Broker_interface,Node{
         //while(true){
             try{
                 new Accept_Publisher_handlers(this, publisherServerSocket, messagesServerSocket_p, publisher_port, number_of_thread_p, registeredPublishers).start();
+                new Accept_Publisher_handlers_videos(this, serverSocket_p_forvideos, (publisher_port-1000), number_of_thread_p, registeredPublishers).start();
             }
             catch(Exception e){
                 System.out.println("exception ston publisher");
@@ -243,6 +245,7 @@ public class Broker extends Thread implements Broker_interface,Node{
     public void init2(int port_pub){
         try{
             publisherServerSocket = new ServerSocket(port_pub);
+            serverSocket_p_forvideos = new ServerSocket(port_pub-1000);//4666
         }
         catch(Exception e){
 
@@ -320,6 +323,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                 this.init2(publisher_port);
                 this.init3(port+1000);
                 System.out.println("Broker's publisher port: "+publisher_port);
+                System.out.println("Broker's publisher port for videos: "+(publisher_port-1000));
                 System.out.println("Broker's message port for consumers: "+(port+1000));
                 System.out.println("Broker's message port for publishers: "+(port+2000));
                 /*Broker temp = new Broker(this);
@@ -906,7 +910,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                     System.out.println("Now publishers size is -------------- "+registeredPublishers.size());
                     Thread.sleep(2000); // ypo synthiki genika milwntas alla problima gia meta
                     //System.out.println("Prin thn apothikeysh toy video ");
-                    new Publisher_handlers(x,number_of_thread,port,broker,registeredPublishers).start();//,registeredUsers.get(registeredUsers.size()-1) //<-------------------------------------- that
+                    //new Publisher_handlers(x,number_of_thread,port,broker,registeredPublishers).start();//,registeredUsers.get(registeredUsers.size()-1) //<-------------------------------------- that
                     //Thread.sleep(2000);
                     //System.out.println("Prin ta minimata me ton publisher1");
                     Socket x2= s.accept();
@@ -922,6 +926,39 @@ public class Broker extends Thread implements Broker_interface,Node{
             }
         }
     }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    private static class Accept_Publisher_handlers_videos extends Thread {
+        private Broker broker;
+        private ServerSocket serverSocket;
+        private int port;
+        private int number_of_thread = 1;
+        private List<Publisher> registeredPublishers;
+
+
+        public Accept_Publisher_handlers_videos(Broker b, ServerSocket socket, int p, int nof, List<Publisher> registers) {
+            this.broker = b;
+            this.serverSocket = socket;
+            this.port = p;
+            this.number_of_thread = nof;
+            this.registeredPublishers = registers;
+        }
+
+        public void run(){
+            try{
+                while (true){
+                    Socket x=serverSocket.accept();
+                    new Publisher_handlers(x,number_of_thread,port,broker,registeredPublishers).start();
+                    number_of_thread+=1;
+                }
+            }
+            catch(Exception e){
+            }
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private static class Publisher_handlers_messages extends Thread {
         private Socket clientSocket;

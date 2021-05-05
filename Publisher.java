@@ -250,7 +250,7 @@ public class Publisher extends Thread implements Publisher_interface,Node{
             fis = new FileInputStream(myFile);
             bis = new BufferedInputStream(fis);
             bis.read(allfile,0,(int)myFile.length());
-            clientSocket_tosend = new Socket(Inet4Address.getLocalHost().getHostAddress(), port); // htan port + 2000 : emeis theloume video 5666
+            clientSocket_tosend = new Socket(Inet4Address.getLocalHost().getHostAddress(), port-1000); // htan port + 2000 : emeis theloume video 5666
             //counting_port +=1;
             os = clientSocket_tosend.getOutputStream();                                           // kai messages 7666
             //System.out.println("after read");
@@ -491,7 +491,7 @@ public class Publisher extends Thread implements Publisher_interface,Node{
 
     public static void main(String args[]) {
         
-        Publisher t1 = new Publisher(5666,1);
+        Publisher t1 = new Publisher(5666,3);
         
         t1.start();
         
