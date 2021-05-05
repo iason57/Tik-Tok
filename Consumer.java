@@ -6,6 +6,7 @@ import java.awt.Desktop;
 public class Consumer extends Thread implements Consumer_interface,Node {
 
     public Socket clientSocket;
+    public Socket clientSocket2;
     public PrintWriter out;
     public BufferedReader in;
     public Broker broker;
@@ -79,7 +80,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
     public void init(int port){
         try{
             clientSocket = new Socket(Inet4Address.getLocalHost().getHostAddress(), port);
-            //clientSocket = new Socket(specific private ip in both computers, port);
+            //clientSocket2 = new Socket(Inet4Address.getLocalHost().getHostAddress(), port+1000);
         }
         catch(Exception e){
 
@@ -96,7 +97,6 @@ public class Consumer extends Thread implements Consumer_interface,Node {
         System.out.println("Reader ok ");
         System.out.println("port is  "+ port1);
         try{
-            Socket clientSocket2;
             clientSocket2 = new Socket(Inet4Address.getLocalHost().getHostAddress(), port1);
             System.out.println("edw0");
             out = new PrintWriter(clientSocket2.getOutputStream(), true); //<----------------------------
@@ -157,7 +157,8 @@ public class Consumer extends Thread implements Consumer_interface,Node {
         Byte w3 = new Byte(b[2]);
         int part = 0;
         FileOutputStream fos = null;
-        BufferedOutputStream bos = null;            
+        BufferedOutputStream bos = null;       
+        Socket clientSocket2;     
             try{
                 //new ----------------------------------------------------------------------------
                 int file_size = 100003;
@@ -165,6 +166,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
                 int current = 0;
                 System.out.println("Starting socket");
                 clientSocket = new Socket(Inet4Address.getLocalHost().getHostAddress(), port);
+                //clientSocket2 = new Socket(Inet4Address.getLocalHost().getHostAddress(), port+1000);
                 InputStream is = clientSocket.getInputStream();
                 byte [] mybytearray  = new byte [file_size];
                 //mpakale test
@@ -280,9 +282,11 @@ public class Consumer extends Thread implements Consumer_interface,Node {
                 fos.close();
                 bos.close();
 
+                /*
                 is=null;
                 fos=null;
                 bos=null;
+                */
 
                 System.out.println("Closing readers");
                 //return;
@@ -358,7 +362,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
     }
     public static void main(String args[]) {
         
-        Consumer t1 = new Consumer(6666,2);
+        Consumer t1 = new Consumer(6666,1);
         
         t1.start();
         

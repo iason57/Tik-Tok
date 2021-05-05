@@ -155,10 +155,14 @@ public class Broker extends Thread implements Broker_interface,Node{
                     x.connect(000);
                 }
                 */
-                for(Consumer x : registeredUsers){
+                for(int i=0; i<registeredUsers.size();i++){
                     System.out.println("Sharing video with all");
-                    x.connect(000);
+                    registeredUsers.get(i).connect(000);
+                    System.out.println("Meta ti connect");
+
                 }
+                System.out.println("exeis provlima");
+
                 /*
                 for(Publisher x : subscribers_p){
                     connect(000);
@@ -168,7 +172,7 @@ public class Broker extends Thread implements Broker_interface,Node{
         }
         catch(Exception e)
         {
-            //System.out.println("Problem in sharing to subs");
+            System.out.println("Problem in sharing to subs");
         }
     }
 
@@ -317,7 +321,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                 temp.publisherAcceptConnection();*/
                 this.acceptConnection(); 
                 this.publisherAcceptConnection();
-                //System.out.println(publisher_port);
+                System.out.println("-----------------aaaaaaaaaaaaaaaaaaaaaaaaaaaa-----------------");
                 //System.out.println("Number of clients : "+number_of_clients.get(0));
             //}
 
