@@ -14,6 +14,7 @@ public class Broker extends Thread implements Broker_interface,Node{
     public List<Consumer> registeredUsers;
     public List<Publisher> registeredPublishers;
     public ServerSocket serverSocket;
+    public ServerSocket serverSocket_forvideos;
     public Socket clientSocket; // mallon oxi
     public PrintWriter out;
     public BufferedReader in;
@@ -37,6 +38,7 @@ public class Broker extends Thread implements Broker_interface,Node{
         this.registeredPublishers = br.registeredPublishers;
         this.serverSocket = br.serverSocket;
         this.clientSocket = br.clientSocket;
+        this.serverSocket_forvideos = br.serverSocket_forvideos;
         this.out = br.out;
         this.in = br.in;
         this.number_of_thread = br.number_of_thread;
@@ -204,6 +206,7 @@ public class Broker extends Thread implements Broker_interface,Node{
             new Consumer_handlers(clSocket,number_of_thread++,port).start();*/
             Accept_Consumer_handlers con_handler = new Accept_Consumer_handlers(this, serverSocket,messagesServerSocket, port, number_of_thread, registeredUsers,registeredPublishers);
             con_handler.start();
+            new Accept_Consumer_handlers_videos(this, serverSocket_forvideos, port+3000, number_of_thread, registeredUsers,registeredPublishers).start();
         }
         catch(Exception e){
             System.out.println("exception ston consumer");
@@ -228,6 +231,7 @@ public class Broker extends Thread implements Broker_interface,Node{
     public void init(int port){
         try{
             serverSocket = new ServerSocket(port);
+            serverSocket_forvideos = new ServerSocket(port+3000);//9666
         }
         catch(Exception e){
 
@@ -312,6 +316,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                 
                 this.init(port);
                 System.out.println("Broker's consumer port: "+port);
+                System.out.println("Broker's consumer port for sending videos: "+(port+3000));
                 this.init2(publisher_port);
                 this.init3(port+1000);
                 System.out.println("Broker's publisher port: "+publisher_port);
@@ -825,6 +830,41 @@ public class Broker extends Thread implements Broker_interface,Node{
                         System.out.println("Accept consumer messages socket");
                         new Consumer_handlers_messages(x2,number_of_thread,port+1000,broker,registeredUsers,registeredUsers.get(registeredUsers.size()-1)).start();
                         number_of_thread +=1;
+                    }
+                }
+                catch(Exception e){
+                }
+            
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    private static class Accept_Consumer_handlers_videos extends Thread {
+        private Broker broker;
+        private ServerSocket serverSocket;
+        private int port;
+        private int number_of_thread = 1;
+        private List<Consumer> registeredUsers;
+        private List<Publisher> registeredPublishers;
+
+
+        public Accept_Consumer_handlers_videos(Broker b, ServerSocket socket, int p, int nof, List<Consumer> registers,List<Publisher> r) {
+            this.broker = b;
+            this.serverSocket = socket;
+            this.port = p;
+            this.number_of_thread = nof;
+            this.registeredUsers = registers;
+            this.registeredPublishers =r;
+        }
+
+        public void run(){
+                try{
+                    while (true){
+                        Socket x=serverSocket.accept();
+                        new Consumer_handlers(x,number_of_thread,port,broker,registeredUsers,registeredPublishers).start();//,registeredUsers.get(registeredUsers.size()-1) //<-------------------------------------- that
+                        number_of_thread+=1;
                     }
                 }
                 catch(Exception e){

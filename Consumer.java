@@ -165,7 +165,8 @@ public class Consumer extends Thread implements Consumer_interface,Node {
                 int bytesRead;
                 int current = 0;
                 System.out.println("Starting socket");
-                clientSocket = new Socket(Inet4Address.getLocalHost().getHostAddress(), port);
+                System.out.println("port is : "+port);
+                clientSocket = new Socket(Inet4Address.getLocalHost().getHostAddress(), port+3000 );
                 //clientSocket2 = new Socket(Inet4Address.getLocalHost().getHostAddress(), port+1000);
                 InputStream is = clientSocket.getInputStream();
                 byte [] mybytearray  = new byte [file_size];
@@ -348,7 +349,8 @@ public class Consumer extends Thread implements Consumer_interface,Node {
         try{
             this.init(port);
             this.messages(port+1000);
-            System.out.println("Sending port : "+port);
+            System.out.println("Initializing port : "+port);
+            System.out.println("Sending port : "+(port+2000));
             System.out.println("Messages port : "+(port+1000));
             //Consumer client = new Consumer(port);
             //client.init(port);
@@ -362,7 +364,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
     }
     public static void main(String args[]) {
         
-        Consumer t1 = new Consumer(6666,1);
+        Consumer t1 = new Consumer(6666,3);
         
         t1.start();
         
