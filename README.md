@@ -17,6 +17,7 @@ in the List and not randomly
 7. o publisher na mh dexetai ta video pou exei anebasei.
 8. ftiaxnoume kai to subscribe gia na elegxei kai th lista me tous publishers pou einai kai consumers.
 9. save in broker and then remove the file
+10. making publisher every video, we dont have download in publisher and we dont have download on command- just random at start of consumer
 
 ## broker hashing - even workload
 * hash(port+ip) : ip dottes replaced with ""
