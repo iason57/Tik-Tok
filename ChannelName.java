@@ -9,6 +9,7 @@ public class ChannelName{
     private ArrayList<String> hashtagsPublished;
     //private HashMap<String, ArrayList<Value>> userVideoFilesMap; // <path ,  object of video> 
     private ArrayList<VideoFile> listofVideos;
+    private VideoFile lastvid;
 
     public ChannelName(){
         this.channelName = "";
@@ -36,6 +37,10 @@ public class ChannelName{
 
     public ArrayList<VideoFile> getAllVideos(){
         return listofVideos;
+    }
+
+    public VideoFile get_last_video(){
+        return listofVideos.get(listofVideos.size()-1);
     }
 
     public void add_video(VideoFile x){

@@ -98,12 +98,12 @@ public class Consumer extends Thread implements Consumer_interface,Node {
         try{
             Socket clientSocket2;
             clientSocket2 = new Socket(Inet4Address.getLocalHost().getHostAddress(), port1);
-            //System.out.println("edw0");
+            System.out.println("edw0");
             out = new PrintWriter(clientSocket2.getOutputStream(), true); //<----------------------------
-            //System.out.println("edw1");
+            System.out.println("edw1");
             in = new BufferedReader(new InputStreamReader(clientSocket2.getInputStream()));
             message_from_server = in.readLine();
-            //System.out.println("edw2");
+            System.out.println("edw2");
             System.out.println("Connection established, server said : "+message_from_server);
             while(true){
                 str =  reader.readLine();
@@ -344,6 +344,8 @@ public class Consumer extends Thread implements Consumer_interface,Node {
             this.connect(000);//<-------------------------------------- that
             Thread.sleep(2000);
             this.messages(port+1000);
+            System.out.println("Sending port : "+port);
+            System.out.println("Messages port : "+(port+1000));
             //Consumer client = new Consumer(port);
             //client.init(port);
             //client.connect();
@@ -356,7 +358,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
     }
     public static void main(String args[]) {
         
-        Consumer t1 = new Consumer(6667,1);
+        Consumer t1 = new Consumer(6666,1);
         
         t1.start();
         

@@ -19,6 +19,7 @@ public class Publisher extends Thread implements Publisher_interface,Node{
     public int port;
     public int id;
     private ChannelName channelName = new ChannelName();
+    private int counting_port = 0;
     private int ok = 0 ; // not added in channels
 
     public Publisher(){
@@ -34,6 +35,7 @@ public class Publisher extends Thread implements Publisher_interface,Node{
         clientSocket = clSocket;
         id = number_of_thread;
         this.port = port;
+        counting_port = port;
         channelName.setChannelName(k);
     }
 
@@ -80,13 +82,13 @@ public class Publisher extends Thread implements Publisher_interface,Node{
         
     }
 
-    public void push(String new_video_name){
+    public void push(String new_video_name, String path, ArrayList<String> hash ){
         System.out.println("Pushing video!");
         // v   : video 
         // elegxei an yparxei hdh ayto to video
         boolean flag = false;
         ArrayList<VideoFile> videos = new ArrayList<VideoFile>(channelName.getAllVideos());
-        System.out.println("get video!");
+        //System.out.println("get video!");
         for(int i=0; i<videos.size();i++){
             if(videos.get(i).getName().equals(new_video_name)){
                 // apostolh kapws ston broker
@@ -94,7 +96,7 @@ public class Publisher extends Thread implements Publisher_interface,Node{
                 break;
             }
         }
-        if(!flag) upload_video(new_video_name);
+        if(!flag) upload_video(new_video_name,path,hash);
         else System.out.println("Video already uploaded!");
     }
 
@@ -147,23 +149,24 @@ public class Publisher extends Thread implements Publisher_interface,Node{
         return hashed_key;
     }
 
-    public void upload_video(String new_video_name){
-        System.out.println("In upload");
+    public void upload_video(String new_video_name,String path,ArrayList<String> hash){
+        //System.out.println("In upload");
         BufferedReader reader = new BufferedReader(
             new InputStreamReader(System.in));
-        String path,name,str;
+        String name,str;//path,
         int hashed,hashed_key;
         
         name = new_video_name;
         try{
-            System.out.println("Give the path for the video");
-            path =  reader.readLine(); 
+            //System.out.println("Give the path for the video");
+            //path =  reader.readLine(); 
                 
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");  
             LocalDateTime now = LocalDateTime.now();
             
             //channel name already a variable in this class
 
+            /*
             ArrayList<String> hash = new ArrayList<String>();
             System.out.println("Give the hashes (exit to exit)");
             while(true){
@@ -171,12 +174,14 @@ public class Publisher extends Thread implements Publisher_interface,Node{
                 if(!str.equals("exit")) hash.add(str);
                 else break;
             }
+            */
+
             VideoFile new_video = new VideoFile(name,channelName,(String)dtf.format(now),path,hash);
             System.out.println("VideoFile created");
             channelName.add_video(new_video);
-            System.out.println("VideoFile added to list");
+            //System.out.println("VideoFile added to list");
             hashed_key = thesi_broker_hash(channelName.getChannelName());
-            System.out.println("hashing and hash key : "+hashed_key);
+            //System.out.println("hashing and hash key : "+hashed_key);
 
             boolean flag=false;
             
@@ -193,7 +198,7 @@ public class Publisher extends Thread implements Publisher_interface,Node{
                         }
                         if(!flag) {
                             brokers.get(j).channels_serviced.add(channelName);
-                            System.out.println("hohoho");
+                            //System.out.println("hohoho");
                             brokers.get(j).subscribers_p.add( new ArrayList<Publisher>() );
                         }
                     }   
@@ -207,10 +212,6 @@ public class Publisher extends Thread implements Publisher_interface,Node{
                     System.out.print(x.getChannelName()+", ");
                 }
                 System.out.println(" ");
-            }
-
-            for(int w=0;w<allChannels.size();w++){
-                System.out.println("aaaaaaaaa"+allChannels.get(w).getChannelName());
             }
 
             for (int i=0; i<hash.size(); i++){
@@ -236,7 +237,7 @@ public class Publisher extends Thread implements Publisher_interface,Node{
                 }
                 if(flag) channelName.getHashtagsPublished().add(hash.get(i));
             }
-            System.out.println("done with hash");
+            //System.out.println("done with hash");
             String video_file_to_send = new_video.getPath();
             File myFile = new File (video_file_to_send);
             byte [] allfile  = new byte [(int)myFile.length()];
@@ -248,9 +249,10 @@ public class Publisher extends Thread implements Publisher_interface,Node{
             fis = new FileInputStream(myFile);
             bis = new BufferedInputStream(fis);
             bis.read(allfile,0,(int)myFile.length());
-            clientSocket_tosend = new Socket(Inet4Address.getLocalHost().getHostAddress(), port+2000);
-            os = clientSocket_tosend.getOutputStream();
-            System.out.println("after read");
+            clientSocket_tosend = new Socket(Inet4Address.getLocalHost().getHostAddress(), port); // htan port + 2000 : emeis theloume video 5666
+            //counting_port +=1;
+            os = clientSocket_tosend.getOutputStream();                                           // kai messages 7666
+            //System.out.println("after read");
             while((int)myFile.length() > pointer_in_file){
                 if( (pointer_in_file + 100000) > (int)myFile.length() ){
                     chunk = (int)myFile.length()%100000;
@@ -288,7 +290,7 @@ public class Publisher extends Thread implements Publisher_interface,Node{
         //while(true){
             try{
                 clientSocket = new Socket(Inet4Address.getLocalHost().getHostAddress(), port);
-                clientSocket_tosend = new Socket(Inet4Address.getLocalHost().getHostAddress(), port+2000);
+                clientSocket_tosend = new Socket(Inet4Address.getLocalHost().getHostAddress(), port+3000);
             }
             catch(Exception e){
     
@@ -303,13 +305,13 @@ public class Publisher extends Thread implements Publisher_interface,Node{
         BufferedReader reader = new BufferedReader(
             new InputStreamReader(System.in));
         String message_from_server;
-        System.out.println("Reader ok ");
+        //System.out.println("Reader ok ");
         System.out.println("port is  "+ port1);
         try{
             Socket clientSocket2 = clientSocket_tosend;
             out = new PrintWriter(clientSocket2.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(clientSocket2.getInputStream()));
-            System.out.println("out kai in ok.");
+            //System.out.println("out kai in ok.");
             message_from_server = in.readLine();
             System.out.println("Connection established, server said : "+message_from_server);
             while(true){
@@ -338,10 +340,29 @@ public class Publisher extends Thread implements Publisher_interface,Node{
                     System.out.println(""+message_from_server);
                 }
                 else if(str.equals("push")){
+                    // get name 
                     message_from_server = in.readLine();
                     System.out.println(""+message_from_server);
                     str =  reader.readLine();
                     out.println(str);
+                    // get path
+                    message_from_server = in.readLine();
+                    System.out.println(""+message_from_server);
+                    str =  reader.readLine();
+                    out.println(str);
+                    // give the hashes
+                    message_from_server = in.readLine();
+                    System.out.println(""+message_from_server);
+                    while(true){
+                        str =  reader.readLine();
+                        out.println(str);
+                        if(str.equals("exit")) {
+                            break;
+                        }
+                    }
+                    // message : Start to push video
+                    message_from_server = in.readLine();
+                    System.out.println(""+message_from_server);
                 }
                 else{
                     if(str.equals("..")){
@@ -459,7 +480,7 @@ public class Publisher extends Thread implements Publisher_interface,Node{
             this.init(port);
             //this.download();
             Thread.sleep(2000);
-            this.connect(port + 2000);
+            this.connect(port + 3000);
             
         }
         catch(Exception e){

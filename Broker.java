@@ -23,6 +23,7 @@ public class Broker extends Thread implements Broker_interface,Node{
     public int publisher_port;
     public ServerSocket publisherServerSocket;
     public ServerSocket messagesServerSocket;
+    public ServerSocket messagesServerSocket_p;
     public ArrayList<ChannelName> channels_serviced; // ["iasonas"]
     public ArrayList< ArrayList<Consumer> > subscribers; // 1-1 antistoixia me ta channels_serviced - get(0)-->lista subs tou iasonas
     public ArrayList< ArrayList<Publisher> > subscribers_p; // 1-1 antistoixia me ta channels_serviced - get(0)-->lista subs tou iasonas
@@ -132,7 +133,7 @@ public class Broker extends Thread implements Broker_interface,Node{
     public void publisherAcceptConnection(){
         //while(true){
             try{
-                new Accept_Publisher_handlers(this, publisherServerSocket, messagesServerSocket, publisher_port, number_of_thread_p, registeredPublishers).start();
+                new Accept_Publisher_handlers(this, publisherServerSocket, messagesServerSocket_p, publisher_port, number_of_thread_p, registeredPublishers).start();
             }
             catch(Exception e){
                 System.out.println("exception ston publisher");
@@ -155,7 +156,7 @@ public class Broker extends Thread implements Broker_interface,Node{
             registeredUsers.add(new Consumer(temp));
             System.out.println(registeredUsers.size());
             new Consumer_handlers(clSocket,number_of_thread++,port).start();*/
-            Accept_Consumer_handlers con_handler = new Accept_Consumer_handlers(this, serverSocket,messagesServerSocket, port, number_of_thread, registeredUsers);
+            Accept_Consumer_handlers con_handler = new Accept_Consumer_handlers(this, serverSocket,messagesServerSocket, port, number_of_thread, registeredUsers,registeredPublishers);
             con_handler.start();
         }
         catch(Exception e){
@@ -202,6 +203,7 @@ public class Broker extends Thread implements Broker_interface,Node{
     public void init3(int port_messages){
         try{
             messagesServerSocket = new ServerSocket(port_messages);
+            messagesServerSocket_p = new ServerSocket(port_messages+1000);
         }
         catch(Exception e){
 
@@ -267,7 +269,8 @@ public class Broker extends Thread implements Broker_interface,Node{
                 this.init2(publisher_port);
                 this.init3(port+1000);
                 System.out.println("Broker's publisher port: "+publisher_port);
-                System.out.println("Broker's message port: "+(port+1000));
+                System.out.println("Broker's message port for consumers: "+(port+1000));
+                System.out.println("Broker's message port for publishers: "+(port+2000));
                 /*Broker temp = new Broker(this);
                 temp.publisherAcceptConnection();*/
                 this.acceptConnection(); 
@@ -297,13 +300,15 @@ public class Broker extends Thread implements Broker_interface,Node{
         private ArrayList<ChannelName> channels = new ArrayList<ChannelName>();
         private List<Consumer> sub;
         private Consumer c;
+        private List<Publisher> publisher_list;
 
-        public Consumer_handlers(Socket socket,int num,int p, Broker b, List<Consumer> registers) {//, Consumer temp
+        public Consumer_handlers(Socket socket,int num,int p, Broker b, List<Consumer> registers,List<Publisher> publisher) {//, Consumer temp
             this.clientSocket = socket;
             id = num;
             pport = p;
             broker = b;
             sub = registers;
+            publisher_list = publisher;
             //c = temp;
         }
 
@@ -322,256 +327,11 @@ public class Broker extends Thread implements Broker_interface,Node{
 
             
             try{
-                
-                /*
-                dokimastika to ftiaxnoume edw --> douleia toy publisher
-                */
-                
-                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");  
-                LocalDateTime now = LocalDateTime.now();  
-                //System.out.println(dtf.format(now)); 
-                //--------------------------------------------------------------------
-                ChannelName ch = new ChannelName("iasonas");
-                channels.add(ch);
-                ChannelName ch2 = new ChannelName("kauta podia elenas");
-                channels.add(ch2);
-                ChannelName ch3 = new ChannelName("myrwdia");
-                channels.add(ch3);
-                ChannelName ch4 = new ChannelName("vana");
-                channels.add(ch4);
-                ChannelName ch5 = new ChannelName("e");
-                channels.add(ch5);
-                ChannelName ch6 = new ChannelName("kal");
-                channels.add(ch6);
-                ChannelName ch7 = new ChannelName("tre");
-                channels.add(ch7);
-                ChannelName ch8 = new ChannelName("port");
-                channels.add(ch8);
-                ChannelName ch9 = new ChannelName("poutsa");
-                channels.add(ch9);
-                ChannelName ch10 = new ChannelName("kourastika");
-                ChannelName ch11 = new ChannelName("kourastika");
-                channels.add(ch10);
-                channels.add(ch11);
-
-                ArrayList<String> hash = new ArrayList<String>();
-                hash.add("#sky");
-                hash.add("#music");
-                hash.add("#amazing");
-                hash.add("#nofilterneeded");
-                hash.add("#instapic");
-                hash.add("#instapic");
-                hash.add("#follow");
-                VideoFile new_video = new VideoFile("peace",ch,(String)dtf.format(now),"5min.mp4",hash);
-                ch.getAllVideos().add(new_video);
-                ch2.getAllVideos().add(new_video);
-                //-----------------------------------------------------------------------------
-                //Katanomh stouw brokers me bash ta CHANNEL NAMES.
-                for (int i=0; i<channels.size(); i++){
-                    //---------------------------------------------------
-
-                    hashed_key = broker.thesi_broker_hash(channels.get(i).getChannelName());
-
-                    /*
-                    
-                    //int hashed_chName = Integer.parseInt(Inet4Address.getLocalHost().getHostAddress().replace(".", "")) + broker.port;   
-                    String hashed_chName = (broker.calculateKeys(channels.get(i).getChannelName()));
-                    int len = hashed_chName.length();
-                    String test2 = hashed_chName.substring(len-3);
-                    //System.out.println("Test 2 : "+test2);
-                    StringBuilder sb = new StringBuilder();
-                    for (int k = 0; k < test2.length(); k++) {
-                        if (Character.isLetter(test2.charAt(k))) {
-                            int m = test2.charAt(k);
-                            sb.append(m); // add the ascii value to the string
-                        } else {
-                            sb.append(test2.charAt(k)); // add the normal character
-                        }
-                    }
-                    //System.out.println(test2);
-                    //System.out.println("prospathw");
-                    hashed = Integer.parseInt(sb.toString());
-                    //System.out.println("prospathw2 -- "+hashed);
-                    hashed_key = hashed % brokers.size();
-                    //System.out.println("hashed : -- "+hashed_key);
-
-                    */
-
-                    boolean flag=false;
-                    /*
-                    if (hashed_key==0){
-                        brokers.get(0).channels_serviced.add(channels.get(i));
-                    }
-                    else if(hashed_key==1){
-                        brokers.get(1).channels_serviced.add(channels.get(i));
-                    }
-                    else if(hashed_key==2){
-                        brokers.get(2).channels_serviced.add(channels.get(i));
-                    }
-                    else if(hashed_key==3){
-                        brokers.get(3).channels_serviced.add(channels.get(i));
-                    }
-                    */
-                    for(int j =0; j<brokers.size();j++){
-                        if(hashed_key == j ){
-                            flag = false; // den yparxei
-                            for(ChannelName x : brokers.get(j).channels_serviced){
-                                //System.out.println("Compare strings : "+x.getChannelName()+","+ channels.get(i).getChannelName() );
-                                if(x.getChannelName().equals(channels.get(i).getChannelName())){
-                                    flag = true; // yparxei hdh to channel name
-                                    break;
-                                }
-                            }
-                            if(!flag) {
-                                brokers.get(j).channels_serviced.add(channels.get(i));
-                                brokers.get(j).subscribers.add( new ArrayList<Consumer>() ); // 1st
-                                allChannels.add(channels.get(i));
-                            }
-                        }   
-                    }
-                }
-                System.out.println(" ");
-                for(int k=0;k<brokers.size();k++){
-                    System.out.print("edw typwnw ta hashed channel name tou broker : "+k+" > ");
-                    for(ChannelName x : brokers.get(k).channels_serviced){
-                        System.out.print(x.getChannelName()+", ");
-                    }
-                    System.out.println(" ");
-                }
-                /*
-                System.out.println("edw typwnw ta hashed channel name tou broker 0: " +brokers.get(0).channels_serviced.getChannelName());
-                System.out.println("edw typwnw ta hashed channel name tou broker 1: " +brokers.get(1).channels_serviced.getChannelName());
-                System.out.println("edw typwnw ta hashed channel name tou broker 2: " +brokers.get(2).channels_serviced.getChannelName());
-                System.out.println("edw typwnw ta hashed channel name tou broker 3: " +brokers.get(3).channels_serviced.getChannelName());
-                */
-
-                /*
-                //edw tha doyme an leitoyrgei to subscribe
-
-                for(int l=0; l< channels.size();l++){
-                    // gia kathe channel
-                    for(int i=0; i< brokers.size();i++){
-                        // psaxnw an einai ston broker
-                        for(x : brokers.get(i).channels_serviced){
-                            // etsi psaxnw
-                            if(x.getChannelName().equals(channels.get(l))){
-                                c.register(broker,channels.get(i).getChannelName());
-                            }
-                        }
-                    }
-                }
-                */
-
-                
-
-                for (int i=0; i<hash.size(); i++){
-                    //---------------------------------------------------
-                    hashed_key = broker.thesi_broker_hash(hash.get(i));
-                    /*
-                    
-                    //int hashed_chName = Integer.parseInt(Inet4Address.getLocalHost().getHostAddress().replace(".", "")) + broker.port;   
-                    String hashed_hashtag = (broker.calculateKeys(hash.get(i)));
-                    int len = hashed_hashtag.length();
-                    String test2 = hashed_hashtag.substring(len-3);
-                    //System.out.println("Test 2 : "+test2);
-                    StringBuilder sb = new StringBuilder();
-                    for (int k = 0; k < test2.length(); k++) {
-                        if (Character.isLetter(test2.charAt(k))) {
-                            int m = test2.charAt(k);
-                            sb.append(m); // add the ascii value to the string
-                        } else {
-                            sb.append(test2.charAt(k)); // add the normal character
-                        }
-                    }
-                    //System.out.println(test2);
-                    //System.out.println("prospathw");
-                    hashed = Integer.parseInt(sb.toString());
-                    //System.out.println("prospathw2 -- "+hashed);
-                    hashed_key = hashed % brokers.size();
-                    //System.out.println("hashed : -- "+hashed_key);
-
-                    */
-
-                    boolean flag=false;
-                    /*
-                    if (hashed_key==0 && !brokers.get(0).hashtags_serviced.contains(hash.get(i))){
-                        brokers.get(0).hashtags_serviced.add(hash.get(i));
-                    }
-                    else if(hashed_key==1 && !brokers.get(1).hashtags_serviced.contains(hash.get(i))){
-                        brokers.get(1).hashtags_serviced.add(hash.get(i));
-                    }
-                    else if(hashed_key==2 && !brokers.get(2).hashtags_serviced.contains(hash.get(i))){
-                        brokers.get(2).hashtags_serviced.add(hash.get(i));
-                    }
-                    else if(hashed_key==3 && !brokers.get(3).hashtags_serviced.contains(hash.get(i)) ){
-                        brokers.get(3).hashtags_serviced.add(hash.get(i));
-                    }
-                    */
-                    for(int j =0; j<brokers.size();j++){
-                        if(hashed_key == j && !brokers.get(j).hashtags_serviced.contains(hash.get(i)) ){
-                            brokers.get(j).hashtags_serviced.add(hash.get(i));
-                            break;
-                        }
-                    }
-                }
-
-
-
-                /*
-                //--------------------------------------------------------------------------------------------------------
-                //Katanomh stouw brokers me bash ta HASHTAGS.
-                for (int i=0; i<hash.size(); i++){
-                    String hashed_hashtag = (broker.calculateKeys(hash.get(i)));
-                    boolean flag=false;
-                    boolean flag2=false;
-                    for (int j=0; j<delimiter_of_Brokers.size(); j++){
-                        if (hashed_hashtag.compareTo(broker.delimiter_of_Brokers.get(j)) < 0 && flag2==false){
-                            flag2=true;
-                            if (!brokers.get(j).hashtags_serviced.contains(hashed_hashtag)) {
-                                brokers.get(j).hashtags_serviced.add(hashed_hashtag);
-                                flag=true;
-                                break;
-                            }
-                        }
-                    }
-                    if (flag==false && flag2==false) {
-                        if (!brokers.get(delimiter_of_Brokers.size()).hashtags_serviced.contains(hashed_hashtag)) {
-                            brokers.get(delimiter_of_Brokers.size()).hashtags_serviced.add(hashed_hashtag);
-                        }
-                    }
-                }
-                */
-                
-                System.out.println("edw typwnw ta hashed hashtags tou broker 0: " +brokers.get(0).hashtags_serviced);
-                System.out.println("edw typwnw ta hashed hashtags tou broker 1: " +brokers.get(1).hashtags_serviced);
-                System.out.println("edw typwnw ta hashed hashtags tou broker 2: " +brokers.get(2).hashtags_serviced);
-                System.out.println("edw typwnw ta hashed hashtags tou broker 3: " +brokers.get(3).hashtags_serviced);
-                
-                //-----------------------------------------------------------------------------
-                
-                
-                //adding new video's hashtags in channel's hashtagsList--if not exist.
-                boolean flag;
-                for(int i=0; i<hash.size(); i++){
-                    flag = true;
-                    for(int j=0; j<ch.getHashtagsPublished().size();j++){
-                        if( (hash.get(i)).equals( ch.getHashtagsPublished().get(j) ) ) flag = false;
-                    }
-                    if(flag) ch.getHashtagsPublished().add(hash.get(i));
-                }
-
-                //System.out.println(ch.getHashtagsPublished());
-
-                /*
-                System.out.println(ch.getChannelName());
-                System.out.println(ch.getHashtagsPublished());
-                
-                for(int i=0; i<ch.getAllVideos().size(); i++){
-                    System.out.println(ch.getAllVideos().get(i).getName());
-                }
-                */
-
+                System.out.println("After 15 sec sleep");
+                VideoFile new_video = publisher_list.get(0).getChannel().get_last_video();
+                System.out.println("here : all vid size : "+publisher_list.get(0).getChannel().getAllVideos().size());
                 String video_file_to_send = new_video.getPath();
+                System.out.println("path : "+video_file_to_send);
                 //System.out.println(new_video.getHashtags());
                 // send file
                 File myFile = new File (video_file_to_send);
@@ -700,7 +460,7 @@ public class Broker extends Thread implements Broker_interface,Node{
         }
 
         public void run() {           
-            System.out.println("Starting");
+            //System.out.println("Starting to receive video from publisher");
             String str;
             String message_from_server;
             String k = "end";
@@ -713,6 +473,10 @@ public class Broker extends Thread implements Broker_interface,Node{
             FileOutputStream fos = null;
             BufferedOutputStream bos = null;            
             try{
+                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");  
+                LocalDateTime now = LocalDateTime.now();
+                String tempstr = (String)dtf.format(now).replace("/", "");
+                tempstr = tempstr.replace(":", "");
                 int file_size = 100003;
                 int bytesRead;
                 int current = 0;
@@ -720,10 +484,11 @@ public class Broker extends Thread implements Broker_interface,Node{
                 byte [] mybytearray  = new byte [file_size];
                 byte [] to_mp4_full  = new byte [10000000];
                 int pointer = 0;
-                String video_file  = "temporary.mp4"; // to onoma pou tha xrisimopoihsoyme gia na to grapsoume
+                String video_file  = "temporary"+tempstr+".mp4"; // to onoma pou tha xrisimopoihsoyme gia na to grapsoume
                 fos = new FileOutputStream(video_file);
                 bos = new BufferedOutputStream(fos);
-                System.out.println("Before for");
+                bos.flush();
+                //System.out.println("Before for");
                 while (true){
                     mybytearray  = new byte [file_size];
                     
@@ -765,7 +530,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                         break;
                     }
                 }
-                System.out.println("after for");
+                //System.out.println("after for");
                 bos.write(to_mp4_full, 0 , pointer);
                 bos.flush();
                 System.out.println("File " + video_file
@@ -971,21 +736,24 @@ public class Broker extends Thread implements Broker_interface,Node{
         private int port;
         private int number_of_thread = 1;
         private List<Consumer> registeredUsers;
+        private List<Publisher> registeredPublishers;
         private ServerSocket s;
 
 
-        public Accept_Consumer_handlers(Broker b, ServerSocket socket,ServerSocket s2, int p, int nof, List<Consumer> registers) {
+        public Accept_Consumer_handlers(Broker b, ServerSocket socket,ServerSocket s2, int p, int nof, List<Consumer> registers,List<Publisher> r) {
             this.broker = b;
             this.serverSocket = socket;
             this.port = p;
             this.s=s2;
             this.number_of_thread = nof;
             this.registeredUsers = registers;
+            this.registeredPublishers =r;
         }
 
         public void run(){
                 try{
                     while (true){
+                        System.out.println("Waiting to accept connection");
                         Socket x=serverSocket.accept();
                         //System.out.println("                                consumer accept");
                         //int thesi = number_of_clients.get(0) % brokers.size();
@@ -999,9 +767,11 @@ public class Broker extends Thread implements Broker_interface,Node{
                         registeredUsers.add(new Consumer(temp));
                         //System.out.println("number of consumers : "+registeredUsers.size());
                         Thread.sleep(2000);
-                        new Consumer_handlers(x,number_of_thread,port,broker,registeredUsers).start();//,registeredUsers.get(registeredUsers.size()-1) //<-------------------------------------- that
+                        new Consumer_handlers(x,number_of_thread,port,broker,registeredUsers,registeredPublishers).start();//,registeredUsers.get(registeredUsers.size()-1) //<-------------------------------------- that
                         Thread.sleep(2000);
+                        System.out.println("Before consumer messages");
                         Socket x2= s.accept();
+                        System.out.println("Accept consumer messages socket");
                         new Consumer_handlers_messages(x2,number_of_thread,port+1000,broker,registeredUsers,registeredUsers.get(registeredUsers.size()-1)).start();
                         number_of_thread +=1;
                     }
@@ -1032,6 +802,7 @@ public class Broker extends Thread implements Broker_interface,Node{
         }
 
         public void run(){
+            //boolean initialize_messages = false;
             try{
                 while (true){
                     Socket x=serverSocket.accept();
@@ -1041,13 +812,16 @@ public class Broker extends Thread implements Broker_interface,Node{
                     Publisher temp = new Publisher(x,number_of_thread,port,test);
                     temp.setBroker(broker);
                     registeredPublishers.add(new Publisher(temp));
+                    System.out.println("Now publishers size is -------------- "+registeredPublishers.size());
                     Thread.sleep(2000); // ypo synthiki genika milwntas alla problima gia meta
-                    System.out.println("Prin thn apothikeysh toy video ");
+                    //System.out.println("Prin thn apothikeysh toy video ");
                     new Publisher_handlers(x,number_of_thread,port,broker,registeredPublishers).start();//,registeredUsers.get(registeredUsers.size()-1) //<-------------------------------------- that
                     //Thread.sleep(2000);
-                    System.out.println("Prin ta minimata me ton publisher1");
+                    //System.out.println("Prin ta minimata me ton publisher1");
                     Socket x2= s.accept();
-                    System.out.println("Prin ta minimata me ton publisher2");
+                    //initialize_messages = true;
+                    
+                    //System.out.println("Prin ta minimata me ton publisher2");
                     new Publisher_handlers_messages(x2,number_of_thread,port+2000,broker,registeredPublishers,registeredPublishers.get(registeredPublishers.size()-1)).start();
                     number_of_thread +=1;
                 }
@@ -1135,8 +909,17 @@ public class Broker extends Thread implements Broker_interface,Node{
                     else if(greeting.equals("push")){
                         out.println("Give name : ");
                         greeting = in.readLine();
+                        out.println("Give the path for the video");
+                        String path = in.readLine();
+                        ArrayList<String> hash = new ArrayList<String>();
+                        out.println("Give the hashes ('exit' to exit)");
+                        while(true){
+                            str =  in.readLine();
+                            if(!str.equals("exit")) hash.add(str);
+                            else break;
+                        }
                         out.println("Start to push video ");
-                        c.push(greeting);
+                        c.push(greeting,path,hash);
                     }
                     else if(greeting.equals("search")){
                         hashed_key = -1;
