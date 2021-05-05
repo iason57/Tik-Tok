@@ -18,6 +18,8 @@ in the List and not randomly
 8. ftiaxnoume kai to subscribe gia na elegxei kai th lista me tous publishers pou einai kai consumers.
 9. save in broker and then remove the file
 10. making publisher every video, we dont have download in publisher and we dont have download on command- just random at start of consumer
+11. 2nd and 3rd publisher etc give broker correct video but he doesnt write it correctly on consumers
+12. we should make it send it only to subs in future
 
 ## broker hashing - even workload
 * hash(port+ip) : ip dottes replaced with ""
