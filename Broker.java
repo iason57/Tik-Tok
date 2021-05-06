@@ -138,35 +138,36 @@ public class Broker extends Thread implements Broker_interface,Node{
     public void share_to_subs(String path){
         try{
             File myFile = new File (path);
-            System.out.println("File made");
             if ((int)myFile.length() != 0) {
-                System.out.println("mesa sto if");
                 int thesi =-1;
                 for (int i=0;i<channels_serviced.size();i++){
-                    if(channels_serviced.get(i).getChannelName().equals(temp_name_of_channel)){
+                    if(channels_serviced.get(i).getChannelName().equals(temp_name_of_channel)){ // kanali me to teleytaio upload
                         thesi = i;
                     }
                 }
                 System.out.println("thesi : "+thesi);
-                /*
-                for(Consumer x : subscribers.get(thesi)){
-                    x.connect(000);
+                
+                for(int i=0; i<subscribers.get(thesi).size();i++){ // get(thesi) giati exoun 1-1 antistoixia me ta channel names 
+                    subscribers.get(thesi).get(i).video_name_temp = last_video.getName();
+                    subscribers.get(thesi).get(i).connect(000);
                 }
-                */
-                for(int i=0; i<registeredUsers.size();i++){
-                    System.out.println("Sharing video with all");
-                    registeredUsers.get(i).video_name_temp = last_video.getName();
-                    registeredUsers.get(i).connect(000);
-                    System.out.println("Meta ti connect");
-
-                }
-                System.out.println("exeis provlima");
+                //Share with all publisher-Consumers that are subscribed also
 
                 /*
                 for(Publisher x : subscribers_p){
                     connect(000);
                 }
                 */
+
+                /* Sharing with all consumers in broker : TEST
+
+                for(int i=0; i<registeredUsers.size();i++){
+                    registeredUsers.get(i).video_name_temp = last_video.getName();
+                    registeredUsers.get(i).connect(000);
+                }
+
+                */
+                
             }
         }
         catch(Exception e)
@@ -894,12 +895,13 @@ public class Broker extends Thread implements Broker_interface,Node{
 
         public void run(){
             //boolean initialize_messages = false;
+                    
             try{
                 while (true){
                     Socket x=serverSocket.accept();
                     System.out.println("Socket accepted: " + port);
                     number_of_publishers.set(0, number_of_publishers.get(0)+1);
-                    String test="problem";
+                    String test = "default_name";
                     Publisher temp = new Publisher(x,number_of_thread,port,test);
                     temp.setBroker(broker);
                     registeredPublishers.add(new Publisher(temp));
@@ -1029,6 +1031,11 @@ public class Broker extends Thread implements Broker_interface,Node{
                             if(broker.port == brokers.get(l).port) thesi = l;
                         }
                         System.out.println("Registered publishers left in broker "+thesi+" : "+broker.registeredPublishers.size());
+                    }
+                    else if(greeting.equals("set channel name")){
+                        out.println("Give channel name : ");
+                        greeting = in.readLine();
+                        c.channelName.setChannelName(greeting);
                     }
                     else if(greeting.equals("push")){
                         out.println("Give name : ");

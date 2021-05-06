@@ -18,9 +18,10 @@ public class Publisher extends Thread implements Publisher_interface,Node{
     public Broker broker;
     public int port;
     public int id;
-    private ChannelName channelName = new ChannelName();
+    public ChannelName channelName = new ChannelName();
     private int counting_port = 0;
     private int ok = 0 ; // not added in channels
+    public String video_name_temp;
 
     public Publisher(){
 
@@ -340,6 +341,12 @@ public class Publisher extends Thread implements Publisher_interface,Node{
                     out.println(str);
                     message_from_server = in.readLine();
                     System.out.println(""+message_from_server);
+                }
+                else if(str.equals("set channel name")){
+                    message_from_server = in.readLine();
+                    System.out.println(""+message_from_server);
+                    str =  reader.readLine();
+                    out.println(str);
                 }
                 else if(str.equals("push")){
                     // get name 
