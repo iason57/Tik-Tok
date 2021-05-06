@@ -6,7 +6,7 @@ https://www.baeldung.com/a-guide-to-java-sockets
 ## Next steps :
 1. Search in publisher, exactly like consumer
 2. Publisher search, dont show him videos that he published
-3. AppNode main that runs publisher and consumer
+3. AppNode main that runs publisher and consumer --READY
 4. Other computer doesnt receive file, but they are saved here in the project directory
 5. make interfaces with function definitions
 
