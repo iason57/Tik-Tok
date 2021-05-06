@@ -30,6 +30,7 @@ public class Broker extends Thread implements Broker_interface,Node{
     public ArrayList< ArrayList<Consumer> > subscribers; // 1-1 antistoixia me ta channels_serviced - get(0)-->lista subs tou iasonas
     public ArrayList< ArrayList<Publisher> > subscribers_p; // 1-1 antistoixia me ta channels_serviced - get(0)-->lista subs tou iasonas
     public ArrayList<String> hashtags_serviced;
+    public  ArrayList< ArrayList<VideoFile>> videos_hash;
     public String temp_name_of_channel,temporary;
     public VideoFile last_video;
     
@@ -51,6 +52,10 @@ public class Broker extends Thread implements Broker_interface,Node{
         this.hashtags_serviced = new ArrayList<String>(br.hashtags_serviced);
         this.subscribers = new ArrayList< ArrayList<Consumer> >(br.subscribers);
         this.subscribers_p = new ArrayList< ArrayList<Publisher> >(br.subscribers_p);
+        this.videos_hash = new ArrayList< ArrayList<VideoFile>> (br.videos_hash);
+        this.last_video= br.last_video;
+        this.temp_name_of_channel= br.temp_name_of_channel;
+        this.temporary=br.temporary;
     }
 
     public Broker(){
@@ -58,6 +63,7 @@ public class Broker extends Thread implements Broker_interface,Node{
         this.hashtags_serviced = new ArrayList<String>();
         this.subscribers = new ArrayList< ArrayList<Consumer> >();
         this.subscribers_p = new ArrayList< ArrayList<Publisher> >();
+        this.videos_hash = new ArrayList< ArrayList<VideoFile>> ();
     }
 
     public Broker(int p){
@@ -66,6 +72,7 @@ public class Broker extends Thread implements Broker_interface,Node{
         this.hashtags_serviced = new ArrayList<String>();
         this.subscribers = new ArrayList< ArrayList<Consumer> >();
         this.subscribers_p = new ArrayList< ArrayList<Publisher> >();
+        this.videos_hash = new ArrayList< ArrayList<VideoFile>> ();
     }
 
     public Broker(int p,int port_p){
@@ -75,6 +82,7 @@ public class Broker extends Thread implements Broker_interface,Node{
         this.hashtags_serviced = new ArrayList<String>();
         this.subscribers = new ArrayList< ArrayList<Consumer> >();
         this.subscribers_p = new ArrayList< ArrayList<Publisher> >();
+        this.videos_hash = new ArrayList< ArrayList<VideoFile>> ();
     }
 
     /*
@@ -813,6 +821,42 @@ public class Broker extends Thread implements Broker_interface,Node{
                                 }
                                 if(!theflag) {
                                     out.println("Not found");
+                                }else{
+                                    System.out.println(brokers.get(hashed_key).hashtags_serviced.size());
+                                    System.out.println(brokers.get(hashed_key).videos_hash.size());
+                                    System.out.println(brokers.get(hashed_key).videos_hash.get(0).size());
+                                    
+                                    int thesi_hash=-1;
+                                    for(int i=0;i<brokers.get(hashed_key).hashtags_serviced.size();i++){
+                                        if(brokers.get(hashed_key).hashtags_serviced.get(i).equals(greeting)){
+                                            thesi_hash=i;
+                                        } 
+                                    }
+                                    if(thesi_hash!=-1){
+                                        out.println(brokers.get(hashed_key).videos_hash.get(thesi_hash).size());
+                                        for(int i=0;i<brokers.get(hashed_key).videos_hash.get(thesi_hash).size();i++){
+                                            out.println(brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i).getName()); 
+                                        }
+                                        out.println("Choose video: ");
+                                        greeting = in.readLine();
+                                        
+                                        for(int i=0;i<brokers.get(hashed_key).videos_hash.get(thesi_hash).size();i++){
+                                            if(brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i).getName().equals(greeting)){
+                                                
+                                                if(!brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i).getName().equals(broker.last_video.getName())){
+                                                    broker.last_video = brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i);
+                                                }
+                                                System.out.println("before");
+                                                new Accept_Consumer_handlers_videos(broker, broker.serverSocket_forvideos, ((broker.port)+3000), broker.number_of_thread, broker.registeredUsers, broker.registeredPublishers).start();
+                                                Thread.sleep(3000);
+                                                System.out.println("after");
+                                                c.connect2(greeting);
+                                            }
+                                        }
+
+                                    }else{
+                                        System.out.println("No video available");
+                                    }
                                 }
                             }
                             else {

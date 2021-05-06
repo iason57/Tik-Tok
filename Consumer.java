@@ -153,7 +153,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
                         }
 
                     }else{
-                        System.out.println("Available hashtags ");
+                        System.out.println("Available hashtags: ");
                         message_from_server = in.readLine(); //broker size
                         int size = Integer.parseInt(message_from_server);
                         for (int i=0;i<size;i++){
@@ -173,8 +173,18 @@ public class Consumer extends Thread implements Consumer_interface,Node {
 
                         if(!message_from_server.equals("Not found")){
                             System.out.println(""+message_from_server);
+                            System.out.println("Available videos: ");
+                            message_from_server = in.readLine(); //videos hash size
+                            size = Integer.parseInt(message_from_server);
+                            for (int j=0;j<size;j++){
+                                message_from_server = in.readLine(); 
+                                System.out.println(""+message_from_server);
+                            }
+                            message_from_server = in.readLine(); //choose video
+                            System.out.println(""+message_from_server);
+                            str =  reader.readLine(); //choice of video
+                            out.println(str); 
                         }
-
 
                     }
                 }

@@ -221,9 +221,20 @@ public class Publisher extends Thread implements Publisher_interface,Node{
                 hashed_key = thesi_broker_hash(hash.get(i));
 
                 for(int j =0; j<brokers.size();j++){
+                    //brokers.get(j).videos_hash.add(new ArrayList<VideoFile>());
                     if(hashed_key == j && !brokers.get(j).hashtags_serviced.contains(hash.get(i)) ){
                         brokers.get(j).hashtags_serviced.add(hash.get(i));
+                        brokers.get(j).videos_hash.add(new ArrayList<VideoFile>());
+                        brokers.get(j).videos_hash.get( brokers.get(j).videos_hash.size()-1).add(new_video);
                         break;
+                    }else if(hashed_key == j && brokers.get(j).hashtags_serviced.contains(hash.get(i))){
+                        for (int k=0;k<brokers.get(j).hashtags_serviced.size();k++){
+                            if(brokers.get(j).hashtags_serviced.get(k).equals(hash.get(i))){
+                                brokers.get(j).videos_hash.get(k).add(new_video);
+                            }
+
+                        }
+                       
                     }
                 }
             }
