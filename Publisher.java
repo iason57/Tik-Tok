@@ -342,7 +342,74 @@ public class Publisher extends Thread implements Publisher_interface,Node{
                     }
                 }
                 else if(str.equals("search")){
-                    message_from_server = in.readLine();
+                    message_from_server = in.readLine(); //want to search name or hash?
+                    System.out.println(""+message_from_server);
+                    str =  reader.readLine();
+                    out.println(str); // name or hashtag option
+
+                    if(str.contains("name") || str.contains("Name")){
+                        System.out.println("Available channels : ");
+                        message_from_server = in.readLine(); //size
+                        message_from_server = message_from_server.replace("Available channels : ", "");
+                        int size = Integer.parseInt(message_from_server); 
+                        for(int i =0; i< size ;i++){
+                            message_from_server = in.readLine();
+                            System.out.println(""+message_from_server);
+                        }
+
+                        message_from_server = in.readLine();
+                        System.out.println(""+message_from_server);
+                        str =  reader.readLine();
+                        out.println(str); // the name of the channel or the hashtag
+                        message_from_server = in.readLine();
+                        size = Integer.parseInt(message_from_server); //size
+                        for(int i =0; i< size ;i++){
+                            message_from_server = in.readLine();
+                            System.out.println(""+message_from_server);
+                        }
+                        message_from_server = in.readLine();
+                        if(!message_from_server.equals("Not found")){
+                            System.out.println(""+message_from_server);
+                            str =  reader.readLine();
+                            out.println(str); // choice of video
+                        }
+
+                    }else{
+                        System.out.println("Available hashtags: ");
+                        message_from_server = in.readLine(); //broker size
+                        int size = Integer.parseInt(message_from_server);
+                        for (int i=0;i<size;i++){
+                            message_from_server = in.readLine(); //hashtags list size
+                            int size2 = Integer.parseInt(message_from_server);
+                            for (int j=0;j<size2;j++){
+                                message_from_server = in.readLine(); //hashtags
+                                System.out.println(""+message_from_server);
+                            }
+                        }
+
+                        message_from_server = in.readLine(); //give hashtag
+                        System.out.println(""+message_from_server);
+                        str =  reader.readLine(); //choice
+                        out.println(str); // the name of the hashtag
+                        message_from_server = in.readLine(); //found or not found
+
+                        if(!message_from_server.equals("Not found")){
+                            System.out.println(""+message_from_server);
+                            System.out.println("Available videos: ");
+                            message_from_server = in.readLine(); //videos hash size
+                            size = Integer.parseInt(message_from_server);
+                            for (int j=0;j<size;j++){
+                                message_from_server = in.readLine(); 
+                                System.out.println(""+message_from_server);
+                            }
+                            message_from_server = in.readLine(); //choose video
+                            System.out.println(""+message_from_server);
+                            str =  reader.readLine(); //choice of video
+                            out.println(str); 
+                        }
+
+                    }
+                    /*message_from_server = in.readLine();
                     System.out.println(""+message_from_server);
                     str =  reader.readLine();
                     out.println(str);
@@ -351,7 +418,7 @@ public class Publisher extends Thread implements Publisher_interface,Node{
                     str =  reader.readLine();
                     out.println(str);
                     message_from_server = in.readLine();
-                    System.out.println(""+message_from_server);
+                    System.out.println(""+message_from_server);*/
                 }
                 else if(str.equals("set channel name")){
                     message_from_server = in.readLine();
@@ -485,6 +552,94 @@ public class Publisher extends Thread implements Publisher_interface,Node{
             }
             
     }
+
+    public void download2(String filename){
+        String str;
+        String message_from_server;
+        String k = "end";
+        byte[] b = k.getBytes();
+
+        Byte w1 = new Byte(b[0]);
+        Byte w2 = new Byte(b[1]);
+        Byte w3 = new Byte(b[2]);
+        int part = 0;
+        FileOutputStream fos = null;
+        BufferedOutputStream bos = null;       
+        Socket clientSocket2;     
+            try{
+                int file_size = 100003;
+                int bytesRead;
+                int current = 0;
+                clientSocket = new Socket(Inet4Address.getLocalHost().getHostAddress(), port+4000 );
+                InputStream is = clientSocket.getInputStream();
+                byte [] mybytearray  = new byte [file_size];
+                //mpakale test
+                byte [] to_mp4_full  = new byte [10000000];
+                int pointer = 0;
+                String video_file  = "publisher-source-downloaded-"+port+"-"+id+"-"+filename+".mp4";
+                fos = new FileOutputStream(video_file);
+                bos = new BufferedOutputStream(fos);
+                while (true){
+
+                    mybytearray  = new byte [file_size];
+                    
+                    try{
+                        bytesRead = is.read(mybytearray,0,mybytearray.length);
+                        
+                        current = 0;
+                        
+                        do {
+                            if(w1.equals(new Byte(mybytearray[current]))){
+                                //System.out.println("mpika"+ current);
+                                if(w2.equals(new Byte(mybytearray[current+1]))){
+                                    //System.out.println("mpika2"+ current);
+                                    if(w3.equals(new Byte(mybytearray[current+2]))){
+                                        //System.out.println("mpika3"+ current);
+                                        break;
+                                    }
+                                    else{
+                                        current++;
+                                    }
+                                }
+                                else{
+                                    current++;
+                                }
+                            }
+                            else{
+                                current++;
+                            }
+                        } while(true);
+
+                        for(int i = pointer; i<pointer+current;i++){
+                            to_mp4_full[i] = mybytearray[i-pointer]; // [0-current]
+                        }
+                        pointer+=current;
+                        
+                    }
+                    catch(FileNotFoundException e){
+                        System.out.println("Exception bro.");
+                    }    
+                       
+                    if (current < 100000 ) {
+                        break;
+                    }
+                }
+                bos.write(to_mp4_full, 0 , pointer);
+                bos.flush();
+                System.out.println("Publisher file " + video_file
+                    + " downloaded (" + pointer + " bytes read)");
+                
+                is.close();
+                fos.close();
+                bos.close();
+
+                System.out.println("Closing readers");
+            }
+            catch (Exception e){
+                System.out.println("Exception in download in publisher.");
+            }
+    }
+    
 
     public void disconnect(int y){
 

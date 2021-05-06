@@ -1150,37 +1150,125 @@ public class Broker extends Thread implements Broker_interface,Node{
                         c.push(greeting,path,hash);
                     }
                     else if(greeting.equals("search")){
+                        ArrayList<VideoFile> vids= new ArrayList<VideoFile>();
                         hashed_key = -1;
                         theflag = false;
                         if(broker.isRegistered_p(c.id)){
                             out.println("Want to search by Channel name or hashtag ?");
                             greeting = in.readLine();
                             if(greeting.contains("name") || greeting.contains("Name") || greeting.contains("channel") || greeting.contains("Channel")){
+                                
+                                out.println("Available channels : "+allChannels.size());
+                                for(ChannelName x : allChannels){
+                                    out.println(x.getChannelName());
+                                }
+
+                                // search by channel name
                                 out.println("Give name : ");
-                                greeting = in.readLine();
+                                greeting = in.readLine(); // den exoume kanei elegxo oti den yparxei to name i to hashtag
                                 hashed_key  = broker.thesi_broker_hash(greeting);
+                                //System.out.println("hashed key for : "+greeting+" is : "+hashed_key);
                                 for(ChannelName x : brokers.get(hashed_key).channels_serviced){
                                     if(x.getChannelName().equals(greeting)){
-                                        out.println("kati tha stelnoyme");
+                                        // thelei na dei ola ta video apo ena channel
+                                        // stelnoume to plithos twn video
+                                        vids = new ArrayList<VideoFile>(x.getAllVideos());
+                                        out.println(vids.size());
+                                        for(int i =0; i< vids.size() ;i++){
+                                            out.println(vids.get(i).getName());
+                                        }
                                         theflag = true;
                                         break;
                                     }
                                 }
-                                if(!theflag) out.println("Not found");
+                                
+                                if(!theflag) {
+                                    out.println("0"); // give size = 0
+                                    out.println("Not found");
+                                }
+                                else{ 
+                                    out.println("Make your choice :");
+                                    greeting = in.readLine(); // get choice from consumer
+                                    // to opoio einai to onoma tou video
+                                    for(int i =0; i< vids.size() ;i++){
+                                        if(vids.get(i).getName().equals(greeting)){
+                                            //vids.get(i).path_in_broker
+                                            if(!vids.get(i).getName().equals(broker.last_video.getName())){
+                                                broker.last_video = vids.get(i);
+                                            }
+                                            System.out.println("before");
+                                            new Accept_Publisher_handlers_videos(broker, broker.serverSocket_forvideos, ((broker.port)+3000), broker.number_of_thread, broker.registeredPublishers).start();
+                                            Thread.sleep(3000);
+                                            System.out.println("after");
+                                            c.download2(greeting);
+                                        }
+                                    }
+                                    
+                                }
                                 
                             }
                             else if(greeting.contains("hashtag") || greeting.contains("Hashtag")) {
+                                // search by hashtag 
+
+                                //give size
+                                out.println(brokers.size());
+                                for (int i=0;i<brokers.size();i++){
+                                    out.println(brokers.get(i).hashtags_serviced.size());
+                                    for (int j=0;j<brokers.get(i).hashtags_serviced.size(); j++){
+                                        out.println(brokers.get(i).hashtags_serviced.get(j));  
+                                    }
+                                }
+                                
                                 out.println("Give hashtag : ( in form #name_of_hashtag )");
                                 greeting = in.readLine();
                                 hashed_key  = broker.thesi_broker_hash(greeting);
+                                //System.out.println("hashed key for : "+greeting+" is : "+hashed_key);
                                 for(String x : brokers.get(hashed_key).hashtags_serviced){
                                     if(x.equals(greeting)){
-                                        out.println("kati tha stelnoyme2");
+                                        out.println("found");
                                         theflag = true;
                                         break;
                                     }
                                 }
-                                if(!theflag) out.println("Not found");
+                                if(!theflag) {
+                                    out.println("Not found");
+                                }else{
+                                    System.out.println(brokers.get(hashed_key).hashtags_serviced.size());
+                                    System.out.println(brokers.get(hashed_key).videos_hash.size());
+                                    System.out.println(brokers.get(hashed_key).videos_hash.get(0).size());
+                                    
+                                    int thesi_hash=-1;
+                                    for(int i=0;i<brokers.get(hashed_key).hashtags_serviced.size();i++){
+                                        if(brokers.get(hashed_key).hashtags_serviced.get(i).equals(greeting)){
+                                            thesi_hash=i;
+                                        } 
+                                    }
+                                    if(thesi_hash!=-1){
+                                        out.println(brokers.get(hashed_key).videos_hash.get(thesi_hash).size());
+                                        for(int i=0;i<brokers.get(hashed_key).videos_hash.get(thesi_hash).size();i++){
+                                            out.println(brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i).getName()); 
+                                        }
+                                        out.println("Choose video: ");
+                                        greeting = in.readLine();
+                                        
+                                        for(int i=0;i<brokers.get(hashed_key).videos_hash.get(thesi_hash).size();i++){
+                                            if(brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i).getName().equals(greeting)){
+                                                
+                                                if(!brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i).getName().equals(broker.last_video.getName())){
+                                                    broker.last_video = brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i);
+                                                }
+                                                System.out.println("before");
+                                                new Accept_Publisher_handlers_videos(broker, broker.serverSocket_forvideos, ((broker.port)+3000), broker.number_of_thread, broker.registeredPublishers).start();
+                                                Thread.sleep(3000);
+                                                System.out.println("after");
+                                                c.download2(greeting);
+                                            }
+                                        }
+
+                                    }else{
+                                        System.out.println("No video available");
+                                    }
+                                }
                             }
                             else {
                                 out.println("Incorrect input!");
