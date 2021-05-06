@@ -787,7 +787,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                                                 broker.last_video = vids.get(i);
                                             }
                                             System.out.println("before");
-                                            new Accept_Consumer_handlers_videos(broker, broker.serverSocket_forvideos, ((broker.port)+3000), broker.number_of_thread, broker.registeredUsers, broker.registeredPublishers).start();
+                                            new Accept_Consumer_handlers_videos(brokers.get(hashed_key), brokers.get(hashed_key).serverSocket_forvideos, ((brokers.get(hashed_key).port)+3000), brokers.get(hashed_key).number_of_thread, brokers.get(hashed_key).registeredUsers, brokers.get(hashed_key).registeredPublishers).start();
                                             Thread.sleep(3000);
                                             System.out.println("after");
                                             c.connect2(greeting);
@@ -848,7 +848,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                                                     broker.last_video = brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i);
                                                 }
                                                 System.out.println("before");
-                                                new Accept_Consumer_handlers_videos(broker, broker.serverSocket_forvideos, ((broker.port)+3000), broker.number_of_thread, broker.registeredUsers, broker.registeredPublishers).start();
+                                                new Accept_Consumer_handlers_videos(brokers.get(hashed_key), brokers.get(hashed_key).serverSocket_forvideos, ((brokers.get(hashed_key).port)+3000), brokers.get(hashed_key).number_of_thread, brokers.get(hashed_key).registeredUsers, brokers.get(hashed_key).registeredPublishers).start();
                                                 Thread.sleep(3000);
                                                 System.out.println("after");
                                                 c.connect2(greeting);
@@ -1198,7 +1198,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                                                 broker.last_video = vids.get(i);
                                             }
                                             System.out.println("before");
-                                            new Accept_Publisher_handlers_videos(broker, broker.serverSocket_forvideos, ((broker.port)+3000), broker.number_of_thread, broker.registeredPublishers).start();
+                                            new Accept_Consumer_handlers_videos(brokers.get(hashed_key), brokers.get(hashed_key).serverSocket_forvideos, ((brokers.get(hashed_key).port)+3000), brokers.get(hashed_key).number_of_thread, brokers.get(hashed_key).registeredUsers, brokers.get(hashed_key).registeredPublishers).start();
                                             Thread.sleep(3000);
                                             System.out.println("after");
                                             c.download2(greeting);
@@ -1259,7 +1259,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                                                     broker.last_video = brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i);
                                                 }
                                                 System.out.println("before");
-                                                new Accept_Publisher_handlers_videos(broker, broker.serverSocket_forvideos, ((broker.port)+3000), broker.number_of_thread, broker.registeredPublishers).start();
+                                                new Accept_Consumer_handlers_videos(brokers.get(hashed_key), brokers.get(hashed_key).serverSocket_forvideos, ((brokers.get(hashed_key).port)+3000), brokers.get(hashed_key).number_of_thread, brokers.get(hashed_key).registeredUsers, brokers.get(hashed_key).registeredPublishers).start();
                                                 Thread.sleep(3000);
                                                 System.out.println("after");
                                                 c.download2(greeting);
