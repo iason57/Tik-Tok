@@ -153,11 +153,10 @@ public class Broker extends Thread implements Broker_interface,Node{
                 }
                 //Share with all publisher-Consumers that are subscribed also
 
-                /*
-                for(Publisher x : subscribers_p){
-                    connect(000);
+                for(int i=0; i<subscribers_p.get(thesi).size();i++){ // get(thesi) giati exoun 1-1 antistoixia me ta channel names 
+                    subscribers_p.get(thesi).get(i).video_name_temp = last_video.getName();
+                    subscribers_p.get(thesi).get(i).download();
                 }
-                */
 
                 /* Sharing with all consumers in broker : TEST
 

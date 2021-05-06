@@ -398,31 +398,42 @@ public class Publisher extends Thread implements Publisher_interface,Node{
         Byte w3 = new Byte(b[2]);
         int part = 0;
         FileOutputStream fos = null;
-        BufferedOutputStream bos = null;            
-        try{
-            int file_size = 100003;
-            int bytesRead;
-            int current = 0;
-            InputStream is = clientSocket.getInputStream();
-            byte [] mybytearray  = new byte [file_size];
-            byte [] to_mp4_full  = new byte [10000000];
-            int pointer = 0;
-            String video_file  = "5min.mp4";
-            fos = new FileOutputStream(video_file);
-            bos = new BufferedOutputStream(fos);
-            System.out.println("prin to while");
-            while (true){
+        BufferedOutputStream bos = null;       
+        Socket clientSocket2;     
+            try{
+                int file_size = 100003;
+                int bytesRead;
+                int current = 0;
+                clientSocket = new Socket(Inet4Address.getLocalHost().getHostAddress(), port+4000 );
+                InputStream is = clientSocket.getInputStream();
+                byte [] mybytearray  = new byte [file_size];
+                //mpakale test
+                byte [] to_mp4_full  = new byte [10000000];
+                int pointer = 0;
+                String video_file  = "publisher-source-downloaded-"+port+"-"+id+"-"+video_name_temp+".mp4";
+                fos = new FileOutputStream(video_file);
+                bos = new BufferedOutputStream(fos);
+                while (true){
 
-                mybytearray  = new byte [file_size];
-                try{
-                    bytesRead = is.read(mybytearray,0,mybytearray.length);
-                    current = 0;
+                    mybytearray  = new byte [file_size];
                     
-                    do {
-                        if(w1.equals(new Byte(mybytearray[current]))){
-                            if(w2.equals(new Byte(mybytearray[current+1]))){
-                                if(w3.equals(new Byte(mybytearray[current+2]))){
-                                    break;
+                    try{
+                        bytesRead = is.read(mybytearray,0,mybytearray.length);
+                        
+                        current = 0;
+                        
+                        do {
+                            if(w1.equals(new Byte(mybytearray[current]))){
+                                //System.out.println("mpika"+ current);
+                                if(w2.equals(new Byte(mybytearray[current+1]))){
+                                    //System.out.println("mpika2"+ current);
+                                    if(w3.equals(new Byte(mybytearray[current+2]))){
+                                        //System.out.println("mpika3"+ current);
+                                        break;
+                                    }
+                                    else{
+                                        current++;
+                                    }
                                 }
                                 else{
                                     current++;
@@ -431,49 +442,39 @@ public class Publisher extends Thread implements Publisher_interface,Node{
                             else{
                                 current++;
                             }
-                        }
-                        else{
-                            current++;
-                        }
-                    } while(true);
+                        } while(true);
 
-                    for(int i = pointer; i<pointer+current;i++){
-                        to_mp4_full[i] = mybytearray[i-pointer]; // [0-current]
+                        for(int i = pointer; i<pointer+current;i++){
+                            to_mp4_full[i] = mybytearray[i-pointer]; // [0-current]
+                        }
+                        pointer+=current;
+                        
                     }
-                    pointer+=current;
-                    
+                    catch(FileNotFoundException e){
+                        System.out.println("Exception bro.");
+                    }    
+                       
+                    if (current < 100000 ) {
+                        break;
+                    }
                 }
-                catch(FileNotFoundException e){
-                    System.out.println("Exception bro.");
-                }
+                bos.write(to_mp4_full, 0 , pointer);
+                bos.flush();
+                System.out.println("File " + video_file
+                    + " downloaded (" + pointer + " bytes read)");
+                
+                is.close();
+                fos.close();
+                bos.close();
 
-                if (current < 100000 ) {
-                    break;
-                }
+                System.out.println("Closing readers");
             }
-            System.out.println("202");
-            bos.write(to_mp4_full, 0 , pointer);
-            bos.flush();
-            System.out.println("File " + video_file
-                + " downloaded (" + pointer + " bytes read)");
+            catch (Exception e){
+                System.out.println("Exception in download in publisher.");
+            }
             
-            is.close();
-            fos.close();
-            bos.close();
-
-            is=null;
-            fos=null;
-            bos=null;
-
-            System.out.println("Closing readers");
-            return;
-        }
-        catch (Exception e){
-            System.out.println("Exception in connect in publisher.");
-        }
-        
-
     }
+
     public void disconnect(int y){
 
     }

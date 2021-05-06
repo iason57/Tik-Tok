@@ -20,6 +20,8 @@ in the List and not randomly
 10. making publisher every video, we dont have download in publisher and we dont have download on command- just random at start of consumer
 11. 2nd and 3rd publisher etc give broker correct video but he doesnt write it correctly on consumers
 12. we should make it send it only to subs in future
+13. disconnect --> remove from subs ? maybe
+14. check publisher that he cannot sub to himself
 
 ## broker hashing - even workload
 * hash(port+ip) : ip dottes replaced with ""
