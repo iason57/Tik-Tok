@@ -31,6 +31,7 @@ public class Broker extends Thread implements Broker_interface,Node{
     public ArrayList< ArrayList<Publisher> > subscribers_p; // 1-1 antistoixia me ta channels_serviced - get(0)-->lista subs tou iasonas
     public ArrayList<String> hashtags_serviced;
     public String temp_name_of_channel,temporary;
+    public VideoFile last_video;
     
     
 
@@ -135,12 +136,6 @@ public class Broker extends Thread implements Broker_interface,Node{
     }
 
     public void share_to_subs(String path){
-        System.out.println("Share to subs");
-        System.out.println(channels_serviced.size());
-        System.out.println(subscribers.get(0).size());
-        System.out.println(registeredUsers.size());
-        System.out.println(temp_name_of_channel);
-        System.out.println(path);
         try{
             File myFile = new File (path);
             System.out.println("File made");
@@ -160,6 +155,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                 */
                 for(int i=0; i<registeredUsers.size();i++){
                     System.out.println("Sharing video with all");
+                    registeredUsers.get(i).video_name_temp = last_video.getName();
                     registeredUsers.get(i).connect(000);
                     System.out.println("Meta ti connect");
 
@@ -383,7 +379,9 @@ public class Broker extends Thread implements Broker_interface,Node{
             
             try{
                 System.out.println("After 15 sec sleep");
-                VideoFile new_video = publisher_list.get(0).getChannel().get_last_video();
+                //VideoFile new_video = publisher_list.get(0).getChannel().get_last_video();
+                VideoFile new_video = broker.last_video;
+                System.out.println("Video downloading to clients : "+ new_video.getName());
                 System.out.println("here : all vid size : "+publisher_list.get(0).getChannel().getAllVideos().size());
                 String video_file_to_send = new_video.getPath();
                 System.out.println("path : "+video_file_to_send);
@@ -826,9 +824,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                         temp.setBroker(broker);
                         registeredUsers.add(new Consumer(temp));
                         //System.out.println("number of consumers : "+registeredUsers.size());
-                        Thread.sleep(2000);
-                        new Consumer_handlers(x,number_of_thread,port,broker,registeredUsers,registeredPublishers).start();//,registeredUsers.get(registeredUsers.size()-1) //<-------------------------------------- that
-                        Thread.sleep(2000);
+                        //new Consumer_handlers(x,number_of_thread,port,broker,registeredUsers,registeredPublishers).start();//,registeredUsers.get(registeredUsers.size()-1) //<-------------------------------------- that
                         System.out.println("Before consumer messages");
                         Socket x2= s.accept();
                         System.out.println("Accept consumer messages socket");

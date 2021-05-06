@@ -12,6 +12,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
     public Broker broker;
     public int port;
     public int id;
+    public String video_name_temp;
 
     /*
     public Consumer(Socket clientSocket) {
@@ -173,7 +174,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
                 //mpakale test
                 byte [] to_mp4_full  = new byte [10000000];
                 int pointer = 0;
-                String video_file  = "source-downloaded-"+port+"-"+id+".mp4";
+                String video_file  = "source-downloaded-"+port+"-"+id+"-"+video_name_temp+".mp4";
                 fos = new FileOutputStream(video_file);
                 bos = new BufferedOutputStream(fos);
                 while (true){
@@ -364,7 +365,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
     }
     public static void main(String args[]) {
         
-        Consumer t1 = new Consumer(6666,3);
+        Consumer t1 = new Consumer(6666,2);
         
         t1.start();
         
