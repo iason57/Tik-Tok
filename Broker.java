@@ -145,8 +145,8 @@ public class Broker extends Thread implements Broker_interface,Node{
 
     public void share_to_subs(String path){
         try{
-            File myFile = new File (path);
-            if ((int)myFile.length() != 0) {
+            //File myFile = new File (path);
+            //if ((int)myFile.length() != 0) {
                 int thesi =-1;
                 for (int i=0;i<channels_serviced.size();i++){
                     if(channels_serviced.get(i).getChannelName().equals(temp_name_of_channel)){ // kanali me to teleytaio upload
@@ -154,18 +154,19 @@ public class Broker extends Thread implements Broker_interface,Node{
                     }
                 }
                 System.out.println("thesi : "+thesi);
+                if(thesi !=1 ){
+                    for(int i=0; i<subscribers.get(thesi).size();i++){ // get(thesi) giati exoun 1-1 antistoixia me ta channel names 
+                        subscribers.get(thesi).get(i).video_name_temp = last_video.getName();
+                        subscribers.get(thesi).get(i).connect(000);
+                    }
+                    //Share with all publisher-Consumers that are subscribed also
+    
+                    for(int i=0; i<subscribers_p.get(thesi).size();i++){ // get(thesi) giati exoun 1-1 antistoixia me ta channel names 
+                        subscribers_p.get(thesi).get(i).video_name_temp = last_video.getName();
+                        subscribers_p.get(thesi).get(i).download();
+                    }
+                }
                 
-                for(int i=0; i<subscribers.get(thesi).size();i++){ // get(thesi) giati exoun 1-1 antistoixia me ta channel names 
-                    subscribers.get(thesi).get(i).video_name_temp = last_video.getName();
-                    subscribers.get(thesi).get(i).connect(000);
-                }
-                //Share with all publisher-Consumers that are subscribed also
-
-                for(int i=0; i<subscribers_p.get(thesi).size();i++){ // get(thesi) giati exoun 1-1 antistoixia me ta channel names 
-                    subscribers_p.get(thesi).get(i).video_name_temp = last_video.getName();
-                    subscribers_p.get(thesi).get(i).download();
-                }
-
                 /* Sharing with all consumers in broker : TEST
 
                 for(int i=0; i<registeredUsers.size();i++){
@@ -175,7 +176,7 @@ public class Broker extends Thread implements Broker_interface,Node{
 
                 */
                 
-            }
+            //}
         }
         catch(Exception e)
         {

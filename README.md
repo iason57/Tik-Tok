@@ -14,5 +14,8 @@ https://www.baeldung.com/a-guide-to-java-sockets
 2. save every file in txt (100.000 chunks) and then open read and connect them so 
 we can send files through the home network and not only the same computer
 
+>1263 kai 1202
+851 kai 790
+einai oi grammes pou mallon theloun brokers.get(hashed_key) anti broker
 
 
