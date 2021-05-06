@@ -120,25 +120,62 @@ public class Consumer extends Thread implements Consumer_interface,Node {
                     }
                 }
                 else if(str.equals("search")){
-                    message_from_server = in.readLine();
+                    message_from_server = in.readLine(); //want to search name or hash?
                     System.out.println(""+message_from_server);
                     str =  reader.readLine();
                     out.println(str); // name or hashtag option
-                    message_from_server = in.readLine();
-                    System.out.println(""+message_from_server);
-                    str =  reader.readLine();
-                    out.println(str); // the name of the channel or the hashtag
-                    message_from_server = in.readLine();
-                    int size = Integer.parseInt(message_from_server); //size
-                    for(int i =0; i< size ;i++){
+
+                    if(str.contains("name") || str.contains("Name")){
+                        System.out.println("Available channels : ");
+                        message_from_server = in.readLine(); //size
+                        message_from_server = message_from_server.replace("Available channels : ", "");
+                        int size = Integer.parseInt(message_from_server); 
+                        for(int i =0; i< size ;i++){
+                            message_from_server = in.readLine();
+                            System.out.println(""+message_from_server);
+                        }
+
                         message_from_server = in.readLine();
                         System.out.println(""+message_from_server);
-                    }
-                    message_from_server = in.readLine();
-                    if(!message_from_server.equals("Not found")){
-                        System.out.println(""+message_from_server);
                         str =  reader.readLine();
-                        out.println(str); // choice of video
+                        out.println(str); // the name of the channel or the hashtag
+                        message_from_server = in.readLine();
+                        size = Integer.parseInt(message_from_server); //size
+                        for(int i =0; i< size ;i++){
+                            message_from_server = in.readLine();
+                            System.out.println(""+message_from_server);
+                        }
+                        message_from_server = in.readLine();
+                        if(!message_from_server.equals("Not found")){
+                            System.out.println(""+message_from_server);
+                            str =  reader.readLine();
+                            out.println(str); // choice of video
+                        }
+
+                    }else{
+                        System.out.println("Available hashtags ");
+                        message_from_server = in.readLine(); //broker size
+                        int size = Integer.parseInt(message_from_server);
+                        for (int i=0;i<size;i++){
+                            message_from_server = in.readLine(); //hashtags list size
+                            int size2 = Integer.parseInt(message_from_server);
+                            for (int j=0;j<size2;j++){
+                                message_from_server = in.readLine(); //hashtags
+                                System.out.println(""+message_from_server);
+                            }
+                        }
+
+                        message_from_server = in.readLine(); //give hashtag
+                        System.out.println(""+message_from_server);
+                        str =  reader.readLine(); //choice
+                        out.println(str); // the name of the hashtag
+                        message_from_server = in.readLine(); //found or not found
+
+                        if(!message_from_server.equals("Not found")){
+                            System.out.println(""+message_from_server);
+                        }
+
+
                     }
                 }
                 else{

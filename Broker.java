@@ -738,6 +738,12 @@ public class Broker extends Thread implements Broker_interface,Node{
                             out.println("Want to search by Channel name or hashtag ?");
                             greeting = in.readLine();
                             if(greeting.contains("name") || greeting.contains("Name") || greeting.contains("channel") || greeting.contains("Channel")){
+                                
+                                out.println("Available channels : "+allChannels.size());
+                                for(ChannelName x : allChannels){
+                                    out.println(x.getChannelName());
+                                }
+
                                 // search by channel name
                                 out.println("Give name : ");
                                 greeting = in.readLine(); // den exoume kanei elegxo oti den yparxei to name i to hashtag
@@ -761,7 +767,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                                     out.println("0"); // give size = 0
                                     out.println("Not found");
                                 }
-                                else{
+                                else{ 
                                     out.println("Make your choice :");
                                     greeting = in.readLine(); // get choice from consumer
                                     // to opoio einai to onoma tou video
@@ -784,18 +790,30 @@ public class Broker extends Thread implements Broker_interface,Node{
                             }
                             else if(greeting.contains("hashtag") || greeting.contains("Hashtag")) {
                                 // search by hashtag 
+
+                                //give size
+                                out.println(brokers.size());
+                                for (int i=0;i<brokers.size();i++){
+                                    out.println(brokers.get(i).hashtags_serviced.size());
+                                    for (int j=0;j<brokers.get(i).hashtags_serviced.size(); j++){
+                                        out.println(brokers.get(i).hashtags_serviced.get(j));  
+                                    }
+                                }
+                                
                                 out.println("Give hashtag : ( in form #name_of_hashtag )");
                                 greeting = in.readLine();
                                 hashed_key  = broker.thesi_broker_hash(greeting);
                                 //System.out.println("hashed key for : "+greeting+" is : "+hashed_key);
                                 for(String x : brokers.get(hashed_key).hashtags_serviced){
                                     if(x.equals(greeting)){
-                                        out.println("kati tha stelnoyme2");
+                                        out.println("found");
                                         theflag = true;
                                         break;
                                     }
                                 }
-                                if(!theflag) out.println("Not found");
+                                if(!theflag) {
+                                    out.println("Not found");
+                                }
                             }
                             else {
                                 out.println("Incorrect input!");
