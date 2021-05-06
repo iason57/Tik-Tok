@@ -541,6 +541,11 @@ public class Broker extends Thread implements Broker_interface,Node{
                 int pointer = 0;
                 String video_file  = "temporary"+tempstr+".mp4"; // to onoma pou tha xrisimopoihsoyme gia na to grapsoume
                 System.out.println("TO TEMP STR EINAI : "+ video_file);
+                for(int i=0; i<broker.channels_serviced.size();i++){
+                    if(broker.last_video.getChannelName().getChannelName().equals(broker.channels_serviced.get(i).getChannelName())){
+                        broker.last_video.path_in_broker = video_file;
+                    }
+                }
                 fos = new FileOutputStream(video_file);
                 bos = new BufferedOutputStream(fos);
                 bos.flush();
@@ -726,6 +731,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                         System.out.println("Registered users left in broker "+thesi+" : "+broker.registeredUsers.size());
                     }
                     else if(greeting.equals("search")){
+                        ArrayList<VideoFile> vids= new ArrayList<VideoFile>();
                         hashed_key = -1;
                         theflag = false;
                         if(broker.isRegistered(c.id)){
@@ -739,12 +745,41 @@ public class Broker extends Thread implements Broker_interface,Node{
                                 //System.out.println("hashed key for : "+greeting+" is : "+hashed_key);
                                 for(ChannelName x : brokers.get(hashed_key).channels_serviced){
                                     if(x.getChannelName().equals(greeting)){
-                                        out.println("kati tha stelnoyme");
+                                        // thelei na dei ola ta video apo ena channel
+                                        // stelnoume to plithos twn video
+                                        vids = new ArrayList<VideoFile>(x.getAllVideos());
+                                        out.println(vids.size());
+                                        for(int i =0; i< vids.size() ;i++){
+                                            out.println(vids.get(i).getName());
+                                        }
                                         theflag = true;
                                         break;
                                     }
                                 }
-                                if(!theflag) out.println("Not found");
+                                
+                                if(!theflag) {
+                                    out.println("0"); // give size = 0
+                                    out.println("Not found");
+                                }
+                                else{
+                                    out.println("Make your choice :");
+                                    greeting = in.readLine(); // get choice from consumer
+                                    // to opoio einai to onoma tou video
+                                    for(int i =0; i< vids.size() ;i++){
+                                        if(vids.get(i).getName().equals(greeting)){
+                                            //vids.get(i).path_in_broker
+                                            if(!vids.get(i).getName().equals(broker.last_video.getName())){
+                                                broker.last_video = vids.get(i);
+                                            }
+                                            System.out.println("before");
+                                            new Accept_Consumer_handlers_videos(broker, broker.serverSocket_forvideos, ((broker.port)+3000), broker.number_of_thread, broker.registeredUsers, broker.registeredPublishers).start();
+                                            Thread.sleep(3000);
+                                            System.out.println("after");
+                                            c.connect2(greeting);
+                                        }
+                                    }
+                                    
+                                }
                                 
                             }
                             else if(greeting.contains("hashtag") || greeting.contains("Hashtag")) {
@@ -858,7 +893,7 @@ public class Broker extends Thread implements Broker_interface,Node{
             this.registeredUsers = registers;
             this.registeredPublishers =r;
         }
-
+        
         public void run(){
                 try{
                     while (true){

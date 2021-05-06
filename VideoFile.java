@@ -11,6 +11,7 @@ public class VideoFile{
     private ChannelName channelName;
     private String dateCreated;
     private String path;
+    public String path_in_broker; 
     //private String length;
     //private String framerate;
     //private String frameWidth;

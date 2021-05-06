@@ -129,7 +129,17 @@ public class Consumer extends Thread implements Consumer_interface,Node {
                     str =  reader.readLine();
                     out.println(str); // the name of the channel or the hashtag
                     message_from_server = in.readLine();
-                    System.out.println(""+message_from_server);
+                    int size = Integer.parseInt(message_from_server); //size
+                    for(int i =0; i< size ;i++){
+                        message_from_server = in.readLine();
+                        System.out.println(""+message_from_server);
+                    }
+                    message_from_server = in.readLine();
+                    if(!message_from_server.equals("Not found")){
+                        System.out.println(""+message_from_server);
+                        str =  reader.readLine();
+                        out.println(str); // choice of video
+                    }
                 }
                 else{
                     if(str.equals("..")){
@@ -326,6 +336,102 @@ public class Consumer extends Thread implements Consumer_interface,Node {
             }
             
     }
+    //?-?
+
+    public void connect2(String video_name){
+        String str;
+        //BufferedReader reader = new BufferedReader(
+        //    new InputStreamReader(System.in));
+        String message_from_server;
+        String k = "end";
+        byte[] b = k.getBytes();
+
+        Byte w1 = new Byte(b[0]);
+        Byte w2 = new Byte(b[1]);
+        Byte w3 = new Byte(b[2]);
+        int part = 0;
+        FileOutputStream fos = null;
+        BufferedOutputStream bos = null;       
+        Socket clientSocket2;     
+            try{
+                //new ----------------------------------------------------------------------------
+                int file_size = 100003;
+                int bytesRead;
+                int current = 0;
+                System.out.println("Starting socket");
+                System.out.println("port is : "+port);
+                clientSocket = new Socket(Inet4Address.getLocalHost().getHostAddress(), port+3000 );
+                //clientSocket2 = new Socket(Inet4Address.getLocalHost().getHostAddress(), port+1000);
+                InputStream is = clientSocket.getInputStream();
+                byte [] mybytearray  = new byte [file_size];
+                //mpakale test
+                byte [] to_mp4_full  = new byte [10000000];
+                int pointer = 0;
+                String video_file  = "source-downloaded-"+port+"-"+id+"-"+video_name+".mp4";
+                fos = new FileOutputStream(video_file);
+                bos = new BufferedOutputStream(fos);
+                while (true){
+
+                    mybytearray  = new byte [file_size];
+                    
+                    try{
+                        bytesRead = is.read(mybytearray,0,mybytearray.length);
+                        
+                        current = 0;
+                        
+                        do {
+                            if(w1.equals(new Byte(mybytearray[current]))){
+                                //System.out.println("mpika"+ current);
+                                if(w2.equals(new Byte(mybytearray[current+1]))){
+                                    //System.out.println("mpika2"+ current);
+                                    if(w3.equals(new Byte(mybytearray[current+2]))){
+                                        //System.out.println("mpika3"+ current);
+                                        break;
+                                    }
+                                    else{
+                                        current++;
+                                    }
+                                }
+                                else{
+                                    current++;
+                                }
+                            }
+                            else{
+                                current++;
+                            }
+                        } while(true);
+
+                        for(int i = pointer; i<pointer+current;i++){
+                            to_mp4_full[i] = mybytearray[i-pointer]; // [0-current]
+                        }
+                        pointer+=current;//proti fora 100.000 , deyteri fora 109.481
+                                                
+                    }
+                    catch(FileNotFoundException e){
+                        System.out.println("Exception bro.");
+                    }
+                    
+                    if (current < 100000 ) {
+                        break;
+                    }
+                }
+                bos.write(to_mp4_full, 0 , pointer);
+                bos.flush();
+                System.out.println("File " + video_file
+                    + " downloaded (" + pointer + " bytes read)");
+                
+                is.close();
+                fos.close();
+                bos.close();
+
+                System.out.println("Closing readers");
+            }
+            catch (Exception e){
+                System.out.println("Exception in connect in consumer.");
+            }
+            
+    }
+
     public void disconnect(int d){
         try{
             in.close();
