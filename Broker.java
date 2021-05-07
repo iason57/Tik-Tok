@@ -149,20 +149,20 @@ public class Broker extends Thread implements Broker_interface,Node{
             //if ((int)myFile.length() != 0) {
                 int thesi =-1;
                 for (int i=0;i<channels_serviced.size();i++){
-                    if(channels_serviced.get(i).getChannelName().equals(temp_name_of_channel)){ // kanali me to teleytaio upload
+                    if(channels_serviced.get(i).getChannelName().equals(last_channel_that_uploaded.get(0))){ // kanali me to teleytaio upload
                         thesi = i;
                     }
                 }
                 System.out.println("thesi : "+thesi);
-                if(thesi !=1 ){
+                if(thesi != -1 ){
                     for(int i=0; i<subscribers.get(thesi).size();i++){ // get(thesi) giati exoun 1-1 antistoixia me ta channel names 
-                        subscribers.get(thesi).get(i).video_name_temp = last_video.getName();
+                        subscribers.get(thesi).get(i).video_name_temp = last_video_search.get(0).getName();
                         subscribers.get(thesi).get(i).connect(000);
                     }
                     //Share with all publisher-Consumers that are subscribed also
     
                     for(int i=0; i<subscribers_p.get(thesi).size();i++){ // get(thesi) giati exoun 1-1 antistoixia me ta channel names 
-                        subscribers_p.get(thesi).get(i).video_name_temp = last_video.getName();
+                        subscribers_p.get(thesi).get(i).video_name_temp = last_video_search.get(0).getName();//last_video.getName();
                         subscribers_p.get(thesi).get(i).download();
                     }
                 }
@@ -1142,6 +1142,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                         out.println("Give name : ");
                         greeting = in.readLine();
                         broker.temp_name_of_channel= c.getChannel().getChannelName();
+                        last_channel_that_uploaded.set(0,c.getChannel().getChannelName());
                         out.println("Give the path for the video");
                         String path = in.readLine();
                         ArrayList<String> hash = new ArrayList<String>();
@@ -1343,6 +1344,7 @@ public class Broker extends Thread implements Broker_interface,Node{
         number_of_publishers.add(0);
         VideoFile temp = new VideoFile();
         last_video_search.add(temp);
+        last_channel_that_uploaded.add("");
 
         Broker b1 = new Broker(6666, 5666);
         b1.start();
