@@ -1159,6 +1159,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                         ArrayList<VideoFile> vids= new ArrayList<VideoFile>();
                         hashed_key = -1;
                         theflag = false;
+                        boolean f = false;
                         if(broker.isRegistered_p(c.id)){
                             out.println("Want to search by Channel name or hashtag ?");
                             greeting = in.readLine();
@@ -1251,25 +1252,39 @@ public class Broker extends Thread implements Broker_interface,Node{
                                         } 
                                     }
                                     if(thesi_hash!=-1){
+                                        vids = new ArrayList<VideoFile>(c.channelName.getAllVideos());
                                         out.println(brokers.get(hashed_key).videos_hash.get(thesi_hash).size());
                                         for(int i=0;i<brokers.get(hashed_key).videos_hash.get(thesi_hash).size();i++){
-                                            out.println(brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i).getName()); 
+                                            f=false;
+                                            for(int l=0; l<vids.size();l++){
+                                                if(vids.get(l).getName().equals(brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i).getName())){
+                                                    f=true; // yparxei se ayton to video
+                                                    break;
+                                                }
+                                            }
+                                            if(!f){
+                                                out.println(brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i).getName()); 
+                                            }
+                                            else{
+                                                out.println("Invalid video(cannot watch)"); 
+                                            }
                                         }
-                                        out.println("Choose video: ");
+                                        out.println("Choose video (press enter if you don't want to choose any): ");
                                         greeting = in.readLine();
-                                        
-                                        for(int i=0;i<brokers.get(hashed_key).videos_hash.get(thesi_hash).size();i++){
-                                            if(brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i).getName().equals(greeting)){
-                                                
-                                                //if(!brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i).getName().equals(broker.last_video.getName())){
-                                                    brokers.get(hashed_key).last_video = brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i);
-                                                    last_video_search.set(0,brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i));
-                                                //}
-                                                System.out.println("before");
-                                                new Accept_Consumer_handlers_videos(brokers.get(hashed_key), brokers.get(hashed_key).serverSocket_forvideos, ((brokers.get(hashed_key).port)+3000), brokers.get(hashed_key).number_of_thread, brokers.get(hashed_key).registeredUsers, brokers.get(hashed_key).registeredPublishers).start();
-                                                Thread.sleep(3000);
-                                                System.out.println("after");
-                                                c.download2(greeting);
+                                        if(!greeting.equals("")){
+                                            for(int i=0;i<brokers.get(hashed_key).videos_hash.get(thesi_hash).size();i++){
+                                                if(brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i).getName().equals(greeting)){
+                                                    
+                                                    //if(!brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i).getName().equals(broker.last_video.getName())){
+                                                        brokers.get(hashed_key).last_video = brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i);
+                                                        last_video_search.set(0,brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i));
+                                                    //}
+                                                    System.out.println("before");
+                                                    new Accept_Consumer_handlers_videos(brokers.get(hashed_key), brokers.get(hashed_key).serverSocket_forvideos, ((brokers.get(hashed_key).port)+3000), brokers.get(hashed_key).number_of_thread, brokers.get(hashed_key).registeredUsers, brokers.get(hashed_key).registeredPublishers).start();
+                                                    Thread.sleep(3000);
+                                                    System.out.println("after");
+                                                    c.download2(greeting);
+                                                }
                                             }
                                         }
 

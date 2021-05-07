@@ -330,6 +330,7 @@ public class Publisher extends Thread implements Publisher_interface,Node{
             message_from_server = in.readLine();
             System.out.println("Connection established, server said : "+message_from_server);
             while(true){
+                System.out.println("Give your message : ");
                 str =  reader.readLine();
                 out.println(str);
                 if(str.equals("subscribe")){
@@ -667,7 +668,7 @@ public class Publisher extends Thread implements Publisher_interface,Node{
 
     public static void main(String args[]) {
         
-        Publisher t1 = new Publisher(5667,1);
+        Publisher t1 = new Publisher(5666,1);
         
         t1.start();
         

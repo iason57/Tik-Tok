@@ -107,6 +107,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
             System.out.println("edw2");
             System.out.println("Connection established, server said : "+message_from_server);
             while(true){
+                System.out.println("Give your message : ");
                 str =  reader.readLine();
                 out.println(str);
                 if(str.equals("subscribe")){
