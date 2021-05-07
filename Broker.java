@@ -389,9 +389,9 @@ public class Broker extends Thread implements Broker_interface,Node{
             try{
                 System.out.println("After 15 sec sleep");
                 //VideoFile new_video = publisher_list.get(0).getChannel().get_last_video();
-                VideoFile new_video = broker.last_video;
+                //VideoFile new_video = broker.last_video;
+                VideoFile new_video = last_video_search.get(0);
                 System.out.println("Video downloading to clients : "+ new_video.getName());
-                System.out.println("here : all vid size : "+publisher_list.get(0).getChannel().getAllVideos().size());
                 String video_file_to_send = new_video.getPath();
                 System.out.println("path : "+video_file_to_send);
                 //System.out.println(new_video.getHashtags());
@@ -783,9 +783,10 @@ public class Broker extends Thread implements Broker_interface,Node{
                                     for(int i =0; i< vids.size() ;i++){
                                         if(vids.get(i).getName().equals(greeting)){
                                             //vids.get(i).path_in_broker
-                                            if(!vids.get(i).getName().equals(broker.last_video.getName())){
-                                                broker.last_video = vids.get(i);
-                                            }
+                                            //if(!vids.get(i).getName().equals(brokers.get(hashed_key).last_video.getName())){
+                                                brokers.get(hashed_key).last_video = vids.get(i);
+                                                last_video_search.set(0,vids.get(i));
+                                            //}
                                             System.out.println("before");
                                             new Accept_Consumer_handlers_videos(brokers.get(hashed_key), brokers.get(hashed_key).serverSocket_forvideos, ((brokers.get(hashed_key).port)+3000), brokers.get(hashed_key).number_of_thread, brokers.get(hashed_key).registeredUsers, brokers.get(hashed_key).registeredPublishers).start();
                                             Thread.sleep(3000);
@@ -841,12 +842,15 @@ public class Broker extends Thread implements Broker_interface,Node{
                                         out.println("Choose video: ");
                                         greeting = in.readLine();
                                         
+                                        System.out.println(brokers.get(hashed_key).videos_hash.get(thesi_hash).size());
                                         for(int i=0;i<brokers.get(hashed_key).videos_hash.get(thesi_hash).size();i++){
+                                            System.out.println("compare : "+brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i).getName()+" with "+greeting);
                                             if(brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i).getName().equals(greeting)){
                                                 
-                                                if(!brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i).getName().equals(broker.last_video.getName())){
-                                                    broker.last_video = brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i);
-                                                }
+                                                //if(!brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i).getName().equals(broker.last_video.getName())){
+                                                    brokers.get(hashed_key).last_video = brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i);
+                                                    last_video_search.set(0,brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i));
+                                                //}
                                                 System.out.println("before");
                                                 new Accept_Consumer_handlers_videos(brokers.get(hashed_key), brokers.get(hashed_key).serverSocket_forvideos, ((brokers.get(hashed_key).port)+3000), brokers.get(hashed_key).number_of_thread, brokers.get(hashed_key).registeredUsers, brokers.get(hashed_key).registeredPublishers).start();
                                                 Thread.sleep(3000);
@@ -1194,9 +1198,10 @@ public class Broker extends Thread implements Broker_interface,Node{
                                     for(int i =0; i< vids.size() ;i++){
                                         if(vids.get(i).getName().equals(greeting)){
                                             //vids.get(i).path_in_broker
-                                            if(!vids.get(i).getName().equals(broker.last_video.getName())){
-                                                broker.last_video = vids.get(i);
-                                            }
+                                            //if(!vids.get(i).getName().equals(broker.last_video.getName())){
+                                                brokers.get(hashed_key).last_video = vids.get(i);
+                                                last_video_search.set(0,vids.get(i));
+                                            //}
                                             System.out.println("before");
                                             new Accept_Consumer_handlers_videos(brokers.get(hashed_key), brokers.get(hashed_key).serverSocket_forvideos, ((brokers.get(hashed_key).port)+3000), brokers.get(hashed_key).number_of_thread, brokers.get(hashed_key).registeredUsers, brokers.get(hashed_key).registeredPublishers).start();
                                             Thread.sleep(3000);
@@ -1255,9 +1260,10 @@ public class Broker extends Thread implements Broker_interface,Node{
                                         for(int i=0;i<brokers.get(hashed_key).videos_hash.get(thesi_hash).size();i++){
                                             if(brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i).getName().equals(greeting)){
                                                 
-                                                if(!brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i).getName().equals(broker.last_video.getName())){
-                                                    broker.last_video = brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i);
-                                                }
+                                                //if(!brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i).getName().equals(broker.last_video.getName())){
+                                                    brokers.get(hashed_key).last_video = brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i);
+                                                    last_video_search.set(0,brokers.get(hashed_key).videos_hash.get(thesi_hash).get(i));
+                                                //}
                                                 System.out.println("before");
                                                 new Accept_Consumer_handlers_videos(brokers.get(hashed_key), brokers.get(hashed_key).serverSocket_forvideos, ((brokers.get(hashed_key).port)+3000), brokers.get(hashed_key).number_of_thread, brokers.get(hashed_key).registeredUsers, brokers.get(hashed_key).registeredPublishers).start();
                                                 Thread.sleep(3000);
@@ -1335,15 +1341,19 @@ public class Broker extends Thread implements Broker_interface,Node{
         
         number_of_clients.add(0);
         number_of_publishers.add(0);
+        VideoFile temp = new VideoFile();
+        last_video_search.add(temp);
 
         Broker b1 = new Broker(6666, 5666);
         b1.start();
         brokers.add(b1);
-        /*
+        
 
         Broker b2 = new Broker(6667,5667);
         b2.start();
         brokers.add(b2);
+
+        /*
 
         Broker b3 = new Broker(6668,5668);
         b3.start();

@@ -179,6 +179,7 @@ public class Publisher extends Thread implements Publisher_interface,Node{
 
             VideoFile new_video = new VideoFile(name,channelName,(String)dtf.format(now),path,hash);
             broker.last_video = new_video;
+            last_video_search.set(0, new_video);
             System.out.println("VideoFile created");
             channelName.add_video(new_video);
             //System.out.println("VideoFile added to list");
@@ -666,7 +667,7 @@ public class Publisher extends Thread implements Publisher_interface,Node{
 
     public static void main(String args[]) {
         
-        Publisher t1 = new Publisher(5666,1);
+        Publisher t1 = new Publisher(5667,1);
         
         t1.start();
         
