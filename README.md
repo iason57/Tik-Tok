@@ -9,6 +9,6 @@ https://www.baeldung.com/a-guide-to-java-sockets
 
 
 1. save every file in txt (100.000 chunks) and then open read and connect them so 
-we can send files through the home network and not only the same computer
+we can send files through the home network and not only the same computer (maybe dont need the socket recconect, we will see)
 
 
