@@ -673,8 +673,15 @@ public class Broker extends Thread implements Broker_interface,Node{
                         //System.out.println("flag 1");
 
                         //------------------------------------------------------------------------------------------------------------------
-                        
-                        hashed_key = broker.thesi_broker_hash(response_for_subscribe);
+                        hashed_key=0;
+                        //hashed_key = broker.thesi_broker_hash(response_for_subscribe);
+                        for(int k=0;k<brokers.size();k++){
+                            for(int i=0;i<brokers.get(k).registeredPublishers.size();i++){
+                                if(brokers.get(k).registeredPublishers.get(i).channelName.getChannelName().equals(response_for_subscribe)){
+                                    hashed_key = k;
+                                }
+                            }
+                        }
 
                         /*
                         String hashed_chName = (broker.calculateKeys(response_for_subscribe));
@@ -756,7 +763,14 @@ public class Broker extends Thread implements Broker_interface,Node{
                                 // search by channel name
                                 out.println("Give name : ");
                                 greeting = in.readLine(); // den exoume kanei elegxo oti den yparxei to name i to hashtag
-                                hashed_key  = broker.thesi_broker_hash(greeting);
+                                //hashed_key = broker.thesi_broker_hash(greeting);
+                                for(int k=0;k<brokers.size();k++){
+                                    for(int i=0;i<brokers.get(k).registeredPublishers.size();i++){
+                                        if(brokers.get(k).registeredPublishers.get(i).channelName.getChannelName().equals(greeting)){
+                                            hashed_key = k;
+                                        }
+                                    }
+                                }
                                 //System.out.println("hashed key for : "+greeting+" is : "+hashed_key);
                                 for(ChannelName x : brokers.get(hashed_key).channels_serviced){
                                     if(x.getChannelName().equals(greeting)){
@@ -1098,8 +1112,15 @@ public class Broker extends Thread implements Broker_interface,Node{
                             out.println(x.getChannelName());
                         }
                         response_for_subscribe = in.readLine();
-                        
-                        hashed_key = broker.thesi_broker_hash(response_for_subscribe);
+                        hashed_key =0;
+                        //hashed_key = broker.thesi_broker_hash(response_for_subscribe);
+                        for(int k=0;k<brokers.size();k++){
+                            for(int i=0;i<brokers.get(k).registeredPublishers.size();i++){
+                                if(brokers.get(k).registeredPublishers.get(i).channelName.getChannelName().equals(response_for_subscribe)){
+                                    hashed_key = k;
+                                }
+                            }
+                        }
                         boolean flag = false, flag_c = true;
                         for ( int i =0; i < brokers.get(hashed_key).channels_serviced.size() ; i++ ){
                             if ( brokers.get(hashed_key).channels_serviced.get(i).getChannelName().equals(response_for_subscribe) ){
@@ -1173,7 +1194,14 @@ public class Broker extends Thread implements Broker_interface,Node{
                                 // search by channel name
                                 out.println("Give name : ");
                                 greeting = in.readLine(); // den exoume kanei elegxo oti den yparxei to name i to hashtag
-                                hashed_key  = broker.thesi_broker_hash(greeting);
+                                //hashed_key  = broker.thesi_broker_hash(greeting);
+                                for(int k=0;k<brokers.size();k++){
+                                    for(int i=0;i<brokers.get(k).registeredPublishers.size();i++){
+                                        if(brokers.get(k).registeredPublishers.get(i).channelName.getChannelName().equals(greeting)){
+                                            hashed_key = k;
+                                        }
+                                    }
+                                }
                                 //System.out.println("hashed key for : "+greeting+" is : "+hashed_key);
                                 for(ChannelName x : brokers.get(hashed_key).channels_serviced){
                                     if(x.getChannelName().equals(greeting)){

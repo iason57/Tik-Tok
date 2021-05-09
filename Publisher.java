@@ -668,7 +668,7 @@ public class Publisher extends Thread implements Publisher_interface,Node{
 
     public static void main(String args[]) {
         
-        Publisher t1 = new Publisher(5666,1);
+        Publisher t1 = new Publisher(5667,1);
         
         t1.start();
         
