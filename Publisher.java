@@ -402,7 +402,7 @@ public class Publisher extends Thread implements Publisher_interface,Node{
                             size = Integer.parseInt(message_from_server);
                             for (int j=0;j<size;j++){
                                 message_from_server = in.readLine(); 
-                                System.out.println(""+message_from_server);
+                                if(!message_from_server.equals("Invalid video(cannot watch)")) System.out.println(""+message_from_server);
                             }
                             message_from_server = in.readLine(); //choose video
                             System.out.println(""+message_from_server);
@@ -668,7 +668,7 @@ public class Publisher extends Thread implements Publisher_interface,Node{
 
     public static void main(String args[]) {
         
-        Publisher t1 = new Publisher(5666,1);
+        Publisher t1 = new Publisher(5667,1);
         
         t1.start();
         
