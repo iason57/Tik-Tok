@@ -145,38 +145,53 @@ public class Broker extends Thread implements Broker_interface,Node{
 
     public void share_to_subs(String path){
         try{
+
             //File myFile = new File (path);
+
             //if ((int)myFile.length() != 0) {
+
+                int thesi_broker = this.thesi_broker_hash(last_channel_that_uploaded.get(0));
+
+
+
                 int thesi =-1;
-                for (int i=0;i<channels_serviced.size();i++){
-                    if(channels_serviced.get(i).getChannelName().equals(last_channel_that_uploaded.get(0))){ // kanali me to teleytaio upload
+
+                for (int i=0;i<brokers.get(thesi_broker).channels_serviced.size();i++){
+
+                    if(brokers.get(thesi_broker).channels_serviced.get(i).getChannelName().equals(last_channel_that_uploaded.get(0))){ // kanali me to teleytaio upload
+
                         thesi = i;
+
                     }
+
                 }
+
                 System.out.println("thesi : "+thesi);
+
                 if(thesi != -1 ){
-                    for(int i=0; i<subscribers.get(thesi).size();i++){ // get(thesi) giati exoun 1-1 antistoixia me ta channel names 
-                        subscribers.get(thesi).get(i).video_name_temp = last_video_search.get(0).getName();
-                        subscribers.get(thesi).get(i).connect(000);
+
+                    for(int i=0; i<brokers.get(thesi_broker).subscribers.get(thesi).size();i++){ // get(thesi) giati exoun 1-1 antistoixia me ta channel names 
+
+                        brokers.get(thesi_broker).subscribers.get(thesi).get(i).video_name_temp = last_video_search.get(0).getName();
+
+                        brokers.get(thesi_broker).subscribers.get(thesi).get(i).connect(000);
+
                     }
+
                     //Share with all publisher-Consumers that are subscribed also
+
     
-                    for(int i=0; i<subscribers_p.get(thesi).size();i++){ // get(thesi) giati exoun 1-1 antistoixia me ta channel names 
-                        subscribers_p.get(thesi).get(i).video_name_temp = last_video_search.get(0).getName();//last_video.getName();
-                        subscribers_p.get(thesi).get(i).download();
+
+                    for(int i=0; i<brokers.get(thesi_broker).subscribers_p.get(thesi).size();i++){ // get(thesi) giati exoun 1-1 antistoixia me ta channel names 
+
+                        brokers.get(thesi_broker).subscribers_p.get(thesi).get(i).video_name_temp = last_video_search.get(0).getName();//last_video.getName();
+
+                        brokers.get(thesi_broker).subscribers_p.get(thesi).get(i).download();
+
                     }
-                }
-                
-                /* Sharing with all consumers in broker : TEST
 
-                for(int i=0; i<registeredUsers.size();i++){
-                    registeredUsers.get(i).video_name_temp = last_video.getName();
-                    registeredUsers.get(i).connect(000);
                 }
 
-                */
-                
-            //}
         }
         catch(Exception e)
         {
@@ -1019,7 +1034,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                     String test = "default_name";
                     Publisher temp = new Publisher(x,number_of_thread,port,test);
                     temp.setBroker(broker);
-                    registeredPublishers.add(new Publisher(temp));
+                    //registeredPublishers.add(new Publisher(temp));
                     System.out.println("Now publishers size is -------------- "+registeredPublishers.size());
                     Thread.sleep(2000); // ypo synthiki genika milwntas alla problima gia meta
                     //System.out.println("Prin thn apothikeysh toy video ");
@@ -1030,7 +1045,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                     //initialize_messages = true;
                     
                     //System.out.println("Prin ta minimata me ton publisher2");
-                    new Publisher_handlers_messages(x2,number_of_thread,port+2000,broker,registeredPublishers,registeredPublishers.get(registeredPublishers.size()-1)).start();
+                    new Publisher_handlers_messages(x2,number_of_thread,port+2000,broker,registeredPublishers,temp).start();
                     number_of_thread +=1;
                 }
             }
@@ -1158,6 +1173,8 @@ public class Broker extends Thread implements Broker_interface,Node{
                         out.println("Give channel name : ");
                         greeting = in.readLine();
                         c.channelName.setChannelName(greeting);
+                        int thesi=broker.thesi_broker_hash(greeting);
+                        brokers.get(thesi).registeredPublishers.add(c);
                     }
                     else if(greeting.equals("push")){
                         out.println("Give name : ");
@@ -1398,12 +1415,13 @@ public class Broker extends Thread implements Broker_interface,Node{
         b2.start();
         brokers.add(b2);
 
-        /*
+
 
         Broker b3 = new Broker(6668,5668);
         b3.start();
         brokers.add(b3);
 
+        /*
         Broker b4 = new Broker(6669,5669);
         b4.start();
         brokers.add(b4);
