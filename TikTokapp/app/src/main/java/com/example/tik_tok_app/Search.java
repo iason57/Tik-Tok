@@ -1,13 +1,18 @@
 package com.example.tik_tok_app;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.MediaController;
+import android.widget.Toast;
+import android.widget.VideoView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,11 +23,17 @@ public class Search extends AppCompatActivity {
 
     private String[] all_searched_videos;
     private ArrayList<String> kati = new ArrayList<>();
+    private Button play_video;
+    private VideoView videoView;
+    private MediaController mc;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
+        all_searched_videos = new String[]{"5min","count"};
 
         // Image button on bottom
 
@@ -79,6 +90,41 @@ public class Search extends AppCompatActivity {
             }
         });
 
+
+        //PROSPATHEIA GIA EMFANISI TOY VIDEO SE OLI TIN OTHONI
+        play_video = findViewById(R.id.search_button_play);
+
+        play_video.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText str = findViewById(R.id.search_input_play);
+                String name_ = str.getText().toString();
+                boolean f = getVideo(name_);
+                if(f==true){
+
+                    String path = "storage/self/primary/Download/"+name_+".mp4";
+                    Uri a =Uri.parse(path);
+                    Intent test_ = new Intent(Intent.ACTION_VIEW,a);
+                    test_.setDataAndType(a,"video/mp4");
+                    startActivity(test_);
+                }
+                else{
+                    Toast.makeText(Search.this,"No such video!",Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+
+    }
+    private boolean getVideo(String name_) {
+        boolean flag =false;
+        for(int i=0;i<all_searched_videos.length;i++){
+            if(all_searched_videos[i].equals(name_)){
+                flag = true;
+                break;
+            }
+        }
+        return flag;
     }
 
     private void showSearchByHashtags(String hash_) {
@@ -112,4 +158,8 @@ public class Search extends AppCompatActivity {
         ListView listView_hashtags = (ListView)findViewById(R.id.search_list);
         listView_hashtags.setAdapter(adapter_hashtags);
     }
+
+
+
+
 }
