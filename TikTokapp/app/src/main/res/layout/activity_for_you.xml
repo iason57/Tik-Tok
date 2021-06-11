@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ListView
-        android:id="@+id/videos_video"
+        android:id="@+id/videos_video_list"
         android:layout_width="334dp"
         android:layout_height="181dp"
         android:layout_marginTop="64dp"
@@ -56,11 +56,12 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <VideoView
-        android:id="@+id/videoView"
+        android:id="@+id/videos_videoPlayer"
         android:layout_width="329dp"
         android:layout_height="226dp"
         android:layout_marginTop="356dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.463"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
