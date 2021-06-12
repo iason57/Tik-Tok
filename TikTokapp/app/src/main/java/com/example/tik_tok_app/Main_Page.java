@@ -4,6 +4,7 @@ package com.example.tik_tok_app;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -135,6 +136,17 @@ public class Main_Page extends AppCompatActivity {
             }
         });
 
+        //Image button rec
+
+        ImageButton rec = findViewById(R.id.main_button_rec);
+        rec.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+                startActivity(intent);
+            }
+        });
+
     }
 
     @Override
@@ -189,4 +201,5 @@ public class Main_Page extends AppCompatActivity {
         ListView listView_channels = (ListView)findViewById(R.id.main_list);
         listView_channels.setAdapter(adapter_channel);
     }
+
 }

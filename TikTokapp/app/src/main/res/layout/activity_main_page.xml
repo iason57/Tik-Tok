@@ -164,7 +164,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
-        android:id="@+id/imageButton2"
+        android:id="@+id/main_button_rec"
         android:layout_width="69dp"
         android:layout_height="39dp"
         android:layout_marginStart="330dp"
