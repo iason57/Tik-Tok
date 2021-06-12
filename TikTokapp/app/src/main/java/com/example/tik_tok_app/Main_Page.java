@@ -3,8 +3,10 @@ package com.example.tik_tok_app;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -18,7 +20,10 @@ import android.widget.VideoView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.net.Socket;
 import java.util.ArrayList;
+
+import AppNode.Publisher;
 
 public class Main_Page extends AppCompatActivity {
     private String [] channels_searched;
@@ -26,15 +31,60 @@ public class Main_Page extends AppCompatActivity {
     private Button submit_upload;
     private VideoView videoView;
     private MediaController mc;
-
-
+    private static int VIDEO_REQUEST = 101;
+    private Uri videoUri = null;
+    private Socket clientSocket;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page);
 
+        int is_init = getIntent().getIntExtra("initialized_socket",-2); // not initialized --> initialized : 0
+
         presentList();
+
+        class Test_socket extends AsyncTask<String, String, String> {
+
+            @Override
+            protected String doInBackground(String...strings) {
+                try{
+                    Log.i("localipv4","Enter try :"+strings[0]);
+                    clientSocket = new Socket("192.168.1.14",6666);
+                    //Socket clientSocket = new Socket(Inet4Address.getLocalHost().getHostAddress(),6666);
+                    Log.i("localipv4","passed socket");
+                    //Inet4Address.getLocalHost().getHostAddress()
+                }
+                catch(Exception e){
+                    Log.i("localipv4",e.toString());
+
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                // do in screen when you receive something from server in doInBackground
+                // when thread finishes he will call onPostExecute and transform some EditText
+                // or something like that !
+
+            }
+        }
+
+        if(is_init == -2 ) {
+            Test_socket a = new Test_socket();
+            a.execute("Hello");
+            Publisher t1 = new Publisher(5668,1);
+
+            t1.start();
+        }
+
+        // testing sockets
+
+
+
+
+        // end test
 
         // Image button on bottom
 
@@ -46,6 +96,7 @@ public class Main_Page extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Main_Page.this, Main_Page.class);
+                intent.putExtra("initialized_socket",0);
                 startActivity(intent);
             }
         });
@@ -79,6 +130,8 @@ public class Main_Page extends AppCompatActivity {
                 EditText main_search = findViewById(R.id.main_input_search);
                 String channel_search = main_search.getText().toString();
                 findChannelName(channel_search);
+                //
+
             }
         });
 
@@ -142,8 +195,8 @@ public class Main_Page extends AppCompatActivity {
         rec.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-                startActivity(intent);
+                Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+                startActivityForResult(intent,VIDEO_REQUEST);
             }
         });
 
@@ -152,8 +205,15 @@ public class Main_Page extends AppCompatActivity {
     @Override
     public void onActivityResult(int req , int resultCode, Intent data){
         super.onActivityResult(req,resultCode,data);
-        if (req == 1){
-            Uri videoUri = data.getData();
+
+        if(req == VIDEO_REQUEST && resultCode==RESULT_OK){
+            videoUri = data.getData();
+
+            videoView.setVisibility(View.VISIBLE);
+            videoView.setVideoURI(videoUri);
+            videoView.start();
+        }else if (req == 1){
+            videoUri = data.getData();
             //save video sto channel ekeinou poy patise to upload
             //give name of the video hashtags ..
 
@@ -161,8 +221,6 @@ public class Main_Page extends AppCompatActivity {
             videoView.setVisibility(View.VISIBLE);
             videoView.setVideoURI(videoUri);
             videoView.start();
-
-
         }
     }
 

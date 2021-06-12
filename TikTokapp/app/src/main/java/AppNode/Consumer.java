@@ -1,9 +1,10 @@
+package AppNode;
+
 import java.util.*;
 import java.net.*;
 import java.io.*;
-import java.awt.Desktop;
 
-public class Consumer extends Thread implements Consumer_interface,Node {
+public class Consumer extends Thread implements Consumer_interface, Node {
 
     public Socket clientSocket;
     public Socket clientSocket2;
@@ -66,16 +67,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
     public void disconnect(Broker b,String str){
 
     }
-    public void playData(String str){//,Value v
-        try{
-            Desktop.getDesktop().open(new File(str)); //opening the file after client gets it.
-        }
-        catch(Exception e){
 
-        }
-        
-    }
-    
     //Node methods
     
     public void init(int port){

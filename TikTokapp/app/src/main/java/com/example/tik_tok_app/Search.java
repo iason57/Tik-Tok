@@ -45,6 +45,7 @@ public class Search extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Search.this, Main_Page.class);
+                intent.putExtra("initialized_socket",0);
                 startActivity(intent);
             }
         });

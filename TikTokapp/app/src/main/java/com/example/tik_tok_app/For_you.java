@@ -3,6 +3,7 @@ package com.example.tik_tok_app;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Looper;
 import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.View;
@@ -44,6 +45,7 @@ public class For_you extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(For_you.this, Main_Page.class);
+                intent.putExtra("initialized_socket",0);
                 startActivity(intent);
             }
         });
