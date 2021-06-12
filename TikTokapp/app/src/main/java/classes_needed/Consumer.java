@@ -1,10 +1,10 @@
-package AppNode;
+package classes_needed;
 
 import java.util.*;
 import java.net.*;
 import java.io.*;
 
-public class Consumer extends Thread implements Consumer_interface, Node {
+public class Consumer extends Thread implements Consumer_interface,Node_ {
 
     public Socket clientSocket;
     public Socket clientSocket2;
@@ -68,6 +68,7 @@ public class Consumer extends Thread implements Consumer_interface, Node {
 
     }
 
+    
     //Node methods
     
     public void init(int port){
@@ -510,6 +511,7 @@ public class Consumer extends Thread implements Consumer_interface, Node {
         }
     }
     public static void main(String args[]) {
+        
         Consumer t1 = new Consumer(6668,1);
         
         t1.start();

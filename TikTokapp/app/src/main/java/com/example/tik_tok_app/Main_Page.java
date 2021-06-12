@@ -1,9 +1,8 @@
 package com.example.tik_tok_app;
-
-
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -18,12 +17,29 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.math.BigInteger;
 import java.net.Socket;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 
-import AppNode.Publisher;
+import classes_needed.Broker;
+import classes_needed.ChannelName;
+import classes_needed.Consumer;
+import classes_needed.Node_;
+import classes_needed.Publisher;
+import classes_needed.VideoFile;
+import java.io.*;
 
 public class Main_Page extends AppCompatActivity {
     private String [] channels_searched;
@@ -35,6 +51,7 @@ public class Main_Page extends AppCompatActivity {
     private Uri videoUri = null;
     private Socket clientSocket;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,24 +61,16 @@ public class Main_Page extends AppCompatActivity {
 
         presentList();
 
-        class Test_socket extends AsyncTask<String, String, String> {
+        class Publisher_ extends AsyncTask<Integer,Integer,Integer> {
 
             @Override
-            protected String doInBackground(String...strings) {
-                try{
-                    Log.i("localipv4","Enter try :"+strings[0]);
-                    clientSocket = new Socket("192.168.1.14",6666);
-                    //Socket clientSocket = new Socket(Inet4Address.getLocalHost().getHostAddress(),6666);
-                    Log.i("localipv4","passed socket");
-                    //Inet4Address.getLocalHost().getHostAddress()
-                }
-                catch(Exception e){
-                    Log.i("localipv4",e.toString());
-
-                }
-                return null;
+            protected Integer doInBackground(Integer...port) {
+                Publisher t2 = new Publisher(port[0],1);
+                t2.start();
+                return 1;
             }
 
+            /*
             @Override
             protected void onPostExecute(String result) {
                 // do in screen when you receive something from server in doInBackground
@@ -69,14 +78,13 @@ public class Main_Page extends AppCompatActivity {
                 // or something like that !
 
             }
+            */
         }
 
         if(is_init == -2 ) {
-            Test_socket a = new Test_socket();
-            a.execute("Hello");
-            Publisher t1 = new Publisher(5668,1);
+            Publisher_ t1 = new Publisher_();
 
-            t1.start();
+            t1.execute(5668);
         }
 
         // testing sockets

@@ -1,4 +1,4 @@
-package AppNode;
+package classes_needed;
 
 interface Publisher_interface{
     public void addHashTag(String str);

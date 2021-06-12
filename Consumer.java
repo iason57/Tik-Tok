@@ -518,6 +518,7 @@ public class Consumer extends Thread implements Consumer_interface,Node {
         }
     }
     public static void main(String args[]) {
+        
         Consumer t1 = new Consumer(6668,1);
         
         t1.start();

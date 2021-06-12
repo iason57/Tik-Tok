@@ -1,4 +1,8 @@
-package AppNode;
+package classes_needed;
+
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 
 import java.util.*;
 import java.net.*;
@@ -9,7 +13,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class Publisher extends Thread implements Publisher_interface,Node{
+public class Publisher extends Thread implements Publisher_interface,Node_{
 
     ArrayList<String> hash = new ArrayList<String>();
     public Socket clientSocket;
@@ -84,6 +88,7 @@ public class Publisher extends Thread implements Publisher_interface,Node{
         
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void push(String new_video_name, String path, ArrayList<String> hash ){
         System.out.println("Pushing video!");
         // v   : video 
@@ -151,7 +156,8 @@ public class Publisher extends Thread implements Publisher_interface,Node{
         return hashed_key;
     }
 
-    public void upload_video(String new_video_name,String path,ArrayList<String> hash){
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void upload_video(String new_video_name, String path, ArrayList<String> hash){
         //System.out.println("In upload");
         BufferedReader reader = new BufferedReader(
             new InputStreamReader(System.in));
@@ -165,6 +171,8 @@ public class Publisher extends Thread implements Publisher_interface,Node{
                 
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");  
             LocalDateTime now = LocalDateTime.now();
+
+            System.out.println("After time");
             
             //channel name already a variable in this class
 
@@ -265,7 +273,7 @@ public class Publisher extends Thread implements Publisher_interface,Node{
             fis = new FileInputStream(myFile);
             bis = new BufferedInputStream(fis);
             bis.read(allfile,0,(int)myFile.length());
-            clientSocket_tosend = new Socket(Inet4Address.getLocalHost().getHostAddress(), port-1000); // htan port + 2000 : emeis theloume video 5666
+            clientSocket_tosend = new Socket("192.168.1.14", port-1000); // htan port + 2000 : emeis theloume video 5666
             //counting_port +=1;
             os = clientSocket_tosend.getOutputStream();                                           // kai messages 7666
             //System.out.println("after read");
@@ -305,8 +313,8 @@ public class Publisher extends Thread implements Publisher_interface,Node{
     public void init(int i){
         //while(true){
             try{
-                clientSocket = new Socket(Inet4Address.getLocalHost().getHostAddress(), port);
-                clientSocket_tosend = new Socket(Inet4Address.getLocalHost().getHostAddress(), port+3000);
+                clientSocket = new Socket("192.168.1.14", port);
+                clientSocket_tosend = new Socket("192.168.1.14", port+3000);
             }
             catch(Exception e){
     
@@ -321,7 +329,7 @@ public class Publisher extends Thread implements Publisher_interface,Node{
         BufferedReader reader = new BufferedReader(
             new InputStreamReader(System.in));
         String message_from_server;
-        //System.out.println("Reader ok ");
+        System.out.println("Reader ok ");
         System.out.println("port is  "+ port1);
         try{
             Socket clientSocket2 = clientSocket_tosend;
@@ -332,7 +340,7 @@ public class Publisher extends Thread implements Publisher_interface,Node{
             System.out.println("Connection established, server said : "+message_from_server);
             while(true){
                 System.out.println("Give your message : ");
-                str =  reader.readLine();
+                str =  "push";//reader.readLine();
                 out.println(str);
                 if(str.equals("subscribe")){
                     System.out.println("Available channels : ");
@@ -430,7 +438,8 @@ public class Publisher extends Thread implements Publisher_interface,Node{
                     out.println(str);
                 }
                 else if(str.equals("push")){
-                    // get name 
+                    // get name
+                    /*
                     message_from_server = in.readLine();
                     System.out.println(""+message_from_server);
                     str =  reader.readLine();
@@ -450,6 +459,21 @@ public class Publisher extends Thread implements Publisher_interface,Node{
                             break;
                         }
                     }
+                    // message : Start to push video
+                    message_from_server = in.readLine();
+                    System.out.println(""+message_from_server);
+                    */
+                    message_from_server = in.readLine();
+                    System.out.println(""+message_from_server);
+                    out.println("video1");
+                    // get path
+                    message_from_server = in.readLine();
+                    System.out.println(""+message_from_server);
+                    out.println("video1.mp4");
+                    // give the hashes
+                    message_from_server = in.readLine();
+                    System.out.println(""+message_from_server);
+                    out.println("exit");
                     // message : Start to push video
                     message_from_server = in.readLine();
                     System.out.println(""+message_from_server);
@@ -485,7 +509,7 @@ public class Publisher extends Thread implements Publisher_interface,Node{
                 int file_size = 100003;
                 int bytesRead;
                 int current = 0;
-                clientSocket = new Socket(Inet4Address.getLocalHost().getHostAddress(), port+4000 );
+                clientSocket = new Socket("192.168.1.14", port+4000 );
                 InputStream is = clientSocket.getInputStream();
                 byte [] mybytearray  = new byte [file_size];
                 //mpakale test
@@ -573,7 +597,7 @@ public class Publisher extends Thread implements Publisher_interface,Node{
                 int file_size = 100003;
                 int bytesRead;
                 int current = 0;
-                clientSocket = new Socket(Inet4Address.getLocalHost().getHostAddress(), port+4000 );
+                clientSocket = new Socket("192.168.1.14", port+4000 );
                 InputStream is = clientSocket.getInputStream();
                 byte [] mybytearray  = new byte [file_size];
                 //mpakale test
@@ -654,12 +678,14 @@ public class Publisher extends Thread implements Publisher_interface,Node{
         return null;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void run(){
         try{
             this.init(port);
             //this.download();
             Thread.sleep(2000);
-            this.connect(port + 3000);
+            this.connect(port + 3000); //------------------------------------------------------!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
             
         }
         catch(Exception e){

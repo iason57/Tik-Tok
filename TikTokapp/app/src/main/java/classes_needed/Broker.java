@@ -1,4 +1,4 @@
-package AppNode;
+package classes_needed;
 
 import java.util.*;
 import java.util.concurrent.Flow.Subscriber;
@@ -11,7 +11,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 
-public class Broker extends Thread implements Broker_interface, Node {
+public class Broker extends Thread implements Broker_interface,Node_{
 
     public List<Consumer> registeredUsers;
     public List<Publisher> registeredPublishers;
@@ -1101,7 +1101,7 @@ public class Broker extends Thread implements Broker_interface, Node {
         private List<Publisher> sub;
         private Publisher c;
 
-        public Publisher_handlers_messages(Socket socket, int num, int p, Broker b, List<Publisher> registers, Publisher p_temp) {//, Consumer temp
+        public Publisher_handlers_messages(Socket socket,int num,int p, Broker b, List<Publisher> registers, Publisher p_temp) {//, Consumer temp
             this.clientSocket = socket;
             id = num;
             pport = p;
