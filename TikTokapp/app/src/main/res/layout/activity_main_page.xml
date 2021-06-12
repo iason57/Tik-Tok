@@ -8,10 +8,10 @@
 
     <Button
         android:id="@+id/main_button_upload"
-        android:layout_width="119dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="270dp"
-        android:layout_marginLeft="270dp"
+        android:layout_width="wrap_content"
+        android:layout_height="49dp"
+        android:layout_marginStart="232dp"
+        android:layout_marginLeft="232dp"
         android:layout_marginTop="544dp"
         android:backgroundTint="#202020"
         android:text="Upload"
@@ -21,7 +21,7 @@
     <EditText
         android:id="@+id/main_input_upload_videoName"
         android:layout_width="113dp"
-        android:layout_height="42dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:layout_marginLeft="5dp"
         android:layout_marginTop="548dp"
@@ -84,8 +84,8 @@
 
     <EditText
         android:id="@+id/main_input_sub"
-        android:layout_width="255dp"
-        android:layout_height="41dp"
+        android:layout_width="225dp"
+        android:layout_height="46dp"
         android:layout_marginStart="5dp"
         android:layout_marginLeft="5dp"
         android:layout_marginTop="484dp"
@@ -150,17 +150,28 @@
 
     <EditText
         android:id="@+id/main_input_upload_hashtags"
-        android:layout_width="131dp"
-        android:layout_height="41dp"
-        android:layout_marginStart="128dp"
-        android:layout_marginLeft="128dp"
+        android:layout_width="114dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="116dp"
+        android:layout_marginLeft="116dp"
         android:layout_marginTop="548dp"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:hint="Hashtags"
-        android:textAlignment="center"
         android:gravity="center"
+        android:hint="Hashtags"
+        android:inputType="textPersonName"
+        android:textAlignment="center"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/imageButton2"
+        android:layout_width="69dp"
+        android:layout_height="39dp"
+        android:layout_marginStart="330dp"
+        android:layout_marginLeft="330dp"
+        android:layout_marginTop="548dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/camera" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
