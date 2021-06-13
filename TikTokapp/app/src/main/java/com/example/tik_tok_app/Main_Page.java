@@ -1,9 +1,12 @@
 package com.example.tik_tok_app;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.FileUtils;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -50,6 +53,13 @@ public class Main_Page extends AppCompatActivity {
     private static int VIDEO_REQUEST = 101;
     private Uri videoUri = null;
     private Socket clientSocket;
+    private String v_name;
+    private String [] v_hashtags;
+    private Publisher_ t1;
+    private Publisher p;
+    private Executor new_temp;
+    private ArrayList<String> all_channels;
+    private int count_searches = 0;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -59,40 +69,29 @@ public class Main_Page extends AppCompatActivity {
 
         int is_init = getIntent().getIntExtra("initialized_socket",-2); // not initialized --> initialized : 0
 
-        presentList();
 
-        class Publisher_ extends AsyncTask<Integer,Integer,Integer> {
-
-            @Override
-            protected Integer doInBackground(Integer...port) {
-                Publisher t2 = new Publisher(port[0],1);
-                t2.start();
-                return 1;
-            }
-
-            /*
-            @Override
-            protected void onPostExecute(String result) {
-                // do in screen when you receive something from server in doInBackground
-                // when thread finishes he will call onPostExecute and transform some EditText
-                // or something like that !
-
-            }
-            */
-        }
 
         if(is_init == -2 ) {
-            Publisher_ t1 = new Publisher_();
-
-            t1.execute(5668);
+            // auto ginetai mono thn proti for
+            // ara prepei seiriaziable publisher
+            // kai na bei se intent
+            // giati alliws apla den ginetai initialize
+            // thn deyterh fora
+            // den yphrxei o publisher
+            t1 = new Publisher_();
+            p = new Publisher(5666,1);
+            t1.execute(p);
+            Log.i("test","init pub "+p.port);
         }
 
-        // testing sockets
 
+        String [] data_ = new String[2];
+        data_[0]="subscribe";
+        data_[1]="present";
+        new_temp = new Executor(p);
+        new_temp.execute(data_);
 
-
-
-        // end test
+        presentList();
 
         // Image button on bottom
 
@@ -137,15 +136,23 @@ public class Main_Page extends AppCompatActivity {
                 //main input Search
                 EditText main_search = findViewById(R.id.main_input_search);
                 String channel_search = main_search.getText().toString();
+
+                if(count_searches==0){
+                    ListView listView_channels = (ListView)findViewById(R.id.main_list);
+
+                    for(int i=0; i<listView_channels.getAdapter().getCount();i++){
+                        all_channels.add(listView_channels.getAdapter().getItem(i).toString());
+                    }
+                }
                 findChannelName(channel_search);
-                //
+
 
             }
         });
 
 
 
-        //button search channel name
+        //button for subscribe
 
         Button sub_submit = findViewById(R.id.main_button_sub);
 
@@ -154,11 +161,34 @@ public class Main_Page extends AppCompatActivity {
             public void onClick(View v) {
                //main input subscribe
                EditText main_sub = findViewById(R.id.main_input_sub);
-               String subscribe_ = main_sub.getText().toString();
+               String subscribe_ = main_sub.getText().toString().replace(" ","");
+
+               ListView temp_list = (ListView)findViewById(R.id.main_list);
+
+               Log.i("debuglista"," compare this : "+subscribe_);
+               Log.i("debuglista",""+temp_list.getAdapter().getItem(0).toString());
+
+
                boolean flag = false;
-                for(int i=0; i<kati.size();i++){
-                    if(kati.get(i).equals(subscribe_)){
-                        subscribe(subscribe_);
+                for(int i=0; i<temp_list.getAdapter().getCount();i++){
+                    if(temp_list.getAdapter().getItem(i).toString().replace(" ","").equals(subscribe_)){
+                        //subscribe(subscribe_);
+
+                        String [] _data_ = new String[2];
+                        _data_[0] = "subscribe";
+                        _data_[1] = "";
+
+
+                        new_temp = new Executor(p);
+                        new_temp.execute(_data_);
+
+                        String [] _data__ = new String[2];
+                        _data__[0] = subscribe_.replace(" ","");
+                        _data__[1] = "";
+
+                        new_temp = new Executor(p);
+                        new_temp.execute(_data__);
+
                         flag = true;
                         break;
                     }
@@ -182,11 +212,11 @@ public class Main_Page extends AppCompatActivity {
 
                 //Search video name and hashtags
                 EditText video_name = findViewById(R.id.main_input_upload_videoName);
-                String v_name = video_name.getText().toString();
+                v_name = video_name.getText().toString();
 
 
                 EditText hashtags = findViewById(R.id.main_input_upload_hashtags);
-                String [] v_hashtags = video_name.getText().toString().split(",");
+                v_hashtags = hashtags.getText().toString().split(",");
 
 
                 Intent pickIntent = new Intent (Intent.ACTION_PICK);
@@ -203,6 +233,15 @@ public class Main_Page extends AppCompatActivity {
         rec.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //Search video name and hashtags
+                EditText video_name = findViewById(R.id.main_input_upload_videoName);
+                v_name = video_name.getText().toString();
+
+
+                EditText hashtags = findViewById(R.id.main_input_upload_hashtags);
+                v_hashtags = hashtags.getText().toString().split(",");
+
                 Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
                 startActivityForResult(intent,VIDEO_REQUEST);
             }
@@ -210,62 +249,123 @@ public class Main_Page extends AppCompatActivity {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onActivityResult(int req , int resultCode, Intent data){
         super.onActivityResult(req,resultCode,data);
 
-        if(req == VIDEO_REQUEST && resultCode==RESULT_OK){
+        if(req == VIDEO_REQUEST && resultCode==RESULT_OK) { // record button
             videoUri = data.getData();
+
+            Cursor cursor = getContentResolver().query(videoUri, null, null, null, null);
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            String path = cursor.getString(idx);
+
+            System.out.println("file path > "+  path );
+            System.out.println("file path2 > "+  data.getData().getEncodedPath() );
+
+
+            Log.i("paramOfPush", "video name " + v_name);
+
+            Log.i("paramOfPush", "path : " + path);
+
+            ArrayList<String> hash_ = new ArrayList<>();
+
+            for (int i = 0; i < v_hashtags.length; i++) {
+                hash_.add(v_hashtags[i]);
+                Log.i("paramOfPush", "hashtag : " + v_hashtags[i]);
+            }
+
+            String[] data_ = new String[v_hashtags.length + 3];
+
+            data_[0] = "push";
+            data_[1] = v_name;
+            data_[2] = path;
+            data_[2] = "C:\\Users\\iason\\Documents\\AndroidStudio\\DeviceExplorer\\Pixel_3a_API_28 [emulator-5554]\\storage\\self\\primary\\DCIM\\Camera\\VID_20210613_171443.mp4";
+            for (int i = 3; i < data_.length; i++) {
+                data_[i] = v_hashtags[i - 3];
+            }
+
+            Executor new_temp = new Executor(p);
+            new_temp.execute(data_);
 
             videoView.setVisibility(View.VISIBLE);
             videoView.setVideoURI(videoUri);
             videoView.start();
-        }else if (req == 1){
-            videoUri = data.getData();
-            //save video sto channel ekeinou poy patise to upload
-            //give name of the video hashtags ..
+        }else if (req == 1){ // upload button
 
+            videoUri = data.getData();
+
+            Cursor cursor = getContentResolver().query(videoUri, null, null, null, null);
+            cursor.moveToFirst();
+            int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            String path = cursor.getString(idx);
+
+            Log.i("paramOfPush","video name "+v_name);
+
+            Log.i("paramOfPush","path : "+path);
+
+            ArrayList<String> hash_ = new ArrayList<>();
+
+            for(int i=0;i<v_hashtags.length;i++){
+                hash_.add(v_hashtags[i]);
+                Log.i("paramOfPush","hashtag : "+v_hashtags[i]);
+            }
+
+            String[] data_ = new String[v_hashtags.length+3];
+
+            data_[0] = "push";
+            data_[1] = v_name;
+            data_[2] = path;
+            data_[2] = "C:\\Users\\iason\\Documents\\AndroidStudio\\DeviceExplorer\\Pixel_3a_API_28 [emulator-5554]\\storage\\self\\primary\\DCIM\\Camera\\"+path.split("/")[path.split("/").length-1];
+            for(int i = 3;i<data_.length;i++){
+                data_[i] = v_hashtags[i-3];
+            }
+
+            Executor new_temp = new Executor(p);
+            new_temp.execute(data_);
 
             videoView.setVisibility(View.VISIBLE);
             videoView.setVideoURI(videoUri);
             videoView.start();
         }
-    }
-
-    private void subscribe(String subscribe_) {//------------------------------------------------------------>>>>>>LEIPEI O EGKEFALOS TOY IASONA
-
     }
 
     private void findChannelName(String channel_search) {
-        kati.add("o iasonas kai i elena einai malakes");
-        //prepeu me to channel search poy edwse o xristis ma broume se poia kanalia ginete contain kai ayto ton pinaka na ton dwsome sthn 71(list_food)
-        int count =0;
-        channels_searched = new String[kati.size()];//kati tha einai ta channels mas poy einai Array list
-        for(int i=0; i<kati.size();i++){
-            if(kati.get(i).contains(channel_search)){
-                channels_searched[count++] = kati.get(i);
+        ListView listView_channels = (ListView)findViewById(R.id.main_list);
+
+        ArrayList<String> get_count_temp = new ArrayList<>();
+
+        for(int i=0; i<all_channels.size();i++){
+            if(all_channels.get(i).contains(channel_search)){
+                get_count_temp.add(all_channels.get(i));
             }
         }
 
-        ArrayAdapter adapter_channel = new ArrayAdapter<String>(this,R.layout.activity_listview,channels_searched);
-        ListView listView_channels = (ListView)findViewById(R.id.main_list);
-        listView_channels.setAdapter(adapter_channel);
+        channels_searched = new String[get_count_temp.size()];//kati tha einai ta channels mas poy einai Array list
 
+        for(int i=0; i<get_count_temp.size();i++){
+            channels_searched[i] = get_count_temp.get(i);
+        }
+
+        ArrayAdapter adapter_channel = new ArrayAdapter<String>(this,R.layout.activity_listview,channels_searched);
+        listView_channels.setAdapter(adapter_channel);
+        count_searches++;
     }
+
 
     private void presentList(){
 
-        kati.add("o iasonas kai i elena einai malakes222");
+        Log.i("debugpresentlist","edwwwwwww-------> "+ p.port);
+        new_temp = new Executor(p,(ListView)findViewById(R.id.main_list),this);
+        String[] data_ = new String[1];
+        data_[0]= "get_channels";
+        new_temp.execute(data_);
 
-        channels_searched = new String[kati.size()];//kati tha einai ta channels mas poy einai Array list
-        for(int i=0; i<kati.size();i++){
-            channels_searched[i] = kati.get(i);
-        }
+        all_channels = new ArrayList<>();
 
 
-        ArrayAdapter adapter_channel = new ArrayAdapter<String>(this,R.layout.activity_listview,channels_searched);
-        ListView listView_channels = (ListView)findViewById(R.id.main_list);
-        listView_channels.setAdapter(adapter_channel);
     }
 
 }

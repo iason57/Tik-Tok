@@ -1,5 +1,9 @@
 package classes_needed;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
 import java.util.*;
 import java.util.concurrent.Flow.Subscriber;
 import java.net.*;
@@ -540,7 +544,8 @@ public class Broker extends Thread implements Broker_interface,Node_{
             sub = registers;
         }
 
-        public void run() {           
+        @RequiresApi(api = Build.VERSION_CODES.O)
+        public void run() {
             //System.out.println("Starting to receive video from publisher");
             String str;
             String message_from_server;
@@ -1110,6 +1115,7 @@ public class Broker extends Thread implements Broker_interface,Node_{
             c = p_temp;
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.O)
         public void run() {
             BufferedReader reader = new BufferedReader(
                 new InputStreamReader(System.in));
@@ -1193,6 +1199,7 @@ public class Broker extends Thread implements Broker_interface,Node_{
                             else break;
                         }
                         out.println("Start to push video ");
+
                         c.push(greeting,path,hash);
                     }
                     else if(greeting.equals("search")){

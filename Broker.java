@@ -1031,7 +1031,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                     Socket x=serverSocket.accept();
                     System.out.println("Socket accepted: " + port);
                     number_of_publishers.set(0, number_of_publishers.get(0)+1);
-                    String test = "default_name";
+                    String test = "i";
                     Publisher temp = new Publisher(x,number_of_thread,port,test);
                     temp.setBroker(broker);
                     //registeredPublishers.add(new Publisher(temp));
@@ -1191,6 +1191,9 @@ public class Broker extends Thread implements Broker_interface,Node{
                             else break;
                         }
                         out.println("Start to push video ");
+                        System.out.println(greeting);
+                        System.out.println(path);
+                        System.out.println(hash);
                         c.push(greeting,path,hash);
                     }
                     else if(greeting.equals("search")){

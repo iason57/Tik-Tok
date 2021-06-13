@@ -244,7 +244,7 @@ public class Publisher extends Thread implements Publisher_interface,Node{
             //System.out.println("edw typwnw ta hashed hashtags tou broker 1: " +brokers.get(1).hashtags_serviced);
             //System.out.println("edw typwnw ta hashed hashtags tou broker 2: " +brokers.get(2).hashtags_serviced);
             //System.out.println("edw typwnw ta hashed hashtags tou broker 3: " +brokers.get(3).hashtags_serviced);
-
+            
             for(int i=0; i<hash.size(); i++){
                 flag = true;
                 for(int j=0; j<channelName.getHashtagsPublished().size();j++){
@@ -252,7 +252,7 @@ public class Publisher extends Thread implements Publisher_interface,Node{
                 }
                 if(flag) channelName.getHashtagsPublished().add(hash.get(i));
             }
-            //System.out.println("done with hash");
+            System.out.println("done with hash");
             String video_file_to_send = new_video.getPath();
             File myFile = new File (video_file_to_send);
             byte [] allfile  = new byte [(int)myFile.length()];
@@ -668,7 +668,7 @@ public class Publisher extends Thread implements Publisher_interface,Node{
 
     public static void main(String args[]) {
         
-        Publisher t1 = new Publisher(5668,1);
+        Publisher t1 = new Publisher(5666,1);
         
         t1.start();
         
