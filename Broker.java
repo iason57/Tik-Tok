@@ -1201,7 +1201,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                         hashed_key = -1;
                         theflag = false;
                         boolean f = false;
-                        if(broker.isRegistered_p(c.id)){
+                        //if(broker.isRegistered_p(c.id)){
                             out.println("Want to search by Channel name or hashtag ?");
                             greeting = in.readLine();
                             if(greeting.contains("name") || greeting.contains("Name") || greeting.contains("channel") || greeting.contains("Channel")){
@@ -1344,10 +1344,7 @@ public class Broker extends Thread implements Broker_interface,Node{
                             else {
                                 out.println("Incorrect input!");
                             }
-                        }
-                        else{
-                            // he is not registered : will see what to do
-                        }
+                        
                     }
                     else{
                         System.out.println("Publisher with id : "+id+", said to broker "+ pport +" : "+greeting);

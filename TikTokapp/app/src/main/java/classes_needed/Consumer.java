@@ -1,5 +1,7 @@
 package classes_needed;
 
+import android.util.Log;
+
 import java.util.*;
 import java.net.*;
 import java.io.*;
@@ -14,6 +16,8 @@ public class Consumer extends Thread implements Consumer_interface,Node_ {
     public int port;
     public int id;
     public String video_name_temp;
+    public ArrayList<String> videos_searched;
+    public String interface_search_chname_message;
 
     /*
     public Consumer(Socket clientSocket) {
@@ -73,13 +77,136 @@ public class Consumer extends Thread implements Consumer_interface,Node_ {
     
     public void init(int port){
         try{
-            clientSocket = new Socket(Inet4Address.getLocalHost().getHostAddress(), port);
+            clientSocket = new Socket("192.168.1.14", port);
             //clientSocket2 = new Socket(Inet4Address.getLocalHost().getHostAddress(), port+1000);
         }
         catch(Exception e){
 
         }
         
+    }
+
+    public void dealWithInterface(int port1, String[] d_ata_) throws IOException {
+        BufferedReader reader = new BufferedReader(
+                new InputStreamReader(System.in));
+        Log.i("DEBUGINTER","size : "+d_ata_.length);
+        String str;
+        String message_from_server;
+        /*
+        out.close();
+        in.close();
+        out = new PrintWriter(clientSocket2.getOutputStream(), true);
+        in = new BufferedReader(new InputStreamReader(clientSocket2.getInputStream()));
+         */
+        //while(true){
+            System.out.println("Give your message : ");
+            str =  d_ata_[1];
+            Log.i("DEBUGINTER","str : "+str);
+            if(!str.equals("choiceofvid")) {
+                out.println(str);
+            }
+            if(str.equals("subscribe")){
+                System.out.println("Available channels : ");
+                message_from_server = in.readLine();
+                message_from_server = message_from_server.replace("Available channels : ", "");
+                int size = Integer.parseInt(message_from_server);
+                for(int i =0; i< size ;i++){
+                    message_from_server = in.readLine();
+                    System.out.println(""+message_from_server);
+                }
+            }
+            else if(str.equals("search")){
+                message_from_server = in.readLine(); //want to search name or hash?
+                System.out.println(""+message_from_server);
+                str =  d_ata_[2];
+                out.println(str); // name or hashtag option
+                Log.i("afters","in search after message sent : NAME");
+                if(str.contains("name") || str.contains("Name")){
+                    Log.i("afters","in NAME");
+                    System.out.println("Available channels : ");
+                    message_from_server = in.readLine(); //size
+                    message_from_server = message_from_server.replace("Available channels : ", "");
+                    int size = Integer.parseInt(message_from_server);
+                    for(int i =0; i< size ;i++){
+                        message_from_server = in.readLine();
+                        System.out.println(""+message_from_server);
+                    }
+                    Log.i("afters","after present");
+                    message_from_server = in.readLine();
+                    System.out.println(""+message_from_server);
+                    Log.i("afters","before str");
+                    str =  d_ata_[3];
+                    Log.i("afters","after str");
+                    out.println(str); // the name of the channel or the hashtag
+                    Log.i("afters","after out");
+                    message_from_server = in.readLine();
+                    Log.i("afters","after in");
+                    size = Integer.parseInt(message_from_server); //size
+                    Log.i("afters","before init");
+                    videos_searched = new ArrayList<>();
+                    Log.i("afters","init video searched");
+                    for(int i =0; i< size ;i++){
+                        message_from_server = in.readLine();
+                        System.out.println(""+message_from_server);
+                        videos_searched.add(message_from_server);
+                    }
+                    message_from_server = in.readLine();
+                    if(!message_from_server.equals("Not found")){
+                        System.out.println(""+message_from_server);
+                        //str =  reader.readLine();
+                        //out.println(str); // choice of video
+                        interface_search_chname_message = "";
+                    }
+                    else interface_search_chname_message = "Not found";
+                    Log.i("afters","search done first time for list");
+
+                }else{
+                    System.out.println("Available hashtags: ");
+                    message_from_server = in.readLine(); //broker size
+                    int size = Integer.parseInt(message_from_server);
+                    for (int i=0;i<size;i++){
+                        message_from_server = in.readLine(); //hashtags list size
+                        int size2 = Integer.parseInt(message_from_server);
+                        for (int j=0;j<size2;j++){
+                            message_from_server = in.readLine(); //hashtags
+                            System.out.println(""+message_from_server);
+                        }
+                    }
+
+                    message_from_server = in.readLine(); //give hashtag
+                    System.out.println(""+message_from_server);
+                    str =  reader.readLine(); //choice
+                    out.println(str); // the name of the hashtag
+                    message_from_server = in.readLine(); //found or not found
+
+                    if(!message_from_server.equals("Not found")){
+                        System.out.println(""+message_from_server);
+                        System.out.println("Available videos: ");
+                        message_from_server = in.readLine(); //videos hash size
+                        size = Integer.parseInt(message_from_server);
+                        for (int j=0;j<size;j++){
+                            message_from_server = in.readLine();
+                            System.out.println(""+message_from_server);
+                        }
+                        message_from_server = in.readLine(); //choose video
+                        System.out.println(""+message_from_server);
+                        str =  reader.readLine(); //choice of video
+                        out.println(str);
+                    }
+
+                }
+            }
+            else if(str.equals("choiceofvid")){
+                out.println(str);
+            }
+            else{
+                if(str.equals("..")){
+                    System.exit(0);
+                }
+                message_from_server = in.readLine();
+                System.out.println("Broker "+port1+" said : "+message_from_server);
+            }
+        //}
     }
 
     public void messages(int port1){
@@ -90,8 +217,9 @@ public class Consumer extends Thread implements Consumer_interface,Node_ {
         String message_from_server;
         System.out.println("Reader ok ");
         System.out.println("port is  "+ port1);
+        Log.i("initializemessage","ok1");
         try{
-            clientSocket2 = new Socket(Inet4Address.getLocalHost().getHostAddress(), port1);
+            clientSocket2 = new Socket("192.168.1.14", port1);
             System.out.println("edw0");
             out = new PrintWriter(clientSocket2.getOutputStream(), true); //<----------------------------
             System.out.println("edw1");
@@ -99,97 +227,7 @@ public class Consumer extends Thread implements Consumer_interface,Node_ {
             message_from_server = in.readLine();
             System.out.println("edw2");
             System.out.println("Connection established, server said : "+message_from_server);
-            while(true){
-                System.out.println("Give your message : ");
-                str =  reader.readLine();
-                out.println(str);
-                if(str.equals("subscribe")){
-                    System.out.println("Available channels : ");
-                    message_from_server = in.readLine();
-                    message_from_server = message_from_server.replace("Available channels : ", "");
-                    int size = Integer.parseInt(message_from_server); 
-                    for(int i =0; i< size ;i++){
-                        message_from_server = in.readLine();
-                        System.out.println(""+message_from_server);
-                    }
-                }
-                else if(str.equals("search")){
-                    message_from_server = in.readLine(); //want to search name or hash?
-                    System.out.println(""+message_from_server);
-                    str =  reader.readLine();
-                    out.println(str); // name or hashtag option
-
-                    if(str.contains("name") || str.contains("Name")){
-                        System.out.println("Available channels : ");
-                        message_from_server = in.readLine(); //size
-                        message_from_server = message_from_server.replace("Available channels : ", "");
-                        int size = Integer.parseInt(message_from_server); 
-                        for(int i =0; i< size ;i++){
-                            message_from_server = in.readLine();
-                            System.out.println(""+message_from_server);
-                        }
-
-                        message_from_server = in.readLine();
-                        System.out.println(""+message_from_server);
-                        str =  reader.readLine();
-                        out.println(str); // the name of the channel or the hashtag
-                        message_from_server = in.readLine();
-                        size = Integer.parseInt(message_from_server); //size
-                        for(int i =0; i< size ;i++){
-                            message_from_server = in.readLine();
-                            System.out.println(""+message_from_server);
-                        }
-                        message_from_server = in.readLine();
-                        if(!message_from_server.equals("Not found")){
-                            System.out.println(""+message_from_server);
-                            str =  reader.readLine();
-                            out.println(str); // choice of video
-                        }
-
-                    }else{
-                        System.out.println("Available hashtags: ");
-                        message_from_server = in.readLine(); //broker size
-                        int size = Integer.parseInt(message_from_server);
-                        for (int i=0;i<size;i++){
-                            message_from_server = in.readLine(); //hashtags list size
-                            int size2 = Integer.parseInt(message_from_server);
-                            for (int j=0;j<size2;j++){
-                                message_from_server = in.readLine(); //hashtags
-                                System.out.println(""+message_from_server);
-                            }
-                        }
-
-                        message_from_server = in.readLine(); //give hashtag
-                        System.out.println(""+message_from_server);
-                        str =  reader.readLine(); //choice
-                        out.println(str); // the name of the hashtag
-                        message_from_server = in.readLine(); //found or not found
-
-                        if(!message_from_server.equals("Not found")){
-                            System.out.println(""+message_from_server);
-                            System.out.println("Available videos: ");
-                            message_from_server = in.readLine(); //videos hash size
-                            size = Integer.parseInt(message_from_server);
-                            for (int j=0;j<size;j++){
-                                message_from_server = in.readLine(); 
-                                System.out.println(""+message_from_server);
-                            }
-                            message_from_server = in.readLine(); //choose video
-                            System.out.println(""+message_from_server);
-                            str =  reader.readLine(); //choice of video
-                            out.println(str); 
-                        }
-
-                    }
-                }
-                else{
-                    if(str.equals("..")){
-                        System.exit(0);
-                    }
-                    message_from_server = in.readLine();
-                    System.out.println("Broker "+port1+" said : "+message_from_server);
-                }
-            }
+            Log.i("initializemessage","ok2");
         }
         catch(Exception e){
             System.out.println("Exception in messages");
@@ -218,7 +256,7 @@ public class Consumer extends Thread implements Consumer_interface,Node_ {
                 int current = 0;
                 System.out.println("Starting socket");
                 System.out.println("port is : "+port);
-                clientSocket = new Socket(Inet4Address.getLocalHost().getHostAddress(), port+3000 );
+                clientSocket = new Socket("192.168.1.14", port+3000 );
                 //clientSocket2 = new Socket(Inet4Address.getLocalHost().getHostAddress(), port+1000);
                 InputStream is = clientSocket.getInputStream();
                 byte [] mybytearray  = new byte [file_size];
@@ -401,7 +439,7 @@ public class Consumer extends Thread implements Consumer_interface,Node_ {
                 int current = 0;
                 System.out.println("Starting socket");
                 System.out.println("port is : "+port);
-                clientSocket = new Socket(Inet4Address.getLocalHost().getHostAddress(), port+3000 );
+                clientSocket = new Socket("192.168.1.14", port+3000 );
                 //clientSocket2 = new Socket(Inet4Address.getLocalHost().getHostAddress(), port+1000);
                 InputStream is = clientSocket.getInputStream();
                 byte [] mybytearray  = new byte [file_size];
@@ -497,6 +535,7 @@ public class Consumer extends Thread implements Consumer_interface,Node_ {
         try{
             this.init(port);
             this.messages(port+1000);
+
             System.out.println("Initializing port : "+port);
             System.out.println("Sending port : "+(port+2000));
             System.out.println("Messages port : "+(port+1000));

@@ -8,13 +8,16 @@ import android.widget.ListView;
 
 import androidx.annotation.RequiresApi;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
+import classes_needed.Consumer;
 import classes_needed.Publisher;
 
 public class Executor extends AsyncTask<String,String,String> {
 
     public Publisher p;
+    public Consumer c;
     public ArrayList<String> ch = new ArrayList<>();
     public String temp;
     private  ListView viewById;
@@ -30,32 +33,53 @@ public class Executor extends AsyncTask<String,String,String> {
         this.main_page = main_page;
     }
 
+    public Executor(Consumer cons){
+        this.c = cons;
+    }
+
+    public Executor(Consumer c, ListView viewById, Main_Page main_page) {
+        this.c = c;
+        this.viewById = viewById;
+        this.main_page = main_page;
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected String doInBackground(String...dedomena) {
-        Log.i("test","do in back port "+p.port);
+        //Log.i("test","do in back port "+p.port);
         // first pos is the id of the task
-        if(dedomena[0].equals("push")){
-            p.dealWithInterface(p.port+3000,dedomena);
-        }else if(dedomena[0].equals("subscribe")){
-            p.dealWithInterface(p.port+3000,dedomena);
-        }else if (dedomena[0].equals("get_channels")){
-            ch = p.channels_present;
-            String temp = "";
-            for(int i =0;i<ch.size();i++){
-                if(i!= ch.size()-1){
-                    temp = temp + ch.get(i)+",";
-                }
-                else{
-                    temp = temp + ch.get(i);
+        if(dedomena[0].equals("consumer")){
+            if(dedomena[1].equals("search")){ // and the choice too
+                try {
+                    c.dealWithInterface(c.port+1000,dedomena);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
-            Log.i("testsame",temp);
-            return temp;
         }
         else{
-            // name of channel to sub
-            p.dealWithInterface(p.port+3000,dedomena);
+            if(dedomena[0].equals("push")){
+                p.dealWithInterface(p.port+3000,dedomena);
+            }else if(dedomena[0].equals("subscribe")){
+                p.dealWithInterface(p.port+3000,dedomena);
+            }else if (dedomena[0].equals("get_channels")){
+                ch = p.channels_present;
+                String temp = "";
+                for(int i =0;i<ch.size();i++){
+                    if(i!= ch.size()-1){
+                        temp = temp + ch.get(i)+",";
+                    }
+                    else{
+                        temp = temp + ch.get(i);
+                    }
+                }
+                Log.i("testsame",temp);
+                return temp;
+            }
+            else{
+                // name of channel to sub
+                p.dealWithInterface(p.port+3000,dedomena);
+            }
         }
         return "";
     }

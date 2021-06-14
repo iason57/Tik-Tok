@@ -60,7 +60,9 @@ public class Main_Page extends AppCompatActivity {
     private String v_name;
     private String [] v_hashtags;
     private Publisher_ t1;
+    private Consumer_ t2;
     private Publisher p;
+    private Consumer c;
     private Executor new_temp;
     private ArrayList<String> all_channels;
     private int count_searches = 0;
@@ -83,13 +85,18 @@ public class Main_Page extends AppCompatActivity {
             // thn deyterh fora
             // den yphrxei o publisher
             t1 = new Publisher_();
+            t2 = new Consumer_();
             p = new Publisher(5666,1);
+            c = new Consumer(6666,1);
             t1.execute(p);
+            t2.execute(c);
             Log.i("testsame","init pub "+p.port);
             //Pref.write(getApplicationContext(),p);
             //p = Pref.readPubFromPref(this);
             Pref.p = p;
+            Pref.c = c;
             Log.i("testsame","init pub after read from memory"+Pref.p.port);
+            Log.i("testsame","init pub after read from memory"+Pref.c.port);
         }
         else{
             p = Pref.p;
@@ -279,54 +286,27 @@ public class Main_Page extends AppCompatActivity {
         if(req == VIDEO_REQUEST && resultCode==RESULT_OK) { // record button
             videoUri = data.getData();
 
-            //String state = Environment.getExternalStorageState();
-
-            //if(Environment.MEDIA_MOUNTED.equals(state)){
-                File Root = this.getExternalFilesDir(null);
-                Log.i("location"," root : "+Root.toPath());
-            try {
-                Log.i("location"," root : "+Root.getCanonicalPath());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            String path2 = Root.toPath().toString();
-                File Dir = new File(path2);
-                if(Dir.exists()){
-                    // message
-                    Log.i("location","found");
-                }
-                else {
-                    Dir.mkdir();
-                    Log.i("location"," not found,making directory");
-                }
-
-                File file = new File(Dir,"cam_video.txt");//mp4
-                String test_string = "testing write";
-                try {
-                    FileOutputStream fileOutputStream = new FileOutputStream(file);
-                    fileOutputStream.write(test_string.getBytes());
-                    fileOutputStream.close();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            //}
-            //else{
-                // no sd card
-                // Log.i("location","no sd card");
-            //}
-
-
-
             Cursor cursor = getContentResolver().query(videoUri, null, null, null, null);
             cursor.moveToFirst();
             int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
             String path = cursor.getString(idx);
 
+            String new_path = "/storage/self/primary/DCIM/Camera/"+path.split("/")[path.split("/").length - 1].replace("/","");
+            Log.i("paramOfPush", "new path" +new_path);
+
             System.out.println("file path > "+  path );
-            System.out.println("file path2 > "+  data.getData().getEncodedPath() );
+            try {
+                String temp = "adb.exe pull "+new_path+" C:\\Users\\iason\\Desktop\\personal";
+                Log.i("paramOfPush", "command :" +temp );
+                Log.i("paramOfPush", "video real name " + path.split("/")[path.split("/").length -1]);
+                Runtime run2 = Runtime. getRuntime();
+                Process pr2= run2. exec(temp);
+
+            } catch (Exception e) {
+                //TODO: handle exception
+                Log.i("paramOfPush", "gamiemai me : "+e.toString() );
+            }
+
 
 
             Log.i("paramOfPush", "video name " + v_name);
@@ -344,8 +324,8 @@ public class Main_Page extends AppCompatActivity {
 
             data_[0] = "push";
             data_[1] = v_name;
-            data_[2] = path;
-            data_[2] = "C:\\Users\\iason\\Documents\\AndroidStudio\\DeviceExplorer\\Pixel_3a_API_28 [emulator-5554]\\storage\\self\\primary\\DCIM\\Camera\\VID_20210613_171443.mp4";
+            //data_[2] = path;
+            data_[2] = "C:\\Users\\iason\\Desktop\\personal\\"+path.split("/")[path.split("/").length - 1].replace("/","");
             for (int i = 3; i < data_.length; i++) {
                 data_[i] = v_hashtags[i - 3];
             }

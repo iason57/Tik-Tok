@@ -9,11 +9,14 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+
+import classes_needed.Consumer;
 import classes_needed.Publisher;
 
 public class Pref {
 
     public static Publisher p = new Publisher();
+    public static Consumer c = new Consumer();
     /*
 
     private static final String LIST_KEY = "publisher_save_key";

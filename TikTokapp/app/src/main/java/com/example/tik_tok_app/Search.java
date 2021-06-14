@@ -3,6 +3,7 @@ package com.example.tik_tok_app;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.PersistableBundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -16,6 +17,8 @@ import android.widget.VideoView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.tik_tok_app.Memory.Pref;
 
 import java.util.ArrayList;
 
@@ -102,12 +105,28 @@ public class Search extends AppCompatActivity {
                 String name_ = str.getText().toString();
                 boolean f = getVideo(name_);
                 if(f==true){
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            String[] data_ = new String[2];
 
+                            data_[0] = "consumer";
+                            data_[1] = "choiceofvid";
+                            data_[2] = name_;
+
+                            Executor new_temp = new Executor(Pref.c);
+                            new_temp.execute(data_);
+                        }
+                    }, 1000);
+
+                    /*
                     String path = "storage/self/primary/Download/"+name_+".mp4";
                     Uri a =Uri.parse(path);
                     Intent test_ = new Intent(Intent.ACTION_VIEW,a);
                     test_.setDataAndType(a,"video/mp4");
                     startActivity(test_);
+                    */
                 }
                 else{
                     Toast.makeText(Search.this,"No such video!",Toast.LENGTH_SHORT).show();
@@ -146,18 +165,36 @@ public class Search extends AppCompatActivity {
 
 
     private void showSearchByChannel(String channel_) {
-        kati.add("channel");
-        int count =0;
-        all_searched_videos = new String[kati.size()];//kati tha einai ta channels mas poy einai Array list
-        for(int i=0; i<kati.size();i++){
-            if(kati.get(i).contains(channel_)){
-                all_searched_videos[count++] = kati.get(i);
+
+        String[] data_ = new String[4];
+
+        data_[0] = "consumer";
+        data_[1] = "search";
+        data_[2] = "name";
+        data_[3] = channel_;
+
+        Executor new_temp = new Executor(Pref.c);
+        new_temp.execute(data_);
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                int count =0;
+                all_searched_videos = new String[Pref.c.videos_searched.size()];//kati tha einai ta channels mas poy einai Array list
+                for(int i=0; i<Pref.c.videos_searched.size();i++){
+                    all_searched_videos[count++] = Pref.c.videos_searched.get(i);
+                }
+
             }
-        }
+        }, 10000);
+
 
         ArrayAdapter adapter_hashtags = new ArrayAdapter<String>(this,R.layout.activity_listview,all_searched_videos);
         ListView listView_hashtags = (ListView)findViewById(R.id.search_list);
         listView_hashtags.setAdapter(adapter_hashtags);
+
+
     }
 
 

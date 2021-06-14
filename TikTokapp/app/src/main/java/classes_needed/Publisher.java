@@ -32,6 +32,8 @@ public class Publisher extends Thread implements Serializable,Publisher_interfac
     private int ok = 0 ; // not added in channels
     public String video_name_temp;
     public String interface_sub_message;
+    public String interface_search_chname_message;
+    public ArrayList<String> videos_searched;
 
     public ArrayList<String> channels_present;
 
@@ -345,7 +347,7 @@ public class Publisher extends Thread implements Serializable,Publisher_interfac
                 System.out.println("Give your message : ");
                 str =  data_[0];
                 Log.i("command--",str);
-                out.println(str);
+                if(!str.equals("choiceofvid")) out.println(str);
                 if(str.equals("subscribe") && data_[1].equals("present")){
                     System.out.println("Available channels : ");
                     message_from_server = in.readLine();
@@ -375,12 +377,14 @@ public class Publisher extends Thread implements Serializable,Publisher_interfac
                     }
                 }
                 else if(str.equals("search")){
+                    Log.i("videos_searched","insearch");
                     message_from_server = in.readLine(); //want to search name or hash?
                     System.out.println(""+message_from_server);
-                    //str =  reader.readLine();
+                    str =  data_[1];
                     out.println(str); // name or hashtag option
 
                     if(str.contains("name") || str.contains("Name")){
+                        Log.i("videos_searched","in channel name search");
                         System.out.println("Available channels : ");
                         message_from_server = in.readLine(); //size
                         message_from_server = message_from_server.replace("Available channels : ", "");
@@ -393,19 +397,24 @@ public class Publisher extends Thread implements Serializable,Publisher_interfac
                         message_from_server = in.readLine();
                         System.out.println(""+message_from_server);
                         //str =  reader.readLine();
-                        out.println(str); // the name of the channel or the hashtag
+                        out.println(data_[2]); // the name of the channel or the hashtag
                         message_from_server = in.readLine();
                         size = Integer.parseInt(message_from_server); //size
+                        videos_searched = new ArrayList<>();
                         for(int i =0; i< size ;i++){
                             message_from_server = in.readLine();
+                            videos_searched.add(message_from_server);
+                            Log.i("videos_searched",message_from_server);
                             System.out.println(""+message_from_server);
                         }
                         message_from_server = in.readLine();
                         if(!message_from_server.equals("Not found")){
                             System.out.println(""+message_from_server);
                             //str =  reader.readLine();
-                            out.println(str); // choice of video
+                            //out.println(str); // choice of video |------------------------------------------------>
+                            interface_search_chname_message = "";
                         }
+                        else interface_search_chname_message = "Not found";
 
                     }else{
                         System.out.println("Available hashtags: ");
@@ -507,6 +516,9 @@ public class Publisher extends Thread implements Serializable,Publisher_interfac
                     message_from_server = in.readLine();
                     System.out.println(""+message_from_server);
                     */
+                }
+                else if(str.equals("choiceofvid")){
+                    out.println(str);
                 }
                 else{
                     if(str.equals("..")){
