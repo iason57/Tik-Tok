@@ -17,7 +17,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class Publisher extends Thread implements Publisher_interface,Node_{
+public class Publisher extends Thread implements Serializable,Publisher_interface,Node_{
 
     ArrayList<String> hash = new ArrayList<String>();
     public Socket clientSocket;
@@ -31,6 +31,7 @@ public class Publisher extends Thread implements Publisher_interface,Node_{
     public int counting_port = 0;
     private int ok = 0 ; // not added in channels
     public String video_name_temp;
+    public String interface_sub_message;
 
     public ArrayList<String> channels_present;
 
@@ -351,6 +352,7 @@ public class Publisher extends Thread implements Publisher_interface,Node_{
                     message_from_server = message_from_server.replace("Available channels : ", "");
                     int size = Integer.parseInt(message_from_server);
                     Log.i("debugpresentlist",size+" the size");
+                    channels_present = new ArrayList<>();
                     for(int i =0; i< size ;i++){
                         message_from_server = in.readLine();
                         System.out.println(""+message_from_server);
@@ -511,6 +513,7 @@ public class Publisher extends Thread implements Publisher_interface,Node_{
                         System.exit(0);
                     }
                     message_from_server = in.readLine();
+                    interface_sub_message = message_from_server;
                     System.out.println("Broker "+port1+" said : "+message_from_server);
                 }
             //}

@@ -1,4 +1,5 @@
 package com.example.tik_tok_app;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -7,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.FileUtils;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -22,6 +24,8 @@ import android.widget.VideoView;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.tik_tok_app.Memory.Pref;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -81,7 +85,14 @@ public class Main_Page extends AppCompatActivity {
             t1 = new Publisher_();
             p = new Publisher(5666,1);
             t1.execute(p);
-            Log.i("test","init pub "+p.port);
+            Log.i("testsame","init pub "+p.port);
+            //Pref.write(getApplicationContext(),p);
+            //p = Pref.readPubFromPref(this);
+            Pref.p = p;
+            Log.i("testsame","init pub after read from memory"+Pref.p.port);
+        }
+        else{
+            p = Pref.p;
         }
 
 
@@ -196,6 +207,17 @@ public class Main_Page extends AppCompatActivity {
                 if(!flag){
                     Toast.makeText(Main_Page.this,"Channel name doesn't exists!",Toast.LENGTH_SHORT).show();
                 }
+                else{
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(Main_Page.this,p.interface_sub_message,Toast.LENGTH_SHORT).show();
+                        }
+                    }, 1000);
+
+                }
+
 
             }
         });
@@ -256,6 +278,47 @@ public class Main_Page extends AppCompatActivity {
 
         if(req == VIDEO_REQUEST && resultCode==RESULT_OK) { // record button
             videoUri = data.getData();
+
+            //String state = Environment.getExternalStorageState();
+
+            //if(Environment.MEDIA_MOUNTED.equals(state)){
+                File Root = this.getExternalFilesDir(null);
+                Log.i("location"," root : "+Root.toPath());
+            try {
+                Log.i("location"," root : "+Root.getCanonicalPath());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            String path2 = Root.toPath().toString();
+                File Dir = new File(path2);
+                if(Dir.exists()){
+                    // message
+                    Log.i("location","found");
+                }
+                else {
+                    Dir.mkdir();
+                    Log.i("location"," not found,making directory");
+                }
+
+                File file = new File(Dir,"cam_video.txt");//mp4
+                String test_string = "testing write";
+                try {
+                    FileOutputStream fileOutputStream = new FileOutputStream(file);
+                    fileOutputStream.write(test_string.getBytes());
+                    fileOutputStream.close();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            //}
+            //else{
+                // no sd card
+                // Log.i("location","no sd card");
+            //}
+
+
 
             Cursor cursor = getContentResolver().query(videoUri, null, null, null, null);
             cursor.moveToFirst();
@@ -358,6 +421,7 @@ public class Main_Page extends AppCompatActivity {
     private void presentList(){
 
         Log.i("debugpresentlist","edwwwwwww-------> "+ p.port);
+
         new_temp = new Executor(p,(ListView)findViewById(R.id.main_list),this);
         String[] data_ = new String[1];
         data_[0]= "get_channels";

@@ -50,7 +50,7 @@ public class Executor extends AsyncTask<String,String,String> {
                     temp = temp + ch.get(i);
                 }
             }
-
+            Log.i("testsame",temp);
             return temp;
         }
         else{
