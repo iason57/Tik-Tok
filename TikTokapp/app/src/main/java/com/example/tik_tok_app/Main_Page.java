@@ -97,6 +97,12 @@ public class Main_Page extends AppCompatActivity {
             Pref.c = c;
             Log.i("testsame","init pub after read from memory"+Pref.p.port);
             Log.i("testsame","init pub after read from memory"+Pref.c.port);
+
+            String [] init_name = new String[2];
+            init_name[0]="set channel name";
+            init_name[1]="mpampis";
+            new_temp = new Executor(p);
+            new_temp.execute(init_name);
         }
         else{
             p = Pref.p;
@@ -402,7 +408,7 @@ public class Main_Page extends AppCompatActivity {
 
         Log.i("debugpresentlist","edwwwwwww-------> "+ p.port);
 
-        new_temp = new Executor(p,(ListView)findViewById(R.id.main_list),this);
+        new_temp = new Executor(Pref.p,(ListView)findViewById(R.id.main_list),this);
         String[] data_ = new String[1];
         data_[0]= "get_channels";
         new_temp.execute(data_);

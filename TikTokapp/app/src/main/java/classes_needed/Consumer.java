@@ -18,6 +18,7 @@ public class Consumer extends Thread implements Consumer_interface,Node_ {
     public String video_name_temp;
     public ArrayList<String> videos_searched;
     public String interface_search_chname_message;
+    public ArrayList<String> hashtags_for_present;
 
     /*
     public Consumer(Socket clientSocket) {
@@ -86,10 +87,13 @@ public class Consumer extends Thread implements Consumer_interface,Node_ {
         
     }
 
-    public void dealWithInterface(int port1, String[] d_ata_) throws IOException {
+    public void dealWithInterface(int port1, String[] da) throws IOException {
         BufferedReader reader = new BufferedReader(
                 new InputStreamReader(System.in));
-        Log.i("DEBUGINTER","size : "+d_ata_.length);
+        Log.i("afters","size : "+da.length);
+        for(int i =0; i<da.length;i++){
+            Log.i("afters","data tou "+i+" : "+da[i]);
+        }
         String str;
         String message_from_server;
         /*
@@ -100,7 +104,7 @@ public class Consumer extends Thread implements Consumer_interface,Node_ {
          */
         //while(true){
             System.out.println("Give your message : ");
-            str =  d_ata_[1];
+            str =  da[1];
             Log.i("DEBUGINTER","str : "+str);
             if(!str.equals("choiceofvid")) {
                 out.println(str);
@@ -115,10 +119,11 @@ public class Consumer extends Thread implements Consumer_interface,Node_ {
                     System.out.println(""+message_from_server);
                 }
             }
-            else if(str.equals("search")){
+            else if(str.equals("search") && da.length==5){ // to 4o orisma einai mia default apantisi xwris shmasia apla gia na arxikopoihsw th lista hash
+                Log.i("debugshowlist","inside 5");
                 message_from_server = in.readLine(); //want to search name or hash?
                 System.out.println(""+message_from_server);
-                str =  d_ata_[2];
+                str =  da[2];
                 out.println(str); // name or hashtag option
                 Log.i("afters","in search after message sent : NAME");
                 if(str.contains("name") || str.contains("Name")){
@@ -135,9 +140,10 @@ public class Consumer extends Thread implements Consumer_interface,Node_ {
                     message_from_server = in.readLine();
                     System.out.println(""+message_from_server);
                     Log.i("afters","before str");
-                    str =  d_ata_[3];
+                    str =  da[3];
                     Log.i("afters","after str");
                     out.println(str); // the name of the channel or the hashtag
+                    Log.i("afters","data 3 is : "+str);
                     Log.i("afters","after out");
                     message_from_server = in.readLine();
                     Log.i("afters","after in");
@@ -164,40 +170,136 @@ public class Consumer extends Thread implements Consumer_interface,Node_ {
                     System.out.println("Available hashtags: ");
                     message_from_server = in.readLine(); //broker size
                     int size = Integer.parseInt(message_from_server);
+                    hashtags_for_present = new ArrayList<>();
+                    for (int i=0;i<size;i++){
+                        message_from_server = in.readLine(); //hashtags list size
+                        int size2 = Integer.parseInt(message_from_server);
+
+                        for (int j=0;j<size2;j++){
+                            message_from_server = in.readLine(); //hashtags
+                            System.out.println(""+message_from_server);
+                            hashtags_for_present.add(message_from_server);
+                        }
+                    }
+
+                    message_from_server = in.readLine(); //give hashtag
+                    System.out.println(""+message_from_server);
+                    str =  da[3];
+                    out.println(str); // the name of the hashtag
+                    message_from_server = in.readLine(); //found or not found
+
+                    if(!message_from_server.equals("Not found")){
+                        interface_search_chname_message = "";
+                        System.out.println(""+message_from_server);
+                        System.out.println("Available videos: ");
+                        message_from_server = in.readLine(); //videos hash size
+                        size = Integer.parseInt(message_from_server);
+                        videos_searched = new ArrayList<>();
+                        for (int j=0;j<size;j++){
+                            message_from_server = in.readLine();
+                            System.out.println(""+message_from_server);
+                            videos_searched.add(message_from_server);
+                        }
+                        message_from_server = in.readLine(); //choose video
+                        System.out.println(""+message_from_server);
+                        str =  da[4]; //choice of video
+                        out.println(str);
+                    }
+                    else interface_search_chname_message = "Not found";
+
+                }
+            }
+            else if(str.equals("search")){
+                message_from_server = in.readLine(); //want to search name or hash?
+                System.out.println(""+message_from_server);
+                str =  da[2];
+                out.println(str); // name or hashtag option
+                Log.i("afters","in search after message sent : NAME");
+                if(str.contains("name") || str.contains("Name")){
+                    Log.i("afters","in NAME");
+                    System.out.println("Available channels : ");
+                    message_from_server = in.readLine(); //size
+                    message_from_server = message_from_server.replace("Available channels : ", "");
+                    int size = Integer.parseInt(message_from_server);
+                    for(int i =0; i< size ;i++){
+                        message_from_server = in.readLine();
+                        System.out.println(""+message_from_server);
+                    }
+                    Log.i("afters","after present");
+                    message_from_server = in.readLine();
+                    System.out.println(""+message_from_server);
+                    Log.i("afters","before str");
+                    str =  da[3];
+                    Log.i("afters","after str");
+                    out.println(str); // the name of the channel or the hashtag
+                    Log.i("afters","data 3 is : "+str);
+                    Log.i("afters","after out");
+                    message_from_server = in.readLine();
+                    Log.i("afters","after in");
+                    size = Integer.parseInt(message_from_server); //size
+                    Log.i("afters","before init");
+                    videos_searched = new ArrayList<>();
+                    Log.i("afters","init video searched");
+                    for(int i =0; i< size ;i++){
+                        message_from_server = in.readLine();
+                        System.out.println(""+message_from_server);
+                        videos_searched.add(message_from_server);
+                    }
+
+                    message_from_server = in.readLine();
+                    if(!message_from_server.equals("Not found")){
+                        System.out.println(""+message_from_server);
+                        //str =  reader.readLine();
+                        //out.println(str); // choice of video
+                        interface_search_chname_message = "";
+                    }
+                    else interface_search_chname_message = "Not found";
+                    Log.i("afters","search done first time for list");
+
+                }else{
+                    System.out.println("Available hashtags: ");
+                    message_from_server = in.readLine(); //broker size
+                    int size = Integer.parseInt(message_from_server);
                     for (int i=0;i<size;i++){
                         message_from_server = in.readLine(); //hashtags list size
                         int size2 = Integer.parseInt(message_from_server);
                         for (int j=0;j<size2;j++){
                             message_from_server = in.readLine(); //hashtags
                             System.out.println(""+message_from_server);
+                            hashtags_for_present.add(message_from_server);
                         }
                     }
 
                     message_from_server = in.readLine(); //give hashtag
                     System.out.println(""+message_from_server);
-                    str =  reader.readLine(); //choice
+                    str =  da[3];
                     out.println(str); // the name of the hashtag
                     message_from_server = in.readLine(); //found or not found
 
                     if(!message_from_server.equals("Not found")){
+                        interface_search_chname_message = "";
                         System.out.println(""+message_from_server);
                         System.out.println("Available videos: ");
                         message_from_server = in.readLine(); //videos hash size
                         size = Integer.parseInt(message_from_server);
+                        videos_searched = new ArrayList<>();
                         for (int j=0;j<size;j++){
                             message_from_server = in.readLine();
                             System.out.println(""+message_from_server);
+                            videos_searched.add(message_from_server);
                         }
                         message_from_server = in.readLine(); //choose video
                         System.out.println(""+message_from_server);
-                        str =  reader.readLine(); //choice of video
-                        out.println(str);
+                        //str =  reader.readLine(); //choice of video
+                        //out.println(str);
                     }
+                    else interface_search_chname_message = "Not found";
 
                 }
             }
             else if(str.equals("choiceofvid")){
-                out.println(str);
+                Log.i("answer","choice : "+da[2]);
+                out.println(da[2]);
             }
             else{
                 if(str.equals("..")){

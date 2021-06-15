@@ -1,10 +1,9 @@
 package com.example.tik_tok_app;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.PersistableBundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -29,6 +28,7 @@ public class Search extends AppCompatActivity {
     private Button play_video;
     private VideoView videoView;
     private MediaController mc;
+    private Executor new_temp;
 
 
     @Override
@@ -37,6 +37,20 @@ public class Search extends AppCompatActivity {
         setContentView(R.layout.activity_search);
 
         all_searched_videos = new String[]{"5min","count"};
+
+        // load hashtags
+
+        String[] data_ = new String[5];
+
+        data_[0] = "consumer";
+        data_[1] = "search";
+        data_[2] = "hashtag";
+        data_[3] = "ahsldkfjhaklsjdfh";
+        data_[4] = "ahsldkfjhaklsjdfh";
+
+        new_temp = new Executor(Pref.c,(ListView)findViewById(R.id.hash_list),this);
+        new_temp.execute(data_);
+
 
         // Image button on bottom
 
@@ -70,26 +84,28 @@ public class Search extends AppCompatActivity {
         });
 
         //search me channel name
-        EditText search_ch = findViewById(R.id.search_input_search_channel_name);
-        String channel_ = search_ch.getText().toString();
+
         ImageButton search_channels = findViewById(R.id.search_button_channel_name);
 
         search_channels.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                EditText search_ch = findViewById(R.id.search_input_search_channel_name);
+                String channel_ = search_ch.getText().toString();
                 showSearchByChannel(channel_);
             }
         });
 
 
         //search me hashtags
-        EditText search_hash = findViewById(R.id.search_input_search_hashtag);
-        String hash_ = search_hash.getText().toString();
+
         ImageButton search_hashtags = findViewById(R.id.search_button_hashtag);
 
         search_hashtags.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                EditText search_hash = findViewById(R.id.search_input_search_hashtag);
+                String hash_ = search_hash.getText().toString();
                 showSearchByHashtags(hash_);
             }
         });
@@ -109,11 +125,16 @@ public class Search extends AppCompatActivity {
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            String[] data_ = new String[2];
+                            String[] data_ = new String[3];
 
                             data_[0] = "consumer";
                             data_[1] = "choiceofvid";
                             data_[2] = name_;
+                            Log.i("herechoice","choice is : "+name_);
+
+                            for(int i =0; i<data_.length;i++){
+                                Log.i("choice","data tou "+i+" : "+data_[i]);
+                            }
 
                             Executor new_temp = new Executor(Pref.c);
                             new_temp.execute(data_);
@@ -148,18 +169,35 @@ public class Search extends AppCompatActivity {
     }
 
     private void showSearchByHashtags(String hash_) {
-        kati.add("hashtag");
-        int count =0;
-        all_searched_videos = new String[kati.size()];//kati tha einai ta channels mas poy einai Array list
-        for(int i=0; i<kati.size();i++){
-            if(kati.get(i).contains(hash_)){//--------------------->>> PROSOXI EDW SYGKRINW TA HASHTAGS  .getHashtags()
-                all_searched_videos[count++] = kati.get(i);
-            }
+
+        String[] data_ = new String[4];
+
+        data_[0] = "consumer";
+        data_[1] = "search";
+        data_[2] = "hashtage";
+        data_[3] = hash_;
+
+        for(int i =0;i<data_.length;i++){
+            Log.i("debugshowlist",i+" : "+ data_[i]);
         }
 
-        ArrayAdapter adapter_channels = new ArrayAdapter<String>(this,R.layout.activity_listview,all_searched_videos);
-        ListView listView_channels = (ListView)findViewById(R.id.search_list);
-        listView_channels.setAdapter(adapter_channels);
+        Executor new_temp = new Executor(Pref.c);
+        new_temp.execute(data_);
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                int count =0;
+                all_searched_videos = new String[Pref.c.videos_searched.size()];//kati tha einai ta channels mas poy einai Array list
+                for(int i=0; i<Pref.c.videos_searched.size();i++){
+                    all_searched_videos[count++] = Pref.c.videos_searched.get(i);
+                }
+
+                presentWithDelay();
+
+            }
+        }, 2000);
     }
 
 
@@ -186,18 +224,18 @@ public class Search extends AppCompatActivity {
                     all_searched_videos[count++] = Pref.c.videos_searched.get(i);
                 }
 
+                presentWithDelay();
+
             }
-        }, 10000);
-
-
-        ArrayAdapter adapter_hashtags = new ArrayAdapter<String>(this,R.layout.activity_listview,all_searched_videos);
-        ListView listView_hashtags = (ListView)findViewById(R.id.search_list);
-        listView_hashtags.setAdapter(adapter_hashtags);
-
+        }, 2000);
 
     }
 
-
+    private void presentWithDelay() {
+        ArrayAdapter adapter_hashtags = new ArrayAdapter<String>(this,R.layout.activity_listview,all_searched_videos);
+        ListView listView_hashtags = (ListView)findViewById(R.id.search_list);
+        listView_hashtags.setAdapter(adapter_hashtags);
+    }
 
 
 }

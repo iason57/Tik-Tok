@@ -466,7 +466,7 @@ public class Publisher extends Thread implements Serializable,Publisher_interfac
                     message_from_server = in.readLine();
                     System.out.println(""+message_from_server);
                     //str =  reader.readLine();
-                    out.println(str);
+                    out.println(data_[1]);
                 }
                 else if(str.equals("push")){
                     // get name
