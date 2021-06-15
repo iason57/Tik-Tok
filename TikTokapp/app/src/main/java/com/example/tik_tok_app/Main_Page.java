@@ -75,7 +75,19 @@ public class Main_Page extends AppCompatActivity {
 
         int is_init = getIntent().getIntExtra("initialized_socket",-2); // not initialized --> initialized : 0
 
+        // testing command line exec
 
+        try {
+            String temp = "dir";
+            Runtime run2 = Runtime. getRuntime();
+            Process pr2= run2. exec(temp);
+
+        } catch (Exception e) {
+            //TODO: handle exception
+            Log.i("paramOfPush2", "gamiemai me : "+e.toString() );
+        }
+
+        // end testing
 
         if(is_init == -2 ) {
             // auto ginetai mono thn proti for
@@ -300,9 +312,10 @@ public class Main_Page extends AppCompatActivity {
             String new_path = "/storage/self/primary/DCIM/Camera/"+path.split("/")[path.split("/").length - 1].replace("/","");
             Log.i("paramOfPush", "new path" +new_path);
 
+            /*
             System.out.println("file path > "+  path );
             try {
-                String temp = "adb.exe pull "+new_path+" C:\\Users\\iason\\Desktop\\personal";
+                String temp = "adb.exe pull "+new_path+" C:\\Users\\iason\\Desktop\\personal"; //adb.exe push C:\\Users\\iason\\Desktop\\personal\\video1.mp4 /storage/self/primary/DCIM/Camera/
                 Log.i("paramOfPush", "command :" +temp );
                 Log.i("paramOfPush", "video real name " + path.split("/")[path.split("/").length -1]);
                 Runtime run2 = Runtime. getRuntime();
@@ -312,6 +325,7 @@ public class Main_Page extends AppCompatActivity {
                 //TODO: handle exception
                 Log.i("paramOfPush", "gamiemai me : "+e.toString() );
             }
+            */
 
 
 
@@ -331,13 +345,21 @@ public class Main_Page extends AppCompatActivity {
             data_[0] = "push";
             data_[1] = v_name;
             //data_[2] = path;
-            data_[2] = "C:\\Users\\iason\\Desktop\\personal\\"+path.split("/")[path.split("/").length - 1].replace("/","");
+            data_[2] = "C:\\Users\\iason\\Documents\\AndroidStudio\\DeviceExplorer\\emulator-5554\\storage\\self\\primary\\DCIM\\Camera\\"+path.split("/")[path.split("/").length - 1].replace("/","");
             for (int i = 3; i < data_.length; i++) {
                 data_[i] = v_hashtags[i - 3];
             }
 
-            Executor new_temp = new Executor(p);
-            new_temp.execute(data_);
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Executor new_temp = new Executor(p);
+                    new_temp.execute(data_);
+                }
+            }, 5000);
+
+
 
             videoView.setVisibility(View.VISIBLE);
             videoView.setVideoURI(videoUri);
@@ -367,13 +389,20 @@ public class Main_Page extends AppCompatActivity {
             data_[0] = "push";
             data_[1] = v_name;
             data_[2] = path;
-            data_[2] = "C:\\Users\\iason\\Documents\\AndroidStudio\\DeviceExplorer\\Pixel_3a_API_28 [emulator-5554]\\storage\\self\\primary\\DCIM\\Camera\\"+path.split("/")[path.split("/").length-1];
+            data_[2] = "C:\\Users\\iason\\Documents\\AndroidStudio\\DeviceExplorer\\emulator-5554\\storage\\self\\primary\\DCIM\\Camera\\"+path.split("/")[path.split("/").length-1];
             for(int i = 3;i<data_.length;i++){
                 data_[i] = v_hashtags[i-3];
             }
 
-            Executor new_temp = new Executor(p);
-            new_temp.execute(data_);
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Executor new_temp = new Executor(p);
+                    new_temp.execute(data_);
+                }
+            }, 5000);
+
 
             videoView.setVisibility(View.VISIBLE);
             videoView.setVideoURI(videoUri);

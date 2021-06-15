@@ -1,6 +1,7 @@
 package com.example.tik_tok_app;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -19,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.tik_tok_app.Memory.Pref;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class Search extends AppCompatActivity {
@@ -141,13 +143,39 @@ public class Search extends AppCompatActivity {
                         }
                     }, 1000);
 
-                    /*
-                    String path = "storage/self/primary/Download/"+name_+".mp4";
-                    Uri a =Uri.parse(path);
-                    Intent test_ = new Intent(Intent.ACTION_VIEW,a);
-                    test_.setDataAndType(a,"video/mp4");
-                    startActivity(test_);
-                    */
+
+                    //String path = "storage/self/primary/Download/"+name_+".mp4";
+
+                    //thelw na vrw path tou telautaioy video search
+                    //diatrexw folder
+
+                    final Handler handler2 = new Handler();
+                    handler2.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            String path="";
+                            File file;
+                            File dir = new File("storage/self/primary/search/");
+                            if (dir.exists()) {
+                                File[] files = dir.listFiles();
+                                for (int i = 0; i < files.length; ++i) {
+                                    file = files[i];
+                                    if (file.getName().contains(name_)){
+                                        path = file.getAbsolutePath();
+                                        break;
+                                    }
+                                }
+                            }
+
+                            Uri a =Uri.parse(path);
+                            Intent test_ = new Intent(Intent.ACTION_VIEW,a);
+                            test_.setDataAndType(a,"video/mp4");
+                            startActivity(test_);
+                        }
+                    }, 6000);
+
+
+
                 }
                 else{
                     Toast.makeText(Search.this,"No such video!",Toast.LENGTH_SHORT).show();

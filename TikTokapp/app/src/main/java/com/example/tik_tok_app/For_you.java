@@ -3,6 +3,7 @@ package com.example.tik_tok_app;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
 import android.os.PersistableBundle;
 import android.util.Log;
@@ -18,6 +19,7 @@ import android.widget.VideoView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class For_you extends AppCompatActivity {
@@ -78,20 +80,39 @@ public class For_you extends AppCompatActivity {
         pick.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
                 EditText str = findViewById(R.id.videos_input);
                 String name_ = str.getText().toString();
 
-                String path = "storage/self/primary/Download/"+name_+".mp4";
-                Uri a =Uri.parse(path);
-                Intent pickIntent = new Intent (Intent.ACTION_VIEW,a);
-                pickIntent.setDataAndType(a,"video/mp4");
-                //startActivity(pickIntent);
+                final Handler handler2 = new Handler();
+                handler2.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        String path="";
+                        File file;
+                        File dir = new File("storage/self/primary/Movies/");
+                        if (dir.exists()) {
+                            File[] files = dir.listFiles();
+                            for (int i = 0; i < files.length; ++i) {
+                                file = files[i];
+                                if (file.getName().split("-")[file.getName().split("-").length-1].replace(".mp4","").equals(name_)){
+                                    path = file.getAbsolutePath();
+                                    break;
+                                }
+                            }
+                        }
 
-                videoView.setVisibility(View.VISIBLE);
-                videoView.setVideoURI(a);
-                videoView.start();
+                        Uri a =Uri.parse(path);
+                        Intent pickIntent = new Intent (Intent.ACTION_VIEW,a);
+                        pickIntent.setDataAndType(a,"video/mp4");
+                        //startActivity(pickIntent);
 
-
+                        videoView.setVisibility(View.VISIBLE);
+                        videoView.setVideoURI(a);
+                        videoView.start();
+                    }
+                }, 1000);
             }
         });
 
@@ -99,14 +120,39 @@ public class For_you extends AppCompatActivity {
 
 
     private void presentSubVideos() {
-        kati.add("test");
-        //prepeu me to channel search poy edwse o xristis ma broume se poia kanalia ginete contain kai ayto ton pinaka na ton dwsome sthn 71(list_food)
-        int count =0;
-        videos_subscribed = new String[kati.size()];//kati tha einai ta channels mas poy einai Array list
-        for(int i=0; i<kati.size();i++){
-            videos_subscribed[count++] = kati.get(i);
-        }
 
+        kati = new ArrayList<String>();
+
+        final Handler handler2 = new Handler();
+        handler2.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                String path="";
+                File file;
+                File dir = new File("/storage/self/primary/Movies");
+                if (dir.exists()) {
+                    File[] files = dir.listFiles();
+                    Log.i("file",""+files.length);
+                    for (int i = 0; i < files.length; ++i) {
+                        file = files[i];
+                        kati.add(file.getName().split("-")[file.getName().split("-").length-1].replace(".mp4",""));
+                    }
+                }
+                //prepeu me to channel search poy edwse o xristis ma broume se poia kanalia ginete contain kai ayto ton pinaka na ton dwsome
+                int count =0;
+                videos_subscribed = new String[kati.size()];//kati tha einai ta channels mas poy einai Array list
+                for(int i=0; i<kati.size();i++){
+                    videos_subscribed[count++] = kati.get(i);
+                }
+
+                presentWithDelay();
+            }
+        }, 1000);
+
+
+    }
+
+    private void presentWithDelay() {
         ArrayAdapter adapter_videos = new ArrayAdapter<String>(this,R.layout.activity_listview,videos_subscribed);
         ListView listView_video_sub = (ListView)findViewById(R.id.videos_video_list);
         listView_video_sub.setAdapter(adapter_videos);
