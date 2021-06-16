@@ -31,6 +31,7 @@ public class Search extends AppCompatActivity {
     private VideoView videoView;
     private MediaController mc;
     private Executor new_temp;
+    private boolean flag_exist;
 
 
     @Override
@@ -160,7 +161,7 @@ public class Search extends AppCompatActivity {
                                 File[] files = dir.listFiles();
                                 for (int i = 0; i < files.length; ++i) {
                                     file = files[i];
-                                    if (file.getName().contains(name_)){
+                                    if (file.getName().split("-")[file.getName().split("-").length-1].replace(".mp4","").equals(name_)){
                                         path = file.getAbsolutePath();
                                         break;
                                     }
@@ -172,7 +173,7 @@ public class Search extends AppCompatActivity {
                             test_.setDataAndType(a,"video/mp4");
                             startActivity(test_);
                         }
-                    }, 6000);
+                    }, 15000);
 
 
 
@@ -197,9 +198,9 @@ public class Search extends AppCompatActivity {
     }
 
     private void showSearchByHashtags(String hash_) {
+        flag_exist = true;
 
         String[] data_ = new String[4];
-
         data_[0] = "consumer";
         data_[1] = "search";
         data_[2] = "hashtage";
@@ -218,6 +219,9 @@ public class Search extends AppCompatActivity {
             public void run() {
                 int count =0;
                 all_searched_videos = new String[Pref.c.videos_searched.size()];//kati tha einai ta channels mas poy einai Array list
+                if(Pref.c.videos_searched.size()==0){
+                    Toast.makeText(Search.this,"Not found",Toast.LENGTH_LONG).show();
+                }
                 for(int i=0; i<Pref.c.videos_searched.size();i++){
                     all_searched_videos[count++] = Pref.c.videos_searched.get(i);
                 }
@@ -231,35 +235,57 @@ public class Search extends AppCompatActivity {
 
 
     private void showSearchByChannel(String channel_) {
-
-        String[] data_ = new String[4];
-
-        data_[0] = "consumer";
-        data_[1] = "search";
-        data_[2] = "name";
-        data_[3] = channel_;
-
-        Executor new_temp = new Executor(Pref.c);
-        new_temp.execute(data_);
-
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                int count =0;
-                all_searched_videos = new String[Pref.c.videos_searched.size()];//kati tha einai ta channels mas poy einai Array list
-                for(int i=0; i<Pref.c.videos_searched.size();i++){
-                    all_searched_videos[count++] = Pref.c.videos_searched.get(i);
-                }
-
-                presentWithDelay();
-
+        flag_exist = false;
+        Log.i("pinakas",Pref.Allchanells.length+"");
+        for(int i =0; i< Pref.Allchanells.length;i++){
+            Log.i("pinakas","compare : " + channel_ + ", "+ Pref.Allchanells[i]);
+            if(channel_.equals(Pref.Allchanells[i])){
+                flag_exist = true;
+                Log.i("pinakas","compare : " + channel_ + ", "+ Pref.Allchanells[i]);
+                break;
             }
-        }, 2000);
+        }
+        if(flag_exist) {
+            String[] data_ = new String[4];
+
+            data_[0] = "consumer";
+            data_[1] = "search";
+            data_[2] = "name";
+            data_[3] = channel_;
+
+            Executor new_temp = new Executor(Pref.c);
+            new_temp.execute(data_);
+
+
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    int count =0;
+
+                    Log.i("videosearch","size is : "+Pref.c.videos_searched.size());
+                    all_searched_videos = new String[Pref.c.videos_searched.size()];//kati tha einai ta channels mas poy einai Array list
+                    for(int i=0; i<Pref.c.videos_searched.size();i++){
+                        all_searched_videos[count++] = Pref.c.videos_searched.get(i);
+                    }
+
+                   presentWithDelay();
+
+                }
+            }, 5000);
+        }
+        else{
+            presentWithDelay();
+        }
 
     }
 
     private void presentWithDelay() {
+        if(!flag_exist){
+            all_searched_videos = new String[0];
+            Toast.makeText(Search.this,"Not found",Toast.LENGTH_LONG).show();
+            Log.i("pinakas","Tost");
+        }
         ArrayAdapter adapter_hashtags = new ArrayAdapter<String>(this,R.layout.activity_listview,all_searched_videos);
         ListView listView_hashtags = (ListView)findViewById(R.id.search_list);
         listView_hashtags.setAdapter(adapter_hashtags);

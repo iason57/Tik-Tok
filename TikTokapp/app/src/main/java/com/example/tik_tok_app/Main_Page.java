@@ -75,20 +75,6 @@ public class Main_Page extends AppCompatActivity {
 
         int is_init = getIntent().getIntExtra("initialized_socket",-2); // not initialized --> initialized : 0
 
-        // testing command line exec
-
-        try {
-            String temp = "dir";
-            Runtime run2 = Runtime. getRuntime();
-            Process pr2= run2. exec(temp);
-
-        } catch (Exception e) {
-            //TODO: handle exception
-            Log.i("paramOfPush2", "gamiemai me : "+e.toString() );
-        }
-
-        // end testing
-
         if(is_init == -2 ) {
             // auto ginetai mono thn proti for
             // ara prepei seiriaziable publisher

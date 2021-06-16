@@ -187,14 +187,14 @@ public class Consumer extends Thread implements Consumer_interface,Node_ {
                     str =  da[3];
                     out.println(str); // the name of the hashtag
                     message_from_server = in.readLine(); //found or not found
-
+                    videos_searched = new ArrayList<>();
                     if(!message_from_server.equals("Not found")){
                         interface_search_chname_message = "";
                         System.out.println(""+message_from_server);
                         System.out.println("Available videos: ");
                         message_from_server = in.readLine(); //videos hash size
                         size = Integer.parseInt(message_from_server);
-                        videos_searched = new ArrayList<>();
+
                         for (int j=0;j<size;j++){
                             message_from_server = in.readLine();
                             System.out.println(""+message_from_server);
@@ -275,14 +275,14 @@ public class Consumer extends Thread implements Consumer_interface,Node_ {
                     str =  da[3];
                     out.println(str); // the name of the hashtag
                     message_from_server = in.readLine(); //found or not found
-
+                    videos_searched = new ArrayList<>();
                     if(!message_from_server.equals("Not found")){
                         interface_search_chname_message = "";
                         System.out.println(""+message_from_server);
                         System.out.println("Available videos: ");
                         message_from_server = in.readLine(); //videos hash size
                         size = Integer.parseInt(message_from_server);
-                        videos_searched = new ArrayList<>();
+
                         for (int j=0;j<size;j++){
                             message_from_server = in.readLine();
                             System.out.println(""+message_from_server);

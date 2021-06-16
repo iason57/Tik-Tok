@@ -786,9 +786,19 @@ public class Broker extends Thread implements Broker_interface,Node{
                                         }
                                     }
                                 }
+                                
+                                ChannelName x;
+                                System.out.println("prin to search tou channel"+brokers.size());
+                                //if(hashed_key ==1){
                                 //System.out.println("hashed key for : "+greeting+" is : "+hashed_key);
-                                for(ChannelName x : brokers.get(hashed_key).channels_serviced){
+                                for(int l =0; l< brokers.get(hashed_key).channels_serviced.size();l++){
+                                    
+                                    //ChannelName x : brokers.get(hashed_key).channels_serviced
+                                    System.out.println("prin to x : "+hashed_key);
+                                    x = brokers.get(hashed_key).channels_serviced.get(l);
+                                    System.out.println("meta to x");
                                     if(x.getChannelName().equals(greeting)){
+                                        System.out.println("kata lathos mpike");
                                         // thelei na dei ola ta video apo ena channel
                                         // stelnoume to plithos twn video
                                         vids = new ArrayList<VideoFile>(x.getAllVideos());
@@ -800,8 +810,11 @@ public class Broker extends Thread implements Broker_interface,Node{
                                         break;
                                     }
                                 }
+                                //}
+                                System.out.println("meta to for");
                                 
                                 if(!theflag) {
+                                    System.out.println("sosta mpike");
                                     out.println("0"); // give size = 0
                                     out.println("Not found");
                                 }
@@ -1409,17 +1422,17 @@ public class Broker extends Thread implements Broker_interface,Node{
         Broker b1 = new Broker(6666, 5666);
         b1.start();
         brokers.add(b1);
-        
-
+  
+        /*
         Broker b2 = new Broker(6667,5667);
         b2.start();
         brokers.add(b2);
 
 
-
         Broker b3 = new Broker(6668,5668);
         b3.start();
         brokers.add(b3);
+		*/
 
         /*
         Broker b4 = new Broker(6669,5669);

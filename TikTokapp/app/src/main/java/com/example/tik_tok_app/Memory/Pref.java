@@ -17,6 +17,8 @@ public class Pref {
 
     public static Publisher p = new Publisher();
     public static Consumer c = new Consumer();
+    public static String [] Allchanells;
+    public static String [] Allhashes;
     /*
 
     private static final String LIST_KEY = "publisher_save_key";

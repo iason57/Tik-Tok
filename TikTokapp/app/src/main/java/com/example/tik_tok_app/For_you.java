@@ -147,7 +147,7 @@ public class For_you extends AppCompatActivity {
 
                 presentWithDelay();
             }
-        }, 1000);
+        }, 3000);
 
 
     }

@@ -8,6 +8,8 @@ import android.widget.ListView;
 
 import androidx.annotation.RequiresApi;
 
+import com.example.tik_tok_app.Memory.Pref;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -24,6 +26,7 @@ public class Executor extends AsyncTask<String,String,String> {
     private Main_Page main_page;
     private Search search;
     private  ListView hashList;
+
 
     public Executor(Publisher pub){
         this.p = pub;
@@ -123,11 +126,11 @@ public class Executor extends AsyncTask<String,String,String> {
             temp = result;
             String [] channels_searched = result.split(",");
             String [] channels_searched2 = new String[channels_searched.length-1];
-
+            Pref.Allchanells = new String[channels_searched.length-1];
             for(int i=0;i<channels_searched2.length;i++){
                 channels_searched2[i] = channels_searched[i+1];
+                Pref.Allchanells[i] = channels_searched[i+1];
             }
-
             ArrayAdapter adapter_channel = new ArrayAdapter<String>(main_page,R.layout.activity_listview,channels_searched2);
             ListView listView_channels = viewById;
             listView_channels.setAdapter(adapter_channel);
@@ -139,11 +142,11 @@ public class Executor extends AsyncTask<String,String,String> {
             temp = result;
             String [] channels_searched = result.split(",");
             String [] channels_searched2 = new String[channels_searched.length-1];
-
+            Pref.Allhashes = new String[channels_searched.length-1];
             for(int i=0;i<channels_searched2.length;i++){
                 channels_searched2[i] = channels_searched[i+1];
+                Pref.Allhashes[i] = channels_searched[i+1];
             }
-
             ArrayAdapter adapter_channel = new ArrayAdapter<String>(search,R.layout.activity_listview,channels_searched2);
             ListView listView_channels = hashList;
             listView_channels.setAdapter(adapter_channel);
